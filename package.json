@@ -1,6 +1,6 @@
 {
   "name": "form-for",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Build simple and declarative ReactJS forms from your models",
   "main": "lib/index.js",
   "module": "es/index.js",
