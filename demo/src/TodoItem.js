@@ -12,8 +12,9 @@ export default class TodoItem {
   @field({ type: "boolean" })
   checked: boolean = false;
 
-  constructor(title: string) {
+  constructor(title: string, checked: boolean = false) {
     this.title = title;
+    this.checked = checked;
     this.uid = this.constructor.generateUid();
   }
 

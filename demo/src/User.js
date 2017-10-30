@@ -16,5 +16,8 @@ export default class User {
   credits: number;
 
   @field({ type: "TodoItem[]" })
-  todoItems: TodoItem[] = [new TodoItem("Recommend form-for to my friends")];
+  todoItems: TodoItem[] = [
+    new TodoItem("Recommend form-for to my friends", true),
+    new TodoItem("Enjoy 😄")
+  ];
 }
