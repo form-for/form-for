@@ -56,7 +56,7 @@ export default class TodoItemsInput extends React.Component<InputProps, State> {
         </header>
 
         <div className="card-body">
-          <FieldContext for={item} prefix={`${this.props.name}[${index}]`}>
+          <FieldContext for={item} index={index}>
             <Field name="title" />
             <Field name="checked" />
           </FieldContext>

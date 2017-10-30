@@ -17,6 +17,10 @@ export default class Field extends React.Component<Props> {
     prefix: PropTypes.string
   };
 
+  static childContextTypes = {
+    prefix: PropTypes.string
+  };
+
   static inputsBindings: { [_: string]: React.ComponentType<*> } = {};
 
   static bindInput(type: string, component: React.ComponentType<*>): void {
@@ -45,6 +49,12 @@ export default class Field extends React.Component<Props> {
     }
 
     return this.props.name;
+  }
+
+  getChildContext() {
+    return {
+      prefix: this.getPrefixedName()
+    };
   }
 
   render() {

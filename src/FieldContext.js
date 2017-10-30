@@ -15,11 +15,15 @@ export type Schema = {
 export type Props = {
   for: any,
   schema?: Schema,
-  prefix?: string,
+  index?: any,
   children: React.Node
 };
 
 export default class FieldContext extends React.Component<Props> {
+  static contextTypes = {
+    prefix: PropTypes.string
+  };
+
   static childContextTypes = {
     object: PropTypes.object,
     schema: PropTypes.object,
@@ -37,13 +41,23 @@ export default class FieldContext extends React.Component<Props> {
     return schema;
   }
 
+  getPrefix(): string {
+    let prefix = this.context.prefix || '';
+
+    if (typeof this.props.index !== 'undefined') {
+      prefix += `[${this.props.index}]`;
+    }
+
+    return prefix;
+  };
+
   getChildContext() {
     const object = this.props.for;
 
     return {
       object,
       schema: this.getSchema(),
-      prefix: this.props.prefix
+      prefix: this.getPrefix()
     };
   }
 
