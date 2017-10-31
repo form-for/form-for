@@ -1,14 +1,21 @@
 // @flow
 
+import { action, observable, useStrict } from "mobx";
+import { observer } from "mobx-react";
+
 import React from "react";
 import { render } from "react-dom";
 
 import User from "./User";
-import { Field, Form } from "../../src";
 import MoneyInput from "./inputs/MoneyInput";
 import TodoItemsInput from "./inputs/TodoItemsInput";
 import Input from "./inputs/Input";
 import BooleanInput from "./inputs/BooleanInput";
+
+import Form from "./Form";
+import Field from "./Field";
+
+useStrict(true);
 
 Field.bindInput("text", Input);
 Field.bindInput("number", Input);
@@ -19,7 +26,22 @@ Field.bindInput("boolean", BooleanInput);
 Field.bindInput("money", MoneyInput);
 Field.bindInput("TodoItem[]", TodoItemsInput);
 
+@observer
 class Demo extends React.Component<any> {
+  @observable user = new User();
+
+  constructor(props: any) {
+    super(props);
+
+    this.user.firstName = "Jane";
+    this.user.email = "jane@doe.com";
+    this.user.credits = 10;
+  }
+
+  handleChange = action(() => {
+    this.user.credits++;
+  });
+
   handleSubmit = (event: Event) => {
     event.preventDefault();
 
@@ -32,34 +54,37 @@ class Demo extends React.Component<any> {
   };
 
   render() {
-    const user = new User();
-    user.name = "Jane";
-    user.email = "jane@doe.com";
-    user.credits = 10;
-
     return (
-      <div className="container">
-        <Form for={user} onSubmit={this.handleSubmit}>
-          <header>
-            <h2>Edit User</h2>
-          </header>
-
-          <div className="row">
-            <div className="col-md-6">
-              <Field name="name" autoFocus />
-            </div>
-
-            <div className="col-md-6">
-              <Field name="last_name" />
-            </div>
+      <div className="container-fluid">
+        <div className="row">
+          <div className="col-md-6">
+            <pre>{JSON.stringify(this.user, null, 2)}</pre>
           </div>
 
-          <Field name="email" label="Business email" placeholder="your-email@business.com" />
-          <Field name="credits" />
-          <Field name="todoItems" />
+          <div className="col-md-6">
+            <Form for={this.user} prefix="user" onSubmit={this.handleSubmit}>
+              <header>
+                <h2>Edit User</h2>
+              </header>
 
-          <button className="btn btn-primary">Save User</button>
-        </Form>
+              <div className="row">
+                <div className="col-md-6">
+                  <Field name="firstName" autoFocus placeholder="What is your name?" />
+                </div>
+
+                <div className="col-md-6">
+                  <Field name="last_name" />
+                </div>
+              </div>
+
+              <Field name="email" />
+              <Field name="credits" />
+              <Field name="todoItems" />
+
+              <button className="btn btn-primary">Save User</button>
+            </Form>
+          </div>
+        </div>
       </div>
     );
   }

@@ -1,14 +1,18 @@
 // @flow
 
+import { observable } from "mobx";
+
 import { field } from "../../src";
 
 export default class TodoItem {
   uid: number;
   static uid = 0;
 
+  @observable
   @field({ required: true })
   title: string;
 
+  @observable
   @field({ type: "boolean" })
   checked: boolean = false;
 
