@@ -16,10 +16,11 @@ export type Props = {
   for: any,
   schema?: Schema,
   index?: any,
+  prefix?: string,
   children: React.Node
 };
 
-export default class FieldContext extends React.Component<Props> {
+export default class FieldGroup extends React.Component<Props> {
   static contextTypes = {
     prefix: PropTypes.string
   };
@@ -42,7 +43,7 @@ export default class FieldContext extends React.Component<Props> {
   }
 
   getPrefix(): string {
-    let prefix = this.context.prefix || '';
+    let prefix = this.props.prefix || this.context.prefix || '';
 
     if (typeof this.props.index !== 'undefined') {
       prefix += `[${this.props.index}]`;

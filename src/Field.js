@@ -3,7 +3,7 @@
 import * as React from "react";
 
 import PropTypes from "prop-types";
-import type { SchemaProperty } from "./FieldContext";
+import type { SchemaProperty } from "./FieldGroup";
 
 type Props = {
   name: string,

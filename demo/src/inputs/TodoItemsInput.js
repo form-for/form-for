@@ -1,7 +1,7 @@
 // @flow
 
 import React from "react";
-import { Field, FieldContext } from "../../../src";
+import { Field, FieldGroup } from "../../../src";
 
 import type { InputProps } from "../../../src";
 import TodoItem from "../TodoItem";
@@ -56,10 +56,10 @@ export default class TodoItemsInput extends React.Component<InputProps, State> {
         </header>
 
         <div className="card-body">
-          <FieldContext for={item} index={index}>
+          <FieldGroup for={item} index={index}>
             <Field name="title" />
             <Field name="checked" />
-          </FieldContext>
+          </FieldGroup>
         </div>
       </div>
     );
