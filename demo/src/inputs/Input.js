@@ -9,6 +9,12 @@ type Props = {
 } & InputProps;
 
 class Input extends React.Component<Props> {
+  handleChange = (event: SyntheticInputEvent<>) => {
+    if (this.props.onChange) {
+      this.props.onChange(event, event.target.value);
+    }
+  };
+
   render() {
     return (
       <div className="form-group">
@@ -38,7 +44,9 @@ class Input extends React.Component<Props> {
 
   renderInput() {
     if (this.props.input) return this.props.input;
-    return <input className="form-control" placeholder={this.props.label} {...this.props} />;
+    return (
+      <input className="form-control" placeholder={this.props.label} {...this.props} onChange={this.handleChange} />
+    );
   }
 }
 

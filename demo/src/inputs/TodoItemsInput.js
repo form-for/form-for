@@ -20,13 +20,21 @@ export default class TodoItemsInput extends React.Component<InputProps, State> {
   }
 
   addTodoItem = () => {
-    this.setState({ items: this.state.items.concat(new TodoItem("New todo item")) });
+    const items = this.state.items.concat(new TodoItem("New todo item"));
+    this.setState({ items });
+
+    if (this.props.onChange) {
+      this.props.onChange(null, items);
+    }
   };
 
   removeTodoItem(item: TodoItem) {
-    const index = this.state.items.indexOf(item);
-    this.state.items.splice(index, 1);
-    this.setState({ items: this.state.items });
+    const items = this.state.items.filter(i => item !== i);
+    this.setState({ items });
+
+    if (this.props.onChange) {
+      this.props.onChange(null, items);
+    }
   }
 
   render() {

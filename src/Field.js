@@ -60,9 +60,9 @@ export default class Field extends React.Component<Props> {
   }
 
   getValueProp() {
-    if (typeof this.props.value === 'undefined') {
+    if (typeof this.props.value === "undefined") {
       if (this.context.onChange) {
-        return { value: this.getObjectValue() || '' };
+        return { value: this.getObjectValue() || "" };
       }
 
       if (!this.props.defaultValue) {
@@ -78,10 +78,14 @@ export default class Field extends React.Component<Props> {
 
     return {
       onChange: (event: Event, value: any) => {
-        this.context.onChange(() => {
-          this.context.object[this.props.name] = value;
-          return this.context.object;
-        }, this.getPrefixedName(), value);
+        this.context.onChange(
+          () => {
+            this.context.object[this.props.name] = value;
+            return this.context.object;
+          },
+          this.getPrefixedName(),
+          value
+        );
 
         if (this.props.onChange) {
           this.props.onChange(event);

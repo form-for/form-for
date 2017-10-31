@@ -12,7 +12,7 @@ import fieldDecorator from "./fieldDecorator";
 import withInputProps from "./withInputProps";
 import type { InputProps } from "./withInputProps";
 
-import { humanize } from './stringHelpers';
+import { humanize } from "./stringHelpers";
 
 export { Form, Field, fieldDecorator as field, FieldGroup, withInputProps, humanize };
 export type { FormProps, FieldProps, InputProps };

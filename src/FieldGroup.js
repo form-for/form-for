@@ -3,7 +3,7 @@
 import * as React from "react";
 import PropTypes from "prop-types";
 
-import type { Props as FormProps } from './Form';
+import type { Props as FormProps } from "./Form";
 
 export type SchemaProperty = {
   type?: string
@@ -14,7 +14,7 @@ export type Schema = {
 };
 
 export type Props = {
-  index?: any,
+  index?: any
 } & FormProps;
 
 export default class FieldGroup extends React.Component<Props> {
