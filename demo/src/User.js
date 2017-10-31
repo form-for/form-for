@@ -11,7 +11,7 @@ export default class User {
   firstName: string;
 
   @observable
-  @field
+  @field({ label: 'Last name (if any)' })
   last_name: string;
 
   @observable
@@ -23,6 +23,10 @@ export default class User {
   credits: number;
 
   @observable
+  @field({ type: 'select', options: { guest: 'Guest', admin: 'Admin' } })
+  access: string;
+
+  @observable
   @field({ type: "TodoItem[]" })
-  todoItems: TodoItem[] = [new TodoItem("Recommend form-for to my friends", true), new TodoItem("Enjoy 😄")];
+  todoItems: TodoItem[] = [];
 }

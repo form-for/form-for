@@ -14,6 +14,8 @@ import BooleanInput from "./inputs/BooleanInput";
 
 import Form from "./Form";
 import Field from "./Field";
+import SelectInput from "./inputs/SelectInput";
+import TodoItem from "./TodoItem";
 
 useStrict(true);
 
@@ -22,6 +24,7 @@ Field.bindInput("number", Input);
 Field.bindInput("email", Input);
 Field.bindInput("date", Input);
 Field.bindInput("boolean", BooleanInput);
+Field.bindInput("select", SelectInput);
 
 Field.bindInput("money", MoneyInput);
 Field.bindInput("TodoItem[]", TodoItemsInput);
@@ -35,7 +38,11 @@ class Demo extends React.Component<any> {
 
     this.user.firstName = "Jane";
     this.user.email = "jane@doe.com";
+    this.user.access = 'admin';
     this.user.credits = 10;
+
+    this.user.todoItems.push(new TodoItem("Recommend form-for to my friends", true));
+    this.user.todoItems.push(new TodoItem("Enjoy 😄"));
   }
 
   handleChange = action(() => {
@@ -69,17 +76,21 @@ class Demo extends React.Component<any> {
 
               <div className="row">
                 <div className="col-md-6">
-                  <Field name="firstName" autoFocus placeholder="What is your name?" />
+                  <Field name="firstName" autoFocus/>
                 </div>
 
                 <div className="col-md-6">
-                  <Field name="last_name" />
+                  <Field name="last_name"/>
                 </div>
               </div>
 
-              <Field name="email" />
-              <Field name="credits" />
-              <Field name="todoItems" />
+              <Field name="email"/>
+              <Field name="credits"/>
+              <Field name="access"/>
+
+              <div className="ml-4">
+                <Field name="todoItems"/>
+              </div>
 
               <button className="btn btn-primary">Save User</button>
             </Form>

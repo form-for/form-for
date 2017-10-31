@@ -39,36 +39,27 @@ export default class TodoItemsInput extends React.Component<InputProps, State> {
 
   render() {
     return (
-      <div className="card form-group">
-        <header className="card-header">Todo Items</header>
+      <div className="form-group">
+        {this.state.items.map((item, index) => this.renderTodoItem(item, index))}
 
-        <div className="card-body">{this.state.items.map((item, index) => this.renderTodoItem(item, index))}</div>
-
-        <div className="card-footer">
-          <button type="button" className="btn btn-primary" onClick={this.addTodoItem}>
-            + Add todo
-          </button>
-        </div>
+        <button type="button" className="btn btn-primary" onClick={this.addTodoItem}>
+          + Add todo
+        </button>
       </div>
     );
   }
 
   renderTodoItem(item: TodoItem, index: number) {
     return (
-      <div key={item.uid} className="form-group card">
-        <header className="card-header">
-          Item #{index + 1}
-          <button type="button" className="btn btn-danger float-right btn-sm" onClick={() => this.removeTodoItem(item)}>
-            X
-          </button>
-        </header>
+      <div key={item.uid} className="form-inline form-group clearfix">
+        <FieldGroup for={item} index={index}>
+          <Field name="checked" label={false} className="mr-1"/>
+          <Field name="title" label={false} style={{ width: '400px' }}/>
+        </FieldGroup>
 
-        <div className="card-body">
-          <FieldGroup for={item} index={index}>
-            <Field name="title" />
-            <Field name="checked" />
-          </FieldGroup>
-        </div>
+        <button type="button" className="btn btn-danger btn-sm ml-2" onClick={() => this.removeTodoItem(item)}>
+          X
+        </button>
       </div>
     );
   }

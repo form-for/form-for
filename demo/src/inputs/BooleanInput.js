@@ -10,6 +10,10 @@ class BooleanInput extends React.Component<InputProps> {
   };
 
   render() {
+    return this.props.label ? this.renderInputWithLabel() : this.renderInput();
+  }
+
+  renderInput() {
     const { defaultValue, value, ...props } = { ...this.props };
     if (typeof props.checked === "undefined" && typeof value !== "undefined") {
       props.checked = !!value;
@@ -17,10 +21,14 @@ class BooleanInput extends React.Component<InputProps> {
       props.defaultChecked = defaultValue;
     }
 
+    return <input className="form-check-input" {...props} type="checkbox" onChange={this.handleChange}/>;
+  }
+
+  renderInputWithLabel() {
     return (
       <div className="form-check">
         <label className="form-check-label">
-          <input className="form-check-input" {...props} type="checkbox" onChange={this.handleChange} />
+          {this.renderInput()}
           {this.props.label}
         </label>
       </div>
