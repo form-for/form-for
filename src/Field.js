@@ -5,16 +5,18 @@ import * as React from "react";
 import PropTypes from "prop-types";
 import type { SchemaProperty } from "./FieldGroup";
 
-type Props = {
+export type Props = {
   name: string,
-  type?: string
+  type?: string,
+  onChange?: Function
 };
 
 export default class Field extends React.Component<Props> {
   static contextTypes = {
     object: PropTypes.object.isRequired,
     schema: PropTypes.object.isRequired,
-    prefix: PropTypes.string
+    prefix: PropTypes.string,
+    onChange: PropTypes.func
   };
 
   static childContextTypes = {
@@ -57,20 +59,51 @@ export default class Field extends React.Component<Props> {
     };
   }
 
+  getValueProp() {
+    if (typeof this.props.value === 'undefined') {
+      if (this.context.onChange) {
+        return { value: this.getObjectValue() || '' };
+      }
+
+      if (!this.props.defaultValue) {
+        return { defaultValue: this.getObjectValue() };
+      }
+    }
+
+    return {};
+  }
+
+  getOnChangeProp() {
+    if (!this.context.onChange) return {};
+
+    return {
+      onChange: (event: Event, value: any) => {
+        this.context.onChange(() => {
+          this.context.object[this.props.name] = value;
+          return this.context.object;
+        }, this.getPrefixedName(), value);
+
+        if (this.props.onChange) {
+          this.props.onChange(event);
+        }
+      }
+    };
+  }
+
+  getInputProps() {
+    return {
+      ...this.getSchemaProperty(),
+      ...this.props,
+      name: this.getPrefixedName(),
+      ...this.getValueProp(),
+      ...this.getOnChangeProp()
+    };
+  }
+
   render() {
     const input = this.getInput();
     if (!input) throw new Error(`Undefined input for field ${this.props.name} with type ${this.getType()}`);
 
-    const props = {
-      ...this.getSchemaProperty(),
-      ...this.props,
-      name: this.getPrefixedName()
-    };
-
-    if (!props.defaultValue && !props.value) {
-      props.defaultValue = this.getObjectValue();
-    }
-
-    return React.createElement(input, props);
+    return React.createElement(input, this.getInputProps());
   }
 }

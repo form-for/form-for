@@ -8,17 +8,17 @@ export type Props = {
   for: any,
   schema?: Schema,
   prefix?: string,
-  children: React.Node,
-  [_: string]: any
+  onChange?: Function,
+  children: React.Node
 };
 
 export default class Form extends React.Component<Props> {
   render(): React.Node {
-    const { ["for"]: object, schema, prefix, ...remainingProps } = { ...this.props };
+    const { ["for"]: object, schema, prefix, onChange, ...remainingProps } = { ...this.props };
 
     return (
       <form {...remainingProps}>
-        <FieldGroup for={object} schema={schema} prefix={prefix}>
+        <FieldGroup for={object} schema={schema} prefix={prefix} onChange={onChange}>
           {this.props.children}
         </FieldGroup>
       </form>

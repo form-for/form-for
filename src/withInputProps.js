@@ -1,4 +1,6 @@
-import React from "react";
+// @flow
+
+import * as React from "react";
 import { humanize } from "./stringHelpers";
 
 type Props = {
@@ -11,7 +13,7 @@ export type InputProps = {
   label: string
 } & Props;
 
-export default function withInputProps(WrappedComponent) {
+export default function withInputProps(WrappedComponent: React.ComponentType<*>) {
   return class extends React.Component<Props> {
     id: string;
     static id: number = 0;

@@ -3,9 +3,10 @@
 import * as React from "react";
 import PropTypes from "prop-types";
 
+import type { Props as FormProps } from './Form';
+
 export type SchemaProperty = {
-  type?: string,
-  [_: string]: any
+  type?: string
 };
 
 export type Schema = {
@@ -13,22 +14,20 @@ export type Schema = {
 };
 
 export type Props = {
-  for: any,
-  schema?: Schema,
   index?: any,
-  prefix?: string,
-  children: React.Node
-};
+} & FormProps;
 
 export default class FieldGroup extends React.Component<Props> {
   static contextTypes = {
-    prefix: PropTypes.string
+    prefix: PropTypes.string,
+    onChange: PropTypes.func
   };
 
   static childContextTypes = {
     object: PropTypes.object,
     schema: PropTypes.object,
-    prefix: PropTypes.string
+    prefix: PropTypes.string,
+    onChange: PropTypes.func
   };
 
   getSchema(): Schema {
@@ -52,14 +51,24 @@ export default class FieldGroup extends React.Component<Props> {
     return prefix;
   }
 
-  getChildContext() {
-    const object = this.props.for;
+  handleChange = (mutator: Function, name: string, value: string) => {
+    if (this.props.onChange) {
+      this.props.onChange(mutator, name, value);
+    }
+  };
 
-    return {
-      object,
+  getChildContext() {
+    const context: any = {
+      object: this.props.for,
       schema: this.getSchema(),
       prefix: this.getPrefix()
     };
+
+    if (this.context.onChange || this.props.onChange) {
+      context.onChange = this.context.onChange || this.handleChange;
+    }
+
+    return context;
   }
 
   render(): React.Node {
