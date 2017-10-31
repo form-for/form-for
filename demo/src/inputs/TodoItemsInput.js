@@ -42,7 +42,7 @@ export default class TodoItemsInput extends React.Component<InputProps, State> {
       <div className="form-group">
         {this.state.items.map((item, index) => this.renderTodoItem(item, index))}
 
-        <button type="button" className="btn btn-primary" onClick={this.addTodoItem}>
+        <button type="button" className="btn btn-default" onClick={this.addTodoItem}>
           + Add todo
         </button>
       </div>
