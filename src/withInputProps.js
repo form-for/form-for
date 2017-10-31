@@ -1,4 +1,5 @@
 import React from "react";
+import { humanize } from "./stringHelpers";
 
 type Props = {
   name: string,
@@ -36,14 +37,7 @@ export default function withInputProps(WrappedComponent) {
     }
 
     getHumanizedName() {
-      let name = this.getSimpleName();
-      return (
-        name.charAt(0).toUpperCase() +
-        name
-          .slice(1)
-          .split(new RegExp("[_|-]"))
-          .join(" ")
-      );
+      return humanize(this.getSimpleName());
     }
 
     getLabel() {
