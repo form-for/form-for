@@ -14,14 +14,15 @@ class BooleanInput extends React.Component<InputProps> {
   }
 
   renderInput() {
-    const { defaultValue, value, label, ...props } = { ...this.props };
+    const { defaultValue, value, label, onChange, ...props } = { ...this.props };
     if (typeof props.checked === "undefined" && typeof value !== "undefined") {
       props.checked = !!value;
     } else if (typeof props.defaultChecked === "undefined") {
       props.defaultChecked = defaultValue;
     }
 
-    return <input className="form-check-input" {...props} type="checkbox" onChange={this.handleChange} />;
+    if (onChange) props.onChange = this.handleChange;
+    return <input className="form-check-input" {...props} type="checkbox" />;
   }
 
   renderInputWithLabel() {
