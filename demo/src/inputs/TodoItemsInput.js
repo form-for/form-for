@@ -39,13 +39,15 @@ export default class TodoItemsInput extends React.Component<InputProps, State> {
 
   render() {
     return (
-      <div className="form-group">
+      <fieldset className="form-group">
+        <legend>Todo Items</legend>
+
         {this.state.items.map((item, index) => this.renderTodoItem(item, index))}
 
         <button type="button" className="btn btn-default" onClick={this.addTodoItem}>
           + Add todo
         </button>
-      </div>
+      </fieldset>
     );
   }
 
