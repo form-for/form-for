@@ -43,14 +43,14 @@ export default class FieldGroup extends React.Component<Props> {
   }
 
   getPrefix(): string {
-    let prefix = this.props.prefix || this.context.prefix || '';
+    let prefix = this.props.prefix || this.context.prefix || "";
 
-    if (typeof this.props.index !== 'undefined') {
+    if (typeof this.props.index !== "undefined") {
       prefix += `[${this.props.index}]`;
     }
 
     return prefix;
-  };
+  }
 
   getChildContext() {
     const object = this.props.for;

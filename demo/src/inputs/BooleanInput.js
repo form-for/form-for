@@ -16,7 +16,7 @@ class BooleanInput extends React.Component<InputProps> {
     return (
       <div className="form-check">
         <label className="form-check-label">
-          <input className="form-check-input" {...props} type="checkbox"/>
+          <input className="form-check-input" {...props} type="checkbox" />
           {this.props.label}
         </label>
       </div>
