@@ -82,7 +82,12 @@ export default class Field extends React.Component<Props> {
     if (!this.context.onChange) return {};
 
     return {
-      onChange: (event: Event, value: any) => {
+      onChange: (event: Event, value?: any) => {
+        if (typeof value === 'undefined' && event.target) {
+          // $FlowFixMe
+          value = event.target.value;
+        }
+        
         this.context.onChange(
           () => {
             this.context.object[this.props.name] = value;
