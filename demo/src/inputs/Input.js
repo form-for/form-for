@@ -38,9 +38,9 @@ class Input extends React.Component<Props> {
 
   renderInput() {
     if (this.props.component) return this.props.component;
-    return (
-      <input className="form-control" placeholder={this.props.label} {...this.props} />
-    );
+
+    const { label, ...props } = { ...this.props };
+    return <input className="form-control" {...props} />;
   }
 }
 

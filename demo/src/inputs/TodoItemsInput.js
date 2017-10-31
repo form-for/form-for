@@ -53,8 +53,8 @@ export default class TodoItemsInput extends React.Component<InputProps, State> {
     return (
       <div key={item.uid} className="form-inline form-group clearfix">
         <FieldGroup for={item} index={index}>
-          <Field name="checked" label={false} className="mr-1"/>
-          <Field name="title" label={false} style={{ width: '400px' }}/>
+          <Field name="checked" label={false} className="mr-1" />
+          <Field name="title" label={false} style={{ width: "400px" }} />
         </FieldGroup>
 
         <button type="button" className="btn btn-danger btn-sm ml-2" onClick={() => this.removeTodoItem(item)}>

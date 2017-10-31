@@ -10,7 +10,8 @@ type Props = {
 
 export type InputProps = {
   id: string,
-  label: string
+  label?: string,
+  placeholder?: string
 } & Props;
 
 export default function withInputProps(WrappedComponent: React.ComponentType<*>) {
@@ -42,17 +43,10 @@ export default function withInputProps(WrappedComponent: React.ComponentType<*>)
       return humanize(this.getSimpleName());
     }
 
-    getLabel() {
-      const label = this.props.label;
-      if (typeof label === "undefined") {
-        return this.getHumanizedName();
-      }
-
-      return label;
-    }
-
     render() {
-      return <WrappedComponent id={this.id} label={this.getLabel()} {...this.props} />;
+      const humanizedName = this.getHumanizedName();
+
+      return <WrappedComponent id={this.id} label={humanizedName} placeholder={humanizedName} {...this.props} />;
     }
   };
 }

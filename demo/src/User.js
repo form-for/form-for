@@ -11,7 +11,7 @@ export default class User {
   firstName: string;
 
   @observable
-  @field({ label: 'Last name (if any)' })
+  @field({ label: "Last name (if any)" })
   last_name: string;
 
   @observable
@@ -23,7 +23,7 @@ export default class User {
   credits: number;
 
   @observable
-  @field({ type: 'select', options: { guest: 'Guest', admin: 'Admin' } })
+  @field({ type: "select", options: { guest: "Guest", admin: "Admin" } })
   access: string;
 
   @observable

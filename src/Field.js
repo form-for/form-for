@@ -32,7 +32,9 @@ export default class Field extends React.Component<Props> {
   getSchemaProperty(): SchemaProperty {
     const property = this.context.schema[this.props.name];
     if (!property) {
-      throw new Error(`Undefined property ${this.props.name} in form for ${this.context.object.constructor.name} instance`);
+      throw new Error(
+        `Undefined property ${this.props.name} in form for ${this.context.object.constructor.name} instance`
+      );
     }
 
     return property;
@@ -83,11 +85,11 @@ export default class Field extends React.Component<Props> {
 
     return {
       onChange: (event: Event, value?: any) => {
-        if (typeof value === 'undefined' && event.target) {
+        if (typeof value === "undefined" && event.target) {
           // $FlowFixMe
           value = event.target.value;
         }
-        
+
         this.context.onChange(
           () => {
             this.context.object[this.props.name] = value;

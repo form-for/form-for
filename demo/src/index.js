@@ -38,7 +38,7 @@ class Demo extends React.Component<any> {
 
     this.user.firstName = "Jane";
     this.user.email = "jane@doe.com";
-    this.user.access = 'admin';
+    this.user.access = "admin";
     this.user.credits = 10;
 
     this.user.todoItems.push(new TodoItem("Recommend form-for to my friends", true));
@@ -76,20 +76,20 @@ class Demo extends React.Component<any> {
 
               <div className="row">
                 <div className="col-md-6">
-                  <Field name="firstName" autoFocus/>
+                  <Field name="firstName" autoFocus />
                 </div>
 
                 <div className="col-md-6">
-                  <Field name="last_name"/>
+                  <Field name="last_name" />
                 </div>
               </div>
 
-              <Field name="email"/>
-              <Field name="credits"/>
-              <Field name="access"/>
+              <Field name="email" />
+              <Field name="credits" />
+              <Field name="access" />
 
               <div className="ml-4">
-                <Field name="todoItems"/>
+                <Field name="todoItems" />
               </div>
 
               <button className="btn btn-primary">Save User</button>
