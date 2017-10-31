@@ -30,7 +30,12 @@ export default class Field extends React.Component<Props> {
   }
 
   getSchemaProperty(): SchemaProperty {
-    return this.context.schema[this.props.name] || {};
+    const property = this.context.schema[this.props.name];
+    if (!property) {
+      throw new Error(`Undefined property ${this.props.name} in form for ${this.context.object.constructor.name} instance`);
+    }
+
+    return property;
   }
 
   getType(): string {
