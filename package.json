@@ -1,6 +1,6 @@
 {
   "name": "form-for",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Build simple and declarative ReactJS forms from your models",
   "main": "lib/index.js",
   "module": "es/index.js",
@@ -20,9 +20,6 @@
     "test:coverage": "nwb test-react --coverage",
     "test:watch": "nwb test-react --server"
   },
-  "dependencies": {
-    "prop-types": "^15.6.0"
-  },
   "peerDependencies": {
     "react": "15.x"
   },
@@ -33,6 +30,7 @@
     "mobx-react": "^4.3.3",
     "nwb": "0.19.x",
     "prettier": "^1.7.4",
+    "prop-types": "^15.6.0",
     "react": "^16.0.0",
     "react-dom": "^16.0.0"
   },
