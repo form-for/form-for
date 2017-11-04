@@ -2,7 +2,7 @@
 
 import React from "react";
 
-import Input from "./Input";
+import Input from "../form-for-bootstrap-components/Input";
 
 export default class MoneyField extends React.Component<*> {
   render() {

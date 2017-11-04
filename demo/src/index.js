@@ -6,105 +6,84 @@ import { observer } from "mobx-react";
 import React from "react";
 import { render } from "react-dom";
 
-import User from "./User";
-import MoneyInput from "./inputs/MoneyInput";
-import TodoItemsInput from "./inputs/TodoItemsInput";
-import Input from "./inputs/Input";
-import BooleanInput from "./inputs/BooleanInput";
+import { Field, Form } from "../../src";
 
-import Form from "./Form";
-import Field from "./Field";
-import SelectInput from "./inputs/SelectInput";
-import TodoItem from "./TodoItem";
+import TodoItemsInput from "./components/TodoItemsInput";
+import MoneyInput from "./components/MoneyInput";
+import { bindFieldComponents } from "../../src/components";
 
-useStrict(true);
+import MutableView from "./views/MutableView";
+import ControlledView from "./views/ControlledView";
+import UncontrolledView from "./views/UncontrolledView";
 
-Field.bindInput("text", Input);
-Field.bindInput("number", Input);
-Field.bindInput("email", Input);
-Field.bindInput("date", Input);
-Field.bindInput("boolean", BooleanInput);
-Field.bindInput("select", SelectInput);
+import { bindBootstrapFieldComponents } from "./form-for-bootstrap-components/index";
 
-Field.bindInput("money", MoneyInput);
-Field.bindInput("TodoItem[]", TodoItemsInput);
+import "./bootstrap.min.css";
+
+// Enable strict MobX & set @observable and @action decorators
+// useStrict(true);
+
+// Field.mutableDecorator = observable;
+// Form.mutableDecorator = (mutator, name) => action(`Update form instance ${name}`, mutator);
+
+// Bind field components
+bindFieldComponents();
+bindBootstrapFieldComponents();
+
+Field.bindComponent("money", MoneyInput);
+Field.bindComponent("TodoItem[]", TodoItemsInput);
+
+type State = {
+  view: string
+};
 
 @observer
-class Demo extends React.Component<any> {
-  @observable user = new User();
-
-  constructor(props: any) {
-    super(props);
-
-    this.user.firstName = "Jane";
-    this.user.email = "jane@doe.com";
-    this.user.access = "admin";
-    this.user.credits = 10;
-
-    this.user.todoItems.push(new TodoItem("Recommend form-for to my friends", true));
-    this.user.todoItems.push(new TodoItem("Enjoy 😄"));
-  }
-
-  handleChange = action(() => {
-    this.user.credits++;
-  });
-
-  handleSubmit = (event: Event) => {
-    event.preventDefault();
-
-    const target: any = event.target;
-    const formData = new FormData(target);
-
-    for (let pair: any of formData.entries()) {
-      console.log(pair[0] + ", " + pair[1]);
-    }
+class Demo extends React.Component<any, State> {
+  state = {
+    view: "mutable"
   };
+
+  selectView = (event: Event, name: string) => {
+    event.preventDefault();
+    this.setState({ view: name });
+  };
+
+  getSelectedViewComponent() {
+    if (this.state.view === "mutable") {
+      return <MutableView />;
+    } else if (this.state.view === "controlled") {
+      return <ControlledView />;
+    }
+
+    return <UncontrolledView />;
+  }
 
   render() {
     return (
       <div className="container-fluid">
-        <div className="row">
-          <div className="col-md-6">
-            <pre>{JSON.stringify(this.user, null, 2)}</pre>
-          </div>
+        <nav className="navbar-nav mr-auto">
+          {this.renderViewNavItem("mutable", "Controlled w/ MobX (Controlled)")}
+          {this.renderViewNavItem("controlled", "Controlled w/ setState({...})")}
+          {this.renderViewNavItem("uncontrolled", "Uncontrolled")}
+        </nav>
 
-          <div className="col-md-6">
-            <Form for={this.user} prefix="user" onSubmit={this.handleSubmit}>
-              <header>
-                <h2>Edit User</h2>
-              </header>
-
-              <div className="row">
-                <div className="col-md-6">
-                  <Field name="firstName" autoFocus />
-                </div>
-
-                <div className="col-md-6">
-                  <Field name="last_name" />
-                </div>
-              </div>
-
-              <Field name="email" />
-              <Field name="credits" />
-              <Field name="access" />
-
-              <div className="ml-4">
-                <Field name="todoItems" />
-              </div>
-
-              <button className="btn btn-primary">Save User</button>
-            </Form>
-          </div>
-        </div>
+        {this.getSelectedViewComponent()}
       </div>
     );
   }
-}
 
-const bootstrap: HTMLLinkElement = document.createElement("link");
-bootstrap.type = "text/css";
-bootstrap.rel = "stylesheet";
-bootstrap.href = "https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css";
-window.document.head.appendChild(bootstrap);
+  renderViewNavItem(name: string, text: string) {
+    const classes = ["nav-item"];
+    if (this.state.view === name) classes.push("active");
+
+    return (
+      <li className={classes}>
+        <a href="" onClick={event => this.selectView(event, name)}>
+          {text}
+        </a>
+      </li>
+    );
+  }
+}
 
 render(<Demo />, window.document.querySelector("#demo"));

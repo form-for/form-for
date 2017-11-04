@@ -3,19 +3,25 @@
 import React from "react";
 import { Field, FieldGroup } from "../../../src";
 
-import type { InputProps } from "../../../src";
 import TodoItem from "../TodoItem";
+
+type Props = {
+  value?: any,
+  defaultValue?: any,
+  onChange?: Function,
+  [key: string]: any
+};
 
 type State = {
   items: TodoItem[]
 };
 
-export default class TodoItemsInput extends React.Component<InputProps, State> {
-  constructor(props: InputProps) {
+export default class TodoItemsInput extends React.Component<Props, State> {
+  constructor(props: Props) {
     super(props);
 
     this.state = {
-      items: this.props.value || this.props.defaultValue
+      items: this.props.value || this.props.defaultValue || []
     };
   }
 
@@ -24,7 +30,7 @@ export default class TodoItemsInput extends React.Component<InputProps, State> {
     this.setState({ items });
 
     if (this.props.onChange) {
-      this.props.onChange(null, items);
+      this.props.onChange(null, { value: items });
     }
   };
 
@@ -33,7 +39,7 @@ export default class TodoItemsInput extends React.Component<InputProps, State> {
     this.setState({ items });
 
     if (this.props.onChange) {
-      this.props.onChange(null, items);
+      this.props.onChange(null, { value: items });
     }
   }
 
@@ -55,7 +61,7 @@ export default class TodoItemsInput extends React.Component<InputProps, State> {
     return (
       <div key={item.uid} className="form-inline form-group clearfix">
         <FieldGroup for={item} index={index}>
-          <Field name="checked" label={false} className="mr-1" />
+          <Field name="checked" label={false} />
           <Field name="title" label={false} style={{ width: "400px" }} />
         </FieldGroup>
 

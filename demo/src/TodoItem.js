@@ -13,7 +13,7 @@ export default class TodoItem {
   title: string;
 
   @observable
-  @field({ type: "boolean" })
+  @field({ type: "checkbox", validator: "validateChecked" })
   checked: boolean = false;
 
   constructor(title: string, checked: boolean = false) {
@@ -24,5 +24,11 @@ export default class TodoItem {
 
   static generateUid(): number {
     return this.uid++;
+  }
+
+  validateChecked(value: boolean) {
+    if (!value) {
+      return "C'mon, you know you gotta check it";
+    }
   }
 }

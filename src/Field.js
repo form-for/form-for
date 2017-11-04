@@ -3,37 +3,178 @@
 import * as React from "react";
 
 import PropTypes from "prop-types";
-import type { SchemaProperty } from "./FieldGroup";
+import type { Schema, SchemaProperty } from "./FieldGroup";
+
+type EventProperties = {
+  value?: any,
+  error?: ?string
+};
 
 export type Props = {
   name: string,
   type?: string,
-  onChange?: Function
+  onChange?: Function,
+  onValid?: Function,
+  onInvalid?: Function,
+  validator?: Function, // must work with promise
+  error?: string,
+  [key: string]: any
 };
 
-export default class Field extends React.Component<Props> {
+type State = {
+  error: ?string
+};
+
+export default class Field extends React.Component<Props, State> {
+  component: HTMLElement;
+  state = { error: undefined };
+
+  static mutableDecorator: ?Function;
+
+  /*
+   * Component binding
+   */
+
+  static componentBindings: { [_: string]: React.ComponentType<*> } = {};
+
+  static bindComponent(type: string, component: React.ComponentType<*>): void {
+    this.componentBindings[type] = component;
+  }
+
+  /*
+   * Context
+   */
+
   static contextTypes = {
     object: PropTypes.object.isRequired,
     schema: PropTypes.object.isRequired,
     prefix: PropTypes.string,
-    onChange: PropTypes.func
+    onChange: PropTypes.func,
+    mutable: PropTypes.bool,
+    validate: PropTypes.oneOfType([PropTypes.string, PropTypes.bool])
   };
 
   static childContextTypes = {
     prefix: PropTypes.string
   };
 
-  static inputsBindings: { [_: string]: React.ComponentType<*> } = {};
+  getChildContext() {
+    return {
+      prefix: this.getPrefixedName()
+    };
+  }
 
-  static bindInput(type: string, component: React.ComponentType<*>): void {
-    this.inputsBindings[type] = component;
+  /*
+   * Dispatchers
+   */
+
+  dispatchValidation(event: any, type: string, value: ?any, error: ?string) {
+    if (this.props.error) return;
+
+    // $FlowFixMe
+    const target: any = (event || {}).target;
+    value = this.guessEventTargetProperty(event, value, "value");
+
+    const validator = this.getValidator();
+    if (validator) {
+      const validatorMessage = validator(value);
+
+      if (validatorMessage) {
+        error = validatorMessage;
+      }
+
+      if (target && target.setCustomValidity) {
+        target.setCustomValidity(validatorMessage || "");
+      }
+    }
+
+    error = this.guessEventTargetProperty(event, error, "validationMessage");
+
+    if (this.hasValidationType(type)) {
+      if (error !== this.state.error) {
+        this.setState({ error });
+      }
+
+      if (error && this.props.onInvalid) {
+        this.props.onInvalid(error, value);
+      } else if (!error && this.props.onValid) {
+        this.props.onValid(value);
+      }
+    }
+  }
+
+  dispatchContextChange(value: any) {
+    if (!this.context.onChange) return;
+
+    const mutator = () => {
+      this.context.object[this.props.name] = value;
+      return this.context.object;
+    };
+
+    this.context.onChange(mutator, this.getPrefixedName(), value);
+  }
+
+  dispatchPropsChange(event: Event) {
+    if (!this.props.onChange) return;
+    this.props.onChange(event);
+  }
+
+  /*
+   * Guessers
+   */
+  guessEventTargetProperty(event: Event, value: ?any, name: string): ?any {
+    if (typeof value !== "undefined") {
+      return value;
+    }
+
+    if (event && event.target) {
+      // $FlowFixMe
+      return event.target[name];
+    }
+  }
+
+  /*
+   * Handlers
+   */
+
+  handleMount(target: ?any, { value, error }: EventProperties = {}) {
+    this.dispatchValidation({ target }, "mount", value, error);
+  }
+
+  handleFocus(event: Event, { value, error }: EventProperties = {}) {
+    this.dispatchValidation(event, "focus", value, error);
+  }
+
+  handleChange(event: Event, { value, error }: EventProperties = {}) {
+    this.dispatchValidation(event, "change", value, error);
+
+    value = this.guessEventTargetProperty(event, value, "value");
+    this.dispatchContextChange(value);
+    this.dispatchPropsChange(event);
+  }
+
+  handleBlur(event: Event, { value, error }: EventProperties = {}) {
+    this.dispatchValidation(event, "blur", value, error);
+  }
+
+  /*
+   * Getters
+   */
+
+  getContextObjectValue() {
+    return this.context.object[this.props.name];
   }
 
   getSchemaProperty(): SchemaProperty {
     const property = this.context.schema[this.props.name];
     if (!property) {
+      if (this.props.type) {
+        return { type: this.props.type };
+      }
+
       throw new Error(
-        `Undefined property ${this.props.name} in form for ${this.context.object.constructor.name} instance`
+        `Undefined property ${this.props.name} in schema or inline type for
+        ${this.context.object.constructor.name} instance`
       );
     }
 
@@ -44,12 +185,15 @@ export default class Field extends React.Component<Props> {
     return this.props.type || this.getSchemaProperty().type || "text";
   }
 
-  getInput(): React.ComponentType<*> {
-    return this.constructor.inputsBindings[this.getType()];
-  }
+  getComponent(): React.ComponentType<*> {
+    const type = this.getType();
+    const component = Field.componentBindings[type];
 
-  getObjectValue(): any {
-    return this.context.object[this.props.name];
+    if (!component) {
+      throw new Error(`Unbound component field type ${type} for ${this.props.name}`);
+    }
+
+    return component;
   }
 
   getPrefixedName() {
@@ -60,66 +204,93 @@ export default class Field extends React.Component<Props> {
     return this.props.name;
   }
 
-  getChildContext() {
-    return {
-      prefix: this.getPrefixedName()
-    };
+  getValidator() {
+    if (this.props.validator) return this.props.validator;
+
+    const validator = this.getSchemaProperty().validator;
+
+    if (typeof validator === "string") {
+      return this.context.object[validator].bind(validator);
+    }
+
+    return validator;
   }
 
-  getValueProp() {
+  hasValidationType(name: string) {
+    return (
+      (this.context.validate === true && name !== "mount") ||
+      (typeof this.context.validate === "string" && this.context.validate.indexOf(name) !== -1)
+    );
+  }
+
+  /*
+   * Builders
+   */
+
+  buildValueProps() {
+    const contextObjectValue = this.getContextObjectValue();
+
     if (typeof this.props.value === "undefined") {
       if (this.context.onChange) {
-        return { value: this.getObjectValue() || "" };
+        return { value: contextObjectValue || "" };
       }
 
       if (!this.props.defaultValue) {
-        return { defaultValue: this.getObjectValue() };
+        return { defaultValue: contextObjectValue };
       }
     }
 
     return {};
   }
 
-  getOnChangeProp() {
-    if (!this.context.onChange) return {};
+  buildEventProps() {
+    const onFocus = this.hasValidationType("focus") ? this.handleFocus.bind(this) : undefined;
 
-    return {
-      onChange: (event: Event, value?: any) => {
-        if (typeof value === "undefined" && event.target) {
-          // $FlowFixMe
-          value = event.target.value;
-        }
+    const onChange =
+      this.context.onChange || this.hasValidationType("change") ? this.handleChange.bind(this) : undefined;
 
-        this.context.onChange(
-          () => {
-            this.context.object[this.props.name] = value;
-            return this.context.object;
-          },
-          this.getPrefixedName(),
-          value
-        );
+    const onBlur = this.hasValidationType("blur") ? this.handleBlur.bind(this) : undefined;
 
-        if (this.props.onChange) {
-          this.props.onChange(event);
-        }
-      }
-    };
+    return { onMount: this.handleMount.bind(this), onFocus, onChange, onBlur };
   }
 
-  getInputProps() {
-    return {
+  buildErrorProps() {
+    const error = this.props.error || this.state.error;
+    return error ? { error } : {};
+  }
+
+  buildProps() {
+    const props = {
       ...this.getSchemaProperty(),
       ...this.props,
       name: this.getPrefixedName(),
-      ...this.getValueProp(),
-      ...this.getOnChangeProp()
+      ...this.buildValueProps(),
+      ...this.buildEventProps(),
+      ...this.buildErrorProps()
     };
+
+    delete props.validator;
+    delete props.onValid;
+    delete props.onInvalid;
+
+    return props;
   }
 
-  render() {
-    const input = this.getInput();
-    if (!input) throw new Error(`Undefined input for field ${this.props.name} with type ${this.getType()}`);
+  /*
+   * Render
+   */
 
-    return React.createElement(input, this.getInputProps());
+  render() {
+    const component = this.getComponent();
+
+    const element = React.createElement(component, this.buildProps());
+    if (this.context.mutable) {
+      const decorator = this.constructor.mutableDecorator;
+      if (decorator) {
+        return decorator(element);
+      }
+    }
+
+    return element;
   }
 }

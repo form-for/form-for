@@ -6,7 +6,8 @@ import PropTypes from "prop-types";
 import type { Props as FormProps } from "./Form";
 
 export type SchemaProperty = {
-  type?: string
+  type?: string,
+  [_: string]: any
 };
 
 export type Schema = {
@@ -20,19 +21,22 @@ export type Props = {
 export default class FieldGroup extends React.Component<Props> {
   static contextTypes = {
     prefix: PropTypes.string,
-    onChange: PropTypes.func
+    onChange: PropTypes.func,
+    validate: PropTypes.oneOfType([PropTypes.string, PropTypes.bool])
   };
 
   static childContextTypes = {
     object: PropTypes.object,
     schema: PropTypes.object,
     prefix: PropTypes.string,
+    mutable: PropTypes.bool,
+    validate: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
     onChange: PropTypes.func
   };
 
   getSchema(): Schema {
     const object = this.props.for;
-    const schema = this.props.schema || object.schema;
+    const schema = this.props.schema || object.schema || {};
 
     if (!schema) {
       throw new Error("Undefined schema for " + object.constructor.name + "instance");
@@ -51,6 +55,10 @@ export default class FieldGroup extends React.Component<Props> {
     return prefix;
   }
 
+  getValidate() {
+    return this.props.validate || this.context.validate;
+  }
+
   handleChange = (mutator: Function, name: string, value: string) => {
     if (this.props.onChange) {
       this.props.onChange(mutator, name, value);
@@ -58,17 +66,13 @@ export default class FieldGroup extends React.Component<Props> {
   };
 
   getChildContext() {
-    const context: any = {
+    return {
       object: this.props.for,
       schema: this.getSchema(),
-      prefix: this.getPrefix()
+      prefix: this.getPrefix(),
+      validate: this.getValidate(),
+      onChange: this.props.onChange ? this.handleChange : this.context.onChange
     };
-
-    if (this.context.onChange || this.props.onChange) {
-      context.onChange = this.context.onChange || this.handleChange;
-    }
-
-    return context;
   }
 
   render(): React.Node {

@@ -8,26 +8,8 @@ type Props = {
   [_: string]: any
 };
 
-export type InputProps = {
-  id: string,
-  label?: string,
-  placeholder?: string
-} & Props;
-
-export default function withInputProps(WrappedComponent: React.ComponentType<*>) {
+export default function withHumanizedName(WrappedComponent: React.ComponentType<*>, propNames: string[]) {
   return class extends React.Component<Props> {
-    id: string;
-    static id: number = 0;
-
-    constructor(props: Props) {
-      super(props);
-      this.id = this.generateId();
-    }
-
-    generateId() {
-      return this.props.name + "#" + this.constructor.id++;
-    }
-
     getSimpleName() {
       const name = this.props.name;
 
@@ -43,10 +25,19 @@ export default function withInputProps(WrappedComponent: React.ComponentType<*>)
       return humanize(this.getSimpleName());
     }
 
-    render() {
+    getHumanizedProps() {
+      const props = {};
       const humanizedName = this.getHumanizedName();
 
-      return <WrappedComponent id={this.id} label={humanizedName} placeholder={humanizedName} {...this.props} />;
+      propNames.forEach(propName => {
+        props[propName] = humanizedName;
+      });
+
+      return props;
+    }
+
+    render() {
+      return <WrappedComponent {...this.getHumanizedProps()} {...this.props} />;
     }
   };
 }

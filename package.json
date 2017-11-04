@@ -1,6 +1,6 @@
 {
   "name": "form-for",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Build simple and declarative ReactJS forms from your models",
   "main": "lib/index.js",
   "module": "es/index.js",
@@ -13,7 +13,7 @@
     "build": "nwb build-react-component",
     "clean": "nwb clean-module && nwb clean-demo",
     "start": "nwb serve-react-demo",
-    "prettier": "prettier --print-width 120 --write \"{demo,src,test}/**/*.js\"",
+    "prettier": "prettier --print-width 120 --write \"{demo/src,src,test}/**/*.js\"",
     "pretest": "npm run prettier",
     "flow": "flow",
     "test": "nwb test-react",
