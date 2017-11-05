@@ -1,3 +1,8 @@
+# Contributing
+
+We'd love to have your contribution added to Jewell. If you decide to do so, please follow the
+[code of conduct](./CODE_OF_CONDUCT.md)
+
 ## Prerequisites
 
 [Node.js](http://nodejs.org/) >= v4 must be installed.
@@ -23,3 +28,28 @@
 - `npm run build` will build the component for publishing to npm and also bundle the demo app.
 
 - `npm run clean` will delete built resources.
+
+## Code Style
+
+The project uses [prettier](https://github.com/prettier/prettier). To format your code just run:
+ 
+```bash
+npm run prettier
+```
+ 
+or
+ 
+```bash
+yarn prettier
+```
+
+Don't worry too much about the formatting, prettier will sort things out before publishing a new version.
+
+## Releasing
+
+To release a new version, define the number following the [semantic versioning](http://semver.org/).
+
+``` bash
+$ npm version <newversion> -m "Releasing %s"
+$ npm publish
+```
