@@ -1,7 +1,7 @@
-// import expect from 'expect';
-// import React from 'react';
+import expect from 'expect';
+import React from 'react';
 // import { render, unmountComponentAtNode } from 'react-dom';
-//
+
 // import Component from 'src/';
 //
 // describe('Component', () => {
@@ -21,3 +21,9 @@
 //     })
 //   })
 // });
+
+describe('Field', () => {
+  it('', () => {
+    expect(true).toBe(true);
+  });
+});
