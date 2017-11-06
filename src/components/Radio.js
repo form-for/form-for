@@ -20,7 +20,7 @@ export default class Radio extends React.Component<Props> {
   }
 
   buildValuePropsFor(value: string) {
-    if (this.props.value) {
+    if (typeof this.props.value !== "undefined") {
       return { checked: value === this.props.value };
     }
 
