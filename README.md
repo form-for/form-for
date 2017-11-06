@@ -24,45 +24,24 @@ const user = new User();
 </Form>
 ```
 
-## Getting Started
+## Installation
 
-### Installation
+Install the core package
 
 ```bash
 npm install form-for --save
 ```
 
-And to import:
-
-```javascript
-import { Form, Field, field } from "form-for";
-```
-
-**Note**: The core components don't have styling, we recommend also adding one of these:
+Choose a styling package, so your components get pretty:
 
 - [form-for-bootstrap](https://github.com/pedsmoreira/form-for-bootstrap)
 
-### Declaring models
+**Note**: If you're using [MobX](https://github.com/mobxjs/mobx), 
+check out [mobx-form-for](https://github.com/pedsmoreira/mobx-form-for) 
 
-// TODO
+## Getting Started
 
-### Creating forms
-
-// TODO
-
-### Custom components
-
-// TODO
-
-### Encapsulating input names
-
-If instead of assigning the name `firstName`, you with to do `user[firstName]`, you can do so with the prefix attribute:
-
-```jsx
-<Form prefix="user">
-    <Field name="firstName" />
-</Form>
-```
+// Todo
 
 ## Resources
 

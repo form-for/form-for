@@ -50,6 +50,6 @@ Don't worry too much about the formatting, prettier will sort things out before 
 To release a new version, define the number following the [semantic versioning](http://semver.org/).
 
 ``` bash
-$ npm version <newversion> -m "Releasing %s"
-$ npm publish
+npm version <newversion> -m "Releasing %s"
+npm publish
 ```
