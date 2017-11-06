@@ -8,6 +8,7 @@ import withHumanizedName from "../../../src/withHumanizedName";
 import withHelp from "../../../src/withHelp";
 import Label from "./Label";
 import Help from "./Help";
+import Feedback from "./Feedback";
 
 type Props = {
   label: string,
@@ -17,11 +18,10 @@ type Props = {
 
 class Radio extends React.Component<Props> {
   render() {
-    const { error, help, helpId, label, className, options, ...props } = { ...this.props };
+    const { error, help, helpId, label, className, ...props } = { ...this.props };
 
     const inputClasses = ["custom-control-input"];
     if (error) inputClasses.push("is-invalid");
-    console.log(error);
 
     return (
       <div className={className || "form-group"}>
@@ -29,8 +29,12 @@ class Radio extends React.Component<Props> {
           <Label for={props.id} text={label} required={props.required} />
         </header>
 
-        <CoreRadio options={options} {...props} className={inputClasses.join(" ")} map={this.renderRadio.bind(this)} />
+        <CoreRadio {...props} className={inputClasses.join(" ")} map={this.renderRadio.bind(this)} />
         <Help id={helpId} text={help} />
+
+        {/* Workaround for Bootstrap 4 issue - https://github.com/twbs/bootstrap/issues/24624 */}
+        <div aria-hidden="true" className="form-control is-invalid" style={{ display: "none" }} />
+        <Feedback text={error} />
       </div>
     );
   }
