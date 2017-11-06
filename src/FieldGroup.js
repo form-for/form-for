@@ -56,7 +56,7 @@ export default class FieldGroup extends React.Component<Props> {
   }
 
   getValidate() {
-    return this.props.validate || this.context.validate;
+    return typeof this.props.validate !== "undefined" ? this.props.validate : this.context.validate;
   }
 
   handleChange = (mutator: Function, name: string, value: string) => {

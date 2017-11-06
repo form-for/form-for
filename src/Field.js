@@ -146,7 +146,9 @@ export default class Field extends React.Component<Props, State> {
   }
 
   handleChange(event: Event, { value, error }: EventProperties = {}) {
-    this.dispatchValidation(event, "change", value, error);
+    if (this.hasValidationType("change")) {
+      this.dispatchValidation(event, "change", value, error);
+    }
 
     value = this.guessEventTargetProperty(event, value, "value");
     this.dispatchContextChange(value);
@@ -228,11 +230,12 @@ export default class Field extends React.Component<Props, State> {
    */
 
   buildValueProps() {
-    const contextObjectValue = this.getContextObjectValue();
-
     if (typeof this.props.value === "undefined") {
+      const contextObjectValue = this.getContextObjectValue();
+
       if (this.context.onChange) {
-        return { value: contextObjectValue || "" };
+        const value = typeof contextObjectValue !== "undefined" ? contextObjectValue : "";
+        return { value };
       }
 
       if (!this.props.defaultValue) {
@@ -244,14 +247,16 @@ export default class Field extends React.Component<Props, State> {
   }
 
   buildEventProps() {
+    const onMount = this.context.validate !== false ? this.handleMount.bind(this) : undefined;
+
     const onFocus = this.hasValidationType("focus") ? this.handleFocus.bind(this) : undefined;
 
-    const onChange =
-      this.context.onChange || this.hasValidationType("change") ? this.handleChange.bind(this) : undefined;
+    const hasOnChange = this.context.onChange || this.hasValidationType("change");
+    const onChange = hasOnChange ? this.handleChange.bind(this) : undefined;
 
     const onBlur = this.hasValidationType("blur") ? this.handleBlur.bind(this) : undefined;
 
-    return { onMount: this.handleMount.bind(this), onFocus, onChange, onBlur };
+    return { onMount, onFocus, onChange, onBlur };
   }
 
   buildErrorProps() {
