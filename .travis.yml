@@ -1,16 +1,12 @@
-sudo: false
-
 language: node_js
 node_js:
-  - 6
-
-before_install:
-  - npm install codecov.io coveralls
-
+  - node
+email:
+  on_failure: change
+  on_success: never
 after_success:
-  - cat ./coverage/lcov.info | ./node_modules/codecov.io/bin/codecov.io.js
-  - cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js
-
-branches:
-  only:
-    - master
+  - npm install -g codeclimate-test-reporter
+  - codeclimate-test-reporter < coverage/lcov.info
+addons:
+  code_climate:
+    repo_token: 0fd9fd3dd341b40489d80a9dcfd562f192b00fce2a8f66a944593a081a9b3e76
