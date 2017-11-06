@@ -2,14 +2,16 @@
 
 [![npm version](https://img.shields.io/npm/v/form-for.svg)](https://www.npmjs.org/package/form-for)
 [![Build Status](https://travis-ci.org/pedsmoreira/form-for.svg?branch=master)](https://travis-ci.org/pedsmoreira/form-for)
-[![Code Climate](https://codeclimate.com/github/pedsmoreira/form-for/badges/gpa.svg)](https://codeclimate.com/github/pedsmoreira/form-for)
-[![Test Coverage](https://codeclimate.com/github/pedsmoreira/form-for/badges/coverage.svg)](https://codeclimate.com/github/pedsmoreira/form-for/coverage)
+[![Maintainability](https://api.codeclimate.com/v1/badges/eea356eb9597322d9ef5/maintainability)](https://codeclimate.com/github/pedsmoreira/form-for/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/eea356eb9597322d9ef5/test_coverage)](https://codeclimate.com/github/pedsmoreira/form-for/test_coverage)
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
 
 ReactJS forms made easy.
 
 ```javascript
 import { Form, Field } from "form-for";
+
+const user = new User();
 
 <Form for={user} onSubmit={...}>
   <Field name="firstName" />
