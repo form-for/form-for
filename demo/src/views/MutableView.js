@@ -4,7 +4,8 @@ import { action, observable } from "mobx";
 import { observer } from "mobx-react";
 
 import React from "react";
-import { Field, Form } from "../../../src";
+import { Form } from "../../../src";
+import Field from "../Field";
 
 import User from "../User";
 import TodoItem from "../TodoItem";

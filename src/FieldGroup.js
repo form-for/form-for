@@ -21,15 +21,14 @@ export type Props = {
 export default class FieldGroup extends React.Component<Props> {
   static contextTypes = {
     prefix: PropTypes.string,
-    onChange: PropTypes.func,
-    validate: PropTypes.arrayOf(PropTypes.string)
+    validate: PropTypes.arrayOf(PropTypes.string),
+    onChange: PropTypes.func
   };
 
   static childContextTypes = {
     object: PropTypes.object,
     schema: PropTypes.object,
     prefix: PropTypes.string,
-    mutable: PropTypes.bool,
     validate: PropTypes.arrayOf(PropTypes.string),
     onChange: PropTypes.func
   };

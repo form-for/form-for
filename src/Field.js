@@ -3,7 +3,7 @@
 import * as React from "react";
 
 import PropTypes from "prop-types";
-import type { Schema, SchemaProperty } from "./FieldGroup";
+import type { SchemaProperty } from "./FieldGroup";
 
 type EventProperties = {
   value?: any,
@@ -29,8 +29,6 @@ export default class Field extends React.Component<Props, State> {
   component: HTMLElement;
   state = { error: undefined };
 
-  static mutableDecorator: ?Function;
-
   /*
    * Component binding
    */
@@ -50,7 +48,6 @@ export default class Field extends React.Component<Props, State> {
     schema: PropTypes.object.isRequired,
     prefix: PropTypes.string,
     onChange: PropTypes.func,
-    mutable: PropTypes.bool,
     validate: PropTypes.arrayOf(PropTypes.string)
   };
 
@@ -299,16 +296,7 @@ export default class Field extends React.Component<Props, State> {
    */
 
   render() {
-    const component = this.getComponent();
-
-    const element = React.createElement(component, this.buildProps());
-    if (this.context.mutable) {
-      const decorator = this.constructor.mutableDecorator;
-      if (decorator) {
-        return decorator(element);
-      }
-    }
-
-    return element;
+    let component = this.getComponent();
+    return React.createElement(component, this.buildProps());
   }
 }

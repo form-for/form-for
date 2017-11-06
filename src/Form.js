@@ -34,7 +34,7 @@ export default class Form extends React.Component<Props> {
   render(): React.Node {
     const { ["for"]: object, schema, prefix, onChange, validate, mutable, ...remainingProps } = { ...this.props };
 
-    const onChangeHandler = this.props.mutable !== false ? this.handleMutableChange : onChange;
+    const onChangeHandler = mutable !== false ? this.handleMutableChange : onChange;
 
     return (
       <form {...remainingProps}>
@@ -44,7 +44,6 @@ export default class Form extends React.Component<Props> {
           prefix={prefix}
           onChange={onChangeHandler}
           validate={typeof validate === "undefined" ? true : validate}
-          mutable={mutable}
         >
           {this.props.children}
         </FieldGroup>

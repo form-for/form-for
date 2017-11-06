@@ -38,7 +38,7 @@ export default class SelectInput extends React.Component<Props> {
 
   renderDefaultOption() {
     const hasValue = this.props.value || this.props.defaultValue;
-    if (this.props.placeholder ===false || (this.props.required && hasValue)) return null;
+    if (this.props.placeholder === false || (this.props.required && hasValue)) return null;
 
     return <option value="">{this.props.placeholder || "---"}</option>;
   }

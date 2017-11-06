@@ -20,11 +20,9 @@ import { bindBootstrapFieldComponents } from "./form-for-bootstrap-components/in
 
 import "./bootstrap.min.css";
 
-// Enable strict MobX & set @observable and @action decorators
-// useStrict(true);
-
-// Field.mutableDecorator = observable;
-// Form.mutableDecorator = (mutator, name) => action(`Update form instance ${name}`, mutator);
+// Enable MobX strict mode
+useStrict(true);
+Form.mutableDecorator = (mutator, name) => action(`Update form instance ${name}`, mutator);
 
 // Bind field components
 bindFieldComponents();
