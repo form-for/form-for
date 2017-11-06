@@ -7,8 +7,8 @@ import withHumanizedName from "../../../src/withHumanizedName";
 import withUniqueId from "../../../src/withUniqueId";
 import withHelp from "../../../src/withHelp";
 import Label from "./Label";
-import Feedback from "./Feedback";
 import Help from "./Help";
+import Feedback from "./Feedback";
 
 export type Props = {
   id: string,
@@ -28,8 +28,8 @@ class Input extends React.Component<Props> {
       <div className={className || "form-group"}>
         <Label for={props.id} text={label} required={props.required} />
         <CoreInput className={inputClasses.join(" ")} {...props} />
-        <Feedback text={error} />
         <Help id={helpId} text={help} />
+        <Feedback text={error} />
       </div>
     );
   }

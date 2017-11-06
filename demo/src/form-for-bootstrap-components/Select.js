@@ -19,7 +19,7 @@ type Props = {
 
 class SelectInput extends React.Component<Props> {
   render() {
-    const { error, help, helpId, label, className, options, ...props } = { ...this.props };
+    const { error, help, helpId, label, className, ...props } = { ...this.props };
 
     const selectClasses = ["form-control"];
     if (error) selectClasses.push("is-invalid");
@@ -27,9 +27,9 @@ class SelectInput extends React.Component<Props> {
     return (
       <div className={className || "form-group"}>
         <Label for={props.id} text={label} required={props.required} />
-        <CoreSelect className={selectClasses.join(" ")} options={options} {...props} />
-        <Feedback text={error} />
+        <CoreSelect className={selectClasses.join(" ")} {...props} />
         <Help id={helpId} text={help} />
+        <Feedback text={error} />
       </div>
     );
   }
