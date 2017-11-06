@@ -28,7 +28,7 @@ export default class User {
 
   @observable
   @field
-  responsibleSalesperson: string
+  responsibleSalesperson: string;
 
   @observable
   @field({ type: "TodoItem[]" })

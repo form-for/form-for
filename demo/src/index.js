@@ -62,7 +62,7 @@ class Demo extends React.Component<any, State> {
     return (
       <div className="container-fluid">
         <nav className="navbar-nav mr-auto">
-          {this.renderViewNavItem("mutable", "Controlled w/ MobX (Controlled)")}
+          {this.renderViewNavItem("mutable", "Controlled w/ MobX (Mutable)")}
           {this.renderViewNavItem("controlled", "Controlled w/ setState({...})")}
           {this.renderViewNavItem("uncontrolled", "Uncontrolled")}
         </nav>

@@ -26,7 +26,7 @@ class Input extends React.Component<Props> {
     }
 
     return (
-      <div className={className || 'form-group'}>
+      <div className={className || "form-group"}>
         <Label for={this.props.id} text={label} required={this.props.required} />
         <CoreInput className={inputClasses.join(" ")} {...props} />
         <Feedback text={error} />

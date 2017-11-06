@@ -18,7 +18,7 @@ class Checkbox extends React.Component<Props> {
     if (error) inputClasses.push("is-invalid");
 
     return (
-      <label className={className || 'custom-control custom-checkbox'}>
+      <label className={className || "custom-control custom-checkbox"}>
         <CoreCheckbox
           className={inputClasses.join(" ")}
           {...props}

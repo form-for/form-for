@@ -61,11 +61,11 @@ export default class MutableView extends React.Component<any> {
 
               <div className="row">
                 <div className="col-md-6">
-                  <Field name="firstName" autoFocus help="This is a required field. Try clearing it"/>
+                  <Field name="firstName" autoFocus help="This is a required field. Try clearing it" />
                 </div>
 
                 <div className="col-md-6">
-                  <Field name="last_name" help="The custom label defined on the model"/>
+                  <Field name="last_name" help="The custom label defined on the model" />
                 </div>
               </div>
 
@@ -84,10 +84,7 @@ export default class MutableView extends React.Component<any> {
                 help="Try setting a number smaller than 1 or bigger than 20"
               />
 
-              <Field
-                name="access"
-                help="Switch to guest to show a guest-specific field"
-              />
+              <Field name="access" help="Switch to guest to show a guest-specific field" />
 
               {this.user.access !== "admin" && (
                 <div className="ml-4">
@@ -100,7 +97,7 @@ export default class MutableView extends React.Component<any> {
               )}
 
               <div className="ml-4">
-                <Field name="todoItems"/>
+                <Field name="todoItems" />
               </div>
 
               <button className="btn btn-primary">Submit</button>

@@ -26,7 +26,7 @@ class SelectInput extends React.Component<Props> {
     }
 
     return (
-      <div className={className || 'form-group'}>
+      <div className={className || "form-group"}>
         <Label for={this.props.id} text={label} required={this.props.required} />
         <CoreSelect className={selectClasses.join(" ")} options={options} {...props} />
         <Feedback text={error} />
