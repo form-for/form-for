@@ -36,7 +36,7 @@ export default class Field extends React.Component<Props, State> {
   static componentBindings: { [_: string]: React.ComponentType<*> } = {};
 
   static bindComponent(type: string, component: React.ComponentType<*>): void {
-    this.componentBindings[type] = component;
+    Field.componentBindings[type] = component;
   }
 
   /*
@@ -271,7 +271,7 @@ export default class Field extends React.Component<Props, State> {
 
   buildErrorProps() {
     const error = this.props.error || this.state.error;
-    return error ? { error, "aria-invalid": true } : {};
+    return error ? { error } : {};
   }
 
   buildProps() {
