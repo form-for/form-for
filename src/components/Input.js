@@ -3,9 +3,7 @@
 import * as React from "react";
 import type { ComponentProps } from "./ComponentProps.flow";
 
-export type Props = {
-  type?: string
-} & ComponentProps;
+export type Props = ComponentProps;
 
 export default class Input extends React.Component<Props> {
   input: ?HTMLInputElement;
@@ -19,7 +17,9 @@ export default class Input extends React.Component<Props> {
   };
 
   componentDidMount() {
-    this.props.onMount(this.input);
+    if (this.props.onMount) {
+      this.props.onMount(this.input);
+    }
   }
 
   render() {

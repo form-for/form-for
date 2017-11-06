@@ -19,14 +19,16 @@ export default class SelectInput extends React.Component<Props> {
   };
 
   componentDidMount() {
-    this.props.onMount(this.select);
+    if (this.props.onMount) {
+      this.props.onMount(this.select);
+    }
   }
 
   render() {
-    const { error, onMount, options, ...props } = { ...this.props };
+    const { type, error, onMount, options, ...props } = { ...this.props };
 
     return (
-      <select ref={el => (this.select = el)} {...props}>
+      <select ref={this.handleRef} {...props}>
         {this.renderOptions()}
       </select>
     );

@@ -28,6 +28,18 @@ export default class Checkbox extends React.Component<Props> {
     this.props.onBlur(event, { value: event.target.checked });
   };
 
+  buildValueProps() {
+    if (typeof this.props.checked === "undefined" && typeof this.props.value !== "undefined") {
+      return { checked: !!this.props.value };
+    }
+
+    if (typeof this.props.defaultChecked === "undefined") {
+      this.props.defaultChecked = !!this.props.defaultValue;
+    }
+
+    return {};
+  }
+
   buildEventHandlers() {
     const onFocus = this.props.onFocus ? this.handleFocus : undefined;
     const onChange = this.props.onChange ? this.handleChange : undefined;
@@ -37,18 +49,22 @@ export default class Checkbox extends React.Component<Props> {
   }
 
   componentDidMount() {
-    this.props.onMount(this.input, { value: (this.input || {}).checked });
+    if (this.props.onMount) {
+      this.props.onMount(this.input, { value: (this.input || {}).checked });
+    }
   }
 
   render() {
     const { defaultValue, value, onMount, ...props } = { ...this.props };
 
-    if (typeof props.checked === "undefined" && typeof value !== "undefined") {
-      props.checked = !!value;
-    } else if (typeof props.defaultChecked === "undefined") {
-      props.defaultChecked = !!defaultValue;
-    }
-
-    return <input ref={this.handleRef} {...props} {...this.buildEventHandlers()} type="checkbox" />;
+    return (
+      <input
+        ref={this.handleRef}
+        {...this.buildValueProps()}
+        {...props}
+        {...this.buildEventHandlers()}
+        type="checkbox"
+      />
+    );
   }
 }
