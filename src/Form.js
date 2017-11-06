@@ -9,7 +9,7 @@ export type Props = {
   schema?: Schema,
   prefix?: string,
   onChange?: Function,
-  validate?: string | boolean, // mount | focus | change | blur
+  validate?: string | boolean, // mount, focus, change, blur
   mutable?: boolean,
   children: React.Node,
   [key: string]: any

@@ -4,6 +4,7 @@ import { inputTypes } from "../../../src/components";
 import Input from "./Input";
 import Checkbox from "./Checkbox";
 import Select from "./Select";
+import Radio from "./Radio";
 
 function bindBootstrapFieldComponents() {
   inputTypes.forEach(type => {
@@ -11,7 +12,7 @@ function bindBootstrapFieldComponents() {
   });
 
   Field.bindComponent("checkbox", Checkbox);
-  // Field.bindComponent('radio', RadioButtons);
+  Field.bindComponent("radio", Radio);
   Field.bindComponent("select", Select);
 }
 

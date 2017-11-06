@@ -4,7 +4,7 @@ import * as React from "react";
 import RequiredAbbreviation from "./RequiredAbbreviation";
 
 type Props = {
-  id: string,
+  id: ?string,
   text: ?string
 };
 

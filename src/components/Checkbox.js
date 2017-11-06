@@ -8,26 +8,6 @@ export type Props = {} & ComponentProps;
 export default class Checkbox extends React.Component<Props> {
   input: ?HTMLInputElement;
 
-  handleRef = (el: ?HTMLInputElement) => {
-    this.input = el;
-
-    if (this.props.ref) {
-      this.props.ref(el);
-    }
-  };
-
-  handleFocus = (event: any) => {
-    this.props.onFocus(event, { value: event.target.checked });
-  };
-
-  handleChange = (event: any) => {
-    this.props.onChange(event, { value: event.target.checked });
-  };
-
-  handleBlur = (event: any) => {
-    this.props.onBlur(event, { value: event.target.checked });
-  };
-
   buildValueProps() {
     if (typeof this.props.checked === "undefined" && typeof this.props.value !== "undefined") {
       return { checked: !!this.props.value };
@@ -47,6 +27,26 @@ export default class Checkbox extends React.Component<Props> {
 
     return { onFocus, onChange, onBlur };
   }
+
+  handleRef = (el: ?HTMLInputElement) => {
+    this.input = el;
+
+    if (this.props.ref) {
+      this.props.ref(el);
+    }
+  };
+
+  handleFocus = (event: any) => {
+    this.props.onFocus(event, { value: event.target.checked });
+  };
+
+  handleChange = (event: any) => {
+    this.props.onChange(event, { value: event.target.checked });
+  };
+
+  handleBlur = (event: any) => {
+    this.props.onBlur(event, { value: event.target.checked });
+  };
 
   componentDidMount() {
     if (this.props.onMount) {

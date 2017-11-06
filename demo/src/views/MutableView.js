@@ -54,7 +54,7 @@ export default class MutableView extends React.Component<any> {
           </div>
 
           <div className="col-md-6">
-            <Form for={this.user} validate="mount|change">
+            <Form for={this.user} validate="mount,change">
               <header>
                 <h2>Edit User</h2>
               </header>

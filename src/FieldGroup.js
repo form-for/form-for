@@ -22,7 +22,7 @@ export default class FieldGroup extends React.Component<Props> {
   static contextTypes = {
     prefix: PropTypes.string,
     onChange: PropTypes.func,
-    validate: PropTypes.oneOfType([PropTypes.string, PropTypes.bool])
+    validate: PropTypes.arrayOf(PropTypes.string)
   };
 
   static childContextTypes = {
@@ -30,7 +30,7 @@ export default class FieldGroup extends React.Component<Props> {
     schema: PropTypes.object,
     prefix: PropTypes.string,
     mutable: PropTypes.bool,
-    validate: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
+    validate: PropTypes.arrayOf(PropTypes.string),
     onChange: PropTypes.func
   };
 
@@ -56,7 +56,15 @@ export default class FieldGroup extends React.Component<Props> {
   }
 
   getValidate() {
-    return typeof this.props.validate !== "undefined" ? this.props.validate : this.context.validate;
+    if (this.props.validate === false) return [];
+
+    if (this.props.validate === true) return ["focus", "change", "blur"];
+
+    if (typeof this.props.validate === "string") {
+      return this.props.validate.replace(/\s/g, "").split(",");
+    }
+
+    return this.props.validate || this.context.validate;
   }
 
   handleChange = (mutator: Function, name: string, value: string) => {

@@ -51,7 +51,7 @@ export default class Field extends React.Component<Props, State> {
     prefix: PropTypes.string,
     onChange: PropTypes.func,
     mutable: PropTypes.bool,
-    validate: PropTypes.oneOfType([PropTypes.string, PropTypes.bool])
+    validate: PropTypes.arrayOf(PropTypes.string)
   };
 
   static childContextTypes = {
@@ -68,6 +68,20 @@ export default class Field extends React.Component<Props, State> {
    * Dispatchers
    */
 
+  dispatchBrowserValidation(target: any, message: string) {
+    if (!target) return;
+
+    if (Array.isArray(target)) {
+      return target.forEach(el => {
+        this.dispatchValidation(el, message);
+      });
+    }
+
+    if (target.setCustomValidity) {
+      target.setCustomValidity(message);
+    }
+  }
+
   dispatchValidation(event: any, type: string, value: ?any, error: ?string) {
     if (this.props.error) return;
 
@@ -83,9 +97,7 @@ export default class Field extends React.Component<Props, State> {
         error = validatorMessage;
       }
 
-      if (target && target.setCustomValidity) {
-        target.setCustomValidity(validatorMessage || "");
-      }
+      this.dispatchBrowserValidation(target, validatorMessage || "");
     }
 
     error = this.guessEventTargetProperty(event, error, "validationMessage");
@@ -128,6 +140,10 @@ export default class Field extends React.Component<Props, State> {
     }
 
     if (event && event.target) {
+      if (Array.isArray(event.target)) {
+        return event.target[0][name];
+      }
+
       // $FlowFixMe
       return event.target[name];
     }
@@ -219,10 +235,7 @@ export default class Field extends React.Component<Props, State> {
   }
 
   hasValidationType(name: string) {
-    return (
-      (this.context.validate === true && name !== "mount") ||
-      (typeof this.context.validate === "string" && this.context.validate.indexOf(name) !== -1)
-    );
+    return this.context.validate.indexOf(name) !== -1;
   }
 
   /*
@@ -247,7 +260,7 @@ export default class Field extends React.Component<Props, State> {
   }
 
   buildEventProps() {
-    const onMount = this.context.validate !== false ? this.handleMount.bind(this) : undefined;
+    const onMount = this.context.validate.length > 0 ? this.handleMount.bind(this) : undefined;
 
     const onFocus = this.hasValidationType("focus") ? this.handleFocus.bind(this) : undefined;
 

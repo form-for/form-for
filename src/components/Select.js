@@ -4,7 +4,7 @@ import * as React from "react";
 import type { ComponentProps } from "./ComponentProps.flow";
 
 export type Props = {
-  options: { [_: any]: any }
+  options: { [key: any]: any }
 } & ComponentProps;
 
 export default class SelectInput extends React.Component<Props> {
