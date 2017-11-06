@@ -54,6 +54,16 @@ import { Form, Field, field } from "form-for";
 
 // TODO
 
+### Encapsulating input names
+
+If instead of assigning the name `firstName`, you with to do `user[firstName]`, you can do so with the prefix attribute:
+
+```jsx
+<Form prefix="user">
+    <Field name="firstName" />
+</Form>
+```
+
 ## Resources
 
 - [Contributing Guide](./CONTRIBUTING.md)
