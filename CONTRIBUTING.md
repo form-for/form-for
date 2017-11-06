@@ -37,19 +37,11 @@ The project uses [prettier](https://github.com/prettier/prettier). To format you
 npm run prettier
 ```
  
-or
- 
-```bash
-yarn prettier
-```
-
-Don't worry too much about the formatting, prettier will sort things out before publishing a new version.
-
 ## Releasing
 
 To release a new version, define the number following the [semantic versioning](http://semver.org/).
 
 ``` bash
-npm version <newversion> -m "Releasing %s"
+npm version <newversion> -m "Release %s"
 npm publish
 ```
