@@ -4,7 +4,8 @@ import * as React from "react";
 import type { ComponentProps } from "./ComponentProps.flow";
 
 export type Props = {
-  options: { [key: any]: any }
+  options: { [key: any]: any },
+  placeholder?: string
 } & ComponentProps;
 
 export default class SelectInput extends React.Component<Props> {
@@ -29,9 +30,17 @@ export default class SelectInput extends React.Component<Props> {
 
     return (
       <select ref={this.handleRef} {...props}>
+        {this.renderDefaultOption()}
         {this.renderOptions()}
       </select>
     );
+  }
+
+  renderDefaultOption() {
+    const hasValue = this.props.value || this.props.defaultValue;
+    if (this.props.placeholder ===false || (this.props.required && hasValue)) return null;
+
+    return <option value="">{this.props.placeholder || "---"}</option>;
   }
 
   renderOptions() {
