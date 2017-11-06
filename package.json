@@ -1,7 +1,7 @@
 {
   "name": "form-for",
   "version": "0.3.1",
-  "description": "Build simple and declarative ReactJS forms from your models",
+  "description": "ReactJS forms made easy.",
   "main": "lib/index.js",
   "module": "es/index.js",
   "files": [
@@ -18,8 +18,30 @@
     "flow": "flow",
     "test": "nwb test-react",
     "test:coverage": "nwb test-react --coverage",
-    "test:watch": "nwb test-react --server"
+    "test:watch": "nwb test-react --server",
+    "preversion": "npm test",
+    "version": "git add package.json",
+    "postversion": "git push && git push --tags"
   },
+  "author": "Pedro Moreira",
+  "homepage": "https://github.com/pedsmoreira/form-for",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pedsmoreira/form-for.git"
+  },
+  "bugs": {
+    "url": "https://github.com/pedsmoreira/jewell/issues"
+  },
+  "keywords": [
+    "react-component",
+    "react",
+    "reactjs",
+    "form",
+    "forms",
+    "simple-form",
+    "reactive"
+  ],
   "peerDependencies": {
     "react": "15.x"
   },
@@ -33,21 +55,5 @@
     "prop-types": "^15.6.0",
     "react": "^16.0.0",
     "react-dom": "^16.0.0"
-  },
-  "author": "Pedro Moreira",
-  "homepage": "pedrosm.com",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/pedsmoreira/form-for.git"
-  },
-  "keywords": [
-    "react-component",
-    "form",
-    "simple-form",
-    "react",
-    "reactjs",
-    "object oriented",
-    "OOP"
-  ]
+  }
 }
