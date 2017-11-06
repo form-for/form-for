@@ -1,85 +1,73 @@
 // @flow
 
-import { action, observable, useStrict } from "mobx";
-import { observer } from "mobx-react";
-
 import React from "react";
 import { render } from "react-dom";
 
-import { Field, Form } from "../../src";
-
-import TodoItemsInput from "./components/TodoItemsInput";
-import MoneyInput from "./components/MoneyInput";
+import { Form, Field } from "../../src";
 import { bindFieldComponents } from "../../src/components";
-
-import MutableView from "./views/MutableView";
-import ControlledView from "./views/ControlledView";
-import UncontrolledView from "./views/UncontrolledView";
-
-import { bindBootstrapFieldComponents } from "./form-for-bootstrap-components/index";
-
-import "./bootstrap.min.css";
-
-// Enable MobX strict mode
-useStrict(true);
-Form.mutableDecorator = (mutator, name) => action(`Update form instance ${name}`, mutator);
-
-// Bind field components
 bindFieldComponents();
-bindBootstrapFieldComponents();
-
-Field.bindComponent("money", MoneyInput);
-Field.bindComponent("TodoItem[]", TodoItemsInput);
 
 type State = {
-  view: string
+  user: any
 };
 
-@observer
 class Demo extends React.Component<any, State> {
-  state = {
-    view: "mutable"
-  };
+  constructor(props: any) {
+    super(props);
 
-  selectView = (event: Event, name: string) => {
-    event.preventDefault();
-    this.setState({ view: name });
-  };
+    const user = {
+      name: "John",
+      surname: "Doe",
 
-  getSelectedViewComponent() {
-    if (this.state.view === "mutable") {
-      return <MutableView />;
-    } else if (this.state.view === "controlled") {
-      return <ControlledView />;
-    }
+      schema: {
+        name: {
+          required: true
+        },
+        surname: {
+          type: "text"
+        },
+        phone: {
+          type: "tel"
+        },
+        email: {
+          type: "email",
+          required: true
+        }
+      }
+    };
 
-    return <UncontrolledView />;
+    this.state = { user };
   }
+
+  handleChange = mutator => {
+    this.setState({ user: mutator() });
+  };
 
   render() {
     return (
-      <div className="container-fluid">
-        <nav className="navbar-nav mr-auto">
-          {this.renderViewNavItem("mutable", "Controlled w/ MobX (Mutable)")}
-          {this.renderViewNavItem("controlled", "Controlled w/ setState({...})")}
-          {this.renderViewNavItem("uncontrolled", "Uncontrolled")}
-        </nav>
+      <div>
+        <Form for={this.state.user} onChange={this.handleChange}>
+          <div>
+            Name: <Field name="name" autoFocus />
+          </div>
 
-        {this.getSelectedViewComponent()}
+          <div>
+            Surname: <Field name="surname" />
+          </div>
+
+          <div>
+            Phone: <Field name="phone" />
+          </div>
+
+          <div>
+            Email: <Field name="email" />
+          </div>
+
+          <button>Submit</button>
+        </Form>
+
+        <pre>{JSON.stringify(this.state.user, null, 2)}</pre>
       </div>
-    );
-  }
-
-  renderViewNavItem(name: string, text: string) {
-    const classes = ["nav-item"];
-    if (this.state.view === name) classes.push("active");
-
-    return (
-      <li className={classes}>
-        <a href="" onClick={event => this.selectView(event, name)}>
-          {text}
-        </a>
-      </li>
     );
   }
 }

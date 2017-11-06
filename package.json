@@ -39,8 +39,7 @@
     "reactjs",
     "form",
     "forms",
-    "simple-form",
-    "reactive"
+    "simple-form"
   ],
   "peerDependencies": {
     "react": "15.x"
@@ -48,8 +47,6 @@
   "devDependencies": {
     "babel-plugin-transform-flow-comments": "^6.22.0",
     "flow-bin": "^0.57.3",
-    "mobx": "^3.3.1",
-    "mobx-react": "^4.3.4",
     "nwb": "0.19.x",
     "prettier": "^1.7.4",
     "prop-types": "^15.6.0",

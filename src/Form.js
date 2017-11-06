@@ -10,31 +10,13 @@ export type Props = {
   prefix?: string,
   onChange?: Function,
   validate?: string | boolean, // mount, focus, change, blur
-  mutable?: boolean,
   children: React.Node,
   [key: string]: any
 };
 
 export default class Form extends React.Component<Props> {
-  static mutableDecorator: ?Function;
-
-  handleMutableChange = (mutator: Function, name: string, value: any) => {
-    const decorator = this.constructor.mutableDecorator;
-    if (decorator) {
-      decorator(mutator, name, value)();
-    } else {
-      mutator();
-    }
-
-    if (this.props.onChange) {
-      this.props.onChange(mutator, name, value);
-    }
-  };
-
   render(): React.Node {
-    const { ["for"]: object, schema, prefix, onChange, validate, mutable, ...remainingProps } = { ...this.props };
-
-    const onChangeHandler = mutable !== false ? this.handleMutableChange : onChange;
+    const { ["for"]: object, schema, prefix, onChange, validate, children, ...remainingProps } = { ...this.props };
 
     return (
       <form {...remainingProps}>
@@ -42,10 +24,10 @@ export default class Form extends React.Component<Props> {
           for={object}
           schema={schema}
           prefix={prefix}
-          onChange={onChangeHandler}
+          onChange={onChange}
           validate={typeof validate === "undefined" ? true : validate}
         >
-          {this.props.children}
+          {children}
         </FieldGroup>
       </form>
     );
