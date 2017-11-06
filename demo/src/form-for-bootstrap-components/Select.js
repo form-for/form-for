@@ -15,9 +15,9 @@ type Props = {
 
 class SelectInput extends React.Component<Props> {
   render() {
-    const { error, help, label, classNames, options, ...props } = { ...this.props };
+    const { error, help, label, className, options, ...props } = { ...this.props };
 
-    const selectClasses = classNames ? [classNames] : ["form-control"];
+    const selectClasses = ["form-control"];
     if (error) selectClasses.push("is-invalid");
 
     const helpId = this.props.id + "-help";
@@ -26,7 +26,7 @@ class SelectInput extends React.Component<Props> {
     }
 
     return (
-      <div className="form-group">
+      <div className={className || 'form-group'}>
         <Label for={this.props.id} text={label} required={this.props.required} />
         <CoreSelect className={selectClasses.join(" ")} options={options} {...props} />
         <Feedback text={error} />

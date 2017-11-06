@@ -14,11 +14,11 @@ class Checkbox extends React.Component<Props> {
   render() {
     const { error, label, className, accessibilityLabel, ...props } = { ...this.props };
 
-    const inputClasses = className ? [className] : ["custom-control-input"];
+    const inputClasses = ["custom-control-input"];
     if (error) inputClasses.push("is-invalid");
 
     return (
-      <label className="custom-control custom-checkbox">
+      <label className={className || 'custom-control custom-checkbox'}>
         <CoreCheckbox
           className={inputClasses.join(" ")}
           {...props}

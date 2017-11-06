@@ -17,7 +17,7 @@ class Input extends React.Component<Props> {
   render() {
     const { error, help, label, className, ...props } = { ...this.props };
 
-    const inputClasses = className ? [className] : ["form-control"];
+    const inputClasses = ["form-control"];
     if (error) inputClasses.push("is-invalid");
 
     const helpId = this.props.id + "-help";
@@ -26,7 +26,7 @@ class Input extends React.Component<Props> {
     }
 
     return (
-      <div className="form-group">
+      <div className={className || 'form-group'}>
         <Label for={this.props.id} text={label} required={this.props.required} />
         <CoreInput className={inputClasses.join(" ")} {...props} />
         <Feedback text={error} />
