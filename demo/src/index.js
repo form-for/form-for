@@ -16,7 +16,7 @@ class Demo extends React.Component<any, State> {
     super(props);
 
     const user = {
-      name: "John",
+      name: "Anonymous",
       surname: "Doe",
 
       schema: {
@@ -39,6 +39,10 @@ class Demo extends React.Component<any, State> {
     this.state = { user };
   }
 
+  handleNameValidation = name => {
+    if(name === 'Anonymous') return 'John is not a valid name';
+  };
+
   handleChange = mutator => {
     this.setState({ user: mutator() });
   };
@@ -48,7 +52,7 @@ class Demo extends React.Component<any, State> {
       <div>
         <Form for={this.state.user} onChange={this.handleChange}>
           <div>
-            Name: <Field name="name" autoFocus />
+            Name: <Field name="name" autoFocus validator={this.handleNameValidation} />
           </div>
 
           <div>
