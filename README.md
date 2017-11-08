@@ -1,9 +1,9 @@
 # ![Form For](./assets/logo.png)
 
 [![npm version](https://img.shields.io/npm/v/form-for.svg)](https://www.npmjs.org/package/form-for)
-[![Build Status](https://travis-ci.org/pedsmoreira/form-for.svg?branch=master)](https://travis-ci.org/pedsmoreira/form-for)
-[![Maintainability](https://api.codeclimate.com/v1/badges/eea356eb9597322d9ef5/maintainability)](https://codeclimate.com/github/pedsmoreira/form-for/maintainability)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/eea356eb9597322d9ef5/test_coverage)](https://codeclimate.com/github/pedsmoreira/form-for/test_coverage)
+[![Build Status](https://travis-ci.org/form-for/form-for.svg?branch=master)](https://travis-ci.org/form-for/form-for)
+[![Maintainability](https://api.codeclimate.com/v1/badges/eea356eb9597322d9ef5/maintainability)](https://codeclimate.com/github/form-for/form-for/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/eea356eb9597322d9ef5/test_coverage)](https://codeclimate.com/github/form-for/form-for/test_coverage)
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
 
 ReactJS forms made easy.
@@ -26,22 +26,22 @@ const user = new User();
 
 ## Installation
 
-Install the core package
+Install the core package and basic components
 
 ```bash
-npm install form-for --save
+npm install form-for form-for-components --save
 ```
 
-Choose a styling package, so your components get pretty:
+If you're looking for pretty components, chose one below
 
-- [form-for-bootstrap](https://github.com/pedsmoreira/form-for-bootstrap)
+- [form-for-bootstrap-components](https://github.com/form-for/form-for-bootstrap-bootstrap)
 
 **Note**: If you're using [MobX](https://github.com/mobxjs/mobx), 
-check out [mobx-form-for](https://github.com/pedsmoreira/mobx-form-for) 
+check out [mobx-form-for](https://github.com/form-for/mobx-form-for) 
 
 ## Getting Started
 
-// Todo
+### Binding components
 
 ## Resources
 
