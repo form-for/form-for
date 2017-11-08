@@ -5,7 +5,19 @@ import * as React from "react";
 import PropTypes from "prop-types";
 import type { SchemaProperty } from "./FieldGroup";
 
-type EventProperties = {
+export type ComponentProps = {
+  type: string,
+  name: string,
+  error: ?string,
+  onMount?: Function,
+  onFocus?: Function,
+  onChange?: Function,
+  onBlur?: Function,
+  value?: any,
+  defaultValue?: any
+};
+
+type EventProps = {
   value?: any,
   error?: ?string
 };
@@ -150,15 +162,15 @@ export default class Field extends React.Component<Props, State> {
    * Handlers
    */
 
-  handleMount(target: ?any, { value, error }: EventProperties = {}) {
+  handleMount(target: ?any, { value, error }: EventProps = {}) {
     this.dispatchValidation({ target }, "mount", value, error);
   }
 
-  handleFocus(event: Event, { value, error }: EventProperties = {}) {
+  handleFocus(event: Event, { value, error }: EventProps = {}) {
     this.dispatchValidation(event, "focus", value, error);
   }
 
-  handleChange(event: Event, { value, error }: EventProperties = {}) {
+  handleChange(event: Event, { value, error }: EventProps = {}) {
     if (this.hasValidationType("change")) {
       this.dispatchValidation(event, "change", value, error);
     }
@@ -168,7 +180,7 @@ export default class Field extends React.Component<Props, State> {
     this.dispatchPropsChange(event);
   }
 
-  handleBlur(event: Event, { value, error }: EventProperties = {}) {
+  handleBlur(event: Event, { value, error }: EventProps = {}) {
     this.dispatchValidation(event, "blur", value, error);
   }
 

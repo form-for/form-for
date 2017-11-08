@@ -11,12 +11,13 @@
     "umd"
   ],
   "scripts": {
-    "build": "nwb build-react-component",
+    "build": "nwb build-react-component && npm run flow-copy-source",
     "clean": "nwb clean-module && nwb clean-demo",
     "start": "nwb serve-react-demo",
     "prettier": "prettier --write --print-width 120 \"{demo/src,src,test}/**/*.js\"",
     "prettier-lint-staged": "prettier --write --print-width 120",
     "flow": "flow",
+    "flow-copy-source": "flow-copy-source src lib && flow-copy-source src es",
     "test": "nwb test-react",
     "test:coverage": "nwb test-react --coverage",
     "test:watch": "nwb test-react --server",
@@ -47,8 +48,8 @@
     "react": "> 15.x"
   },
   "devDependencies": {
-    "babel-plugin-transform-flow-comments": "^6.22.0",
     "flow-bin": "^0.57.3",
+    "flow-copy-source": "^1.2.1",
     "husky": "^0.14.3",
     "lint-staged": "^4.3.0",
     "nwb": "0.19.x",

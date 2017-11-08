@@ -1,17 +1,12 @@
 module.exports = {
-  type: 'react-component',
-  babel: {
-    plugins: [
-      'transform-flow-comments'
-    ]
-  },
+  type: "react-component",
   npm: {
     esModules: true,
     umd: {
-      global: 'FormFor',
+      global: "FormFor",
       externals: {
-        react: 'React'
+        react: "React"
       }
     }
   }
-}
+};

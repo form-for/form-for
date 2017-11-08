@@ -5,7 +5,6 @@
 [include]
 
 [libs]
-<PROJECT_ROOT>/node_modules/fbjs/flow/lib
 
 [lints]
 

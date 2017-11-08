@@ -1,15 +1,14 @@
 // @flow
 
 import Form from "./Form";
-import type { Props as FormProps } from "./Form";
-
-import Field from "./Field";
-import type { Props as FieldProps } from "./Field";
-
-import type { ComponentProps } from "./ComponentProps.flow";
+export type { Props as FormProps } from "./Form";
 
 import FieldGroup from "./FieldGroup";
+export type { SchemaProperty, Schema, Props as FieldGroupProps } from "./FieldGroup";
+
+import Field from "./Field";
+export type { ComponentProps, Props as FieldProps } from "./Field";
+
 import fieldDecorator from "./fieldDecorator";
 
 export { Form, Field, fieldDecorator as field, FieldGroup };
-export type { FormProps, FieldProps, ComponentProps };
