@@ -19,6 +19,7 @@
     "test": "nwb test-react",
     "test:coverage": "nwb test-react --coverage",
     "test:watch": "nwb test-react --server",
+    "precommit": "lint-staged",
     "preversion": "npm test",
     "version": "git add package.json",
     "postversion": "git push && git push --tags"
