@@ -1,6 +1,6 @@
 {
   "name": "form-for",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "ReactJS forms made easy.",
   "main": "lib/index.js",
   "umd:main": "umd/form-for.js",
