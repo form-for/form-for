@@ -4,8 +4,10 @@ import React from "react";
 import { render } from "react-dom";
 
 import { Form, Field } from "../../src";
-import { bindFieldComponents } from "../../src/components";
-bindFieldComponents();
+import Input from "./Input";
+
+Field.bindComponent("text", Input);
+Field.bindComponent("email", Input);
 
 type State = {
   user: any
@@ -21,13 +23,8 @@ class Demo extends React.Component<any, State> {
 
       schema: {
         name: {
-          required: true
-        },
-        surname: {
-          type: "text"
-        },
-        phone: {
-          type: "tel"
+          required: true,
+          placeholder: "First name"
         },
         email: {
           type: "email",
@@ -40,7 +37,7 @@ class Demo extends React.Component<any, State> {
   }
 
   handleNameValidation = name => {
-    if(name === 'Anonymous') return 'John is not a valid name';
+    if (name === "Anonymous") return name + " is not a valid name";
   };
 
   handleChange = mutator => {
@@ -53,14 +50,6 @@ class Demo extends React.Component<any, State> {
         <Form for={this.state.user} onChange={this.handleChange}>
           <div>
             Name: <Field name="name" autoFocus validator={this.handleNameValidation} />
-          </div>
-
-          <div>
-            Surname: <Field name="surname" />
-          </div>
-
-          <div>
-            Phone: <Field name="phone" />
           </div>
 
           <div>
