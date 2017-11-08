@@ -22,7 +22,7 @@
     "test:watch": "nwb test-react --server",
     "precommit": "lint-staged",
     "preversion": "npm test",
-    "version": "git add package.json",
+    "version": "npm run build && git add package.json",
     "postversion": "git push && git push --tags"
   },
   "author": "Pedro Moreira",
