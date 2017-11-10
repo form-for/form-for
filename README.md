@@ -40,16 +40,14 @@ Choose a components package:
 **Note**: If you're using [MobX](https://github.com/mobxjs/mobx), 
 check out [mobx-form-for](https://github.com/form-for/mobx-form-for) 
 
-## Getting Started
+## Schema
 
-### Schema
-
-Forms are created based on the component schema. If your schema defines the type `date` for the field `last_seen`
+Forms are created based on a given schema. If your schema defines the type `date` for the field `last_seen`
 for instance, then `<Field name="date" />` will use the component bound to `last_seen`.
 
-There are three ways to provide the schema data to a form. In all three, if no type is given, it defaults to `text`
+There are three ways to provide the schema to a form.
  
-#### Annotation
+### Annotation
 
 The `@field` annotation may or may not have parameters.
 
@@ -57,7 +55,7 @@ The `@field` annotation may or may not have parameters.
 import { field } from "form-for";
 
 export default class User {
-    @field name;
+    @field name; // type defaults to 'text'
     
     @field({ type: 'email', required: true }) 
     email;
@@ -75,12 +73,12 @@ const user = new User();
 </Form/>
 ```
 
-### Schema
+### Schema attribute
 
 ```javsacript
 export default class User {
     schema = {
-        name: {},
+        name: {}, // type defaults to 'text'
         email: { type: 'email', required: true }    
         todoItems: { type: 'todoItem[]' }
     };
@@ -99,7 +97,7 @@ const user = new User();
 
 ```javascript
 const schema = {
-    name: {},
+    name: {}, // type defaults to 'text'
     email: { type: 'email', required: true }    
     todoItems: { type: 'todoItem[]' }
 }
@@ -111,15 +109,17 @@ const user = {};
 </Form/>
 ```
 
+### Extra (avoid doing this, stay DRY)
+
 You can also set special properties directly to the `<Field>` tag.
 
 ```javascript
-<Form for={user} schema={schema}>
+<Form for={user} ...>
     <Field name="..." type="special_type_for_this_form_only" placeholder="Special" />
 </Form/>
 ```
 
-### Binding components
+## Binding components
 
 ```javascript
 import { Field } from "form-for";
@@ -132,7 +132,7 @@ class Copmonent extends React.Component {
 Field.bindComponent('type', Component);
 ```
 
-### Uncontrolled form
+## Uncontrolled form
 
 If you do not provide a `onChange` prop to your form, this means it's uncontrolled. This implies `defaultValue`
 will be provided to the field components.
@@ -143,7 +143,9 @@ will be provided to the field components.
 </Form/>
 ```
 
-### Controlled form
+For more about uncontrolled components, check out [React's documentation](https://reactjs.org/docs/uncontrolled-components.html)
+
+## Controlled form
 
 Proving `onChange` the the form makes it controlled. Therefore you must use some kind of state management to update the
 content passed through `for`.
@@ -167,15 +169,15 @@ handleFormChange = (mutator, name, value) => {
 **Note**: If you're using [MobX](https://github.com/mobxjs/mobx), 
 [mobx-form-for](https://github.com/form-for/mobx-form-for) handles `onChange` for you, even on `strict` mode.
 
-### Validation
+## Validation
 
-There are four validation states triggers: `mount, focus, change, blur` 
+There are four validation trigger states: `mount, focus, change, blur` 
 
 The default validation is `validate="focus,change,blur"`. To disable validation use `validate={false}`.
 
 Validation takes into consideration both custom validators and HTML 5 validations, in this order. 
 
-#### Function custom validator
+### Function custom validator
 
 Provide a function to validate a given value. If the new value is invalid, return an error message.
 
@@ -189,7 +191,7 @@ function validateName(name) {
 </Form>
 ```
 
-#### Named custom validator
+### Named custom validator
 
 Provide the name of the method responsible for validating.
 
@@ -237,7 +239,7 @@ Here's a simple example:
 
 import React from "react";
 import { render } from "react-dom";
-import type { ComponentProps } from "../../src/Field";
+import type { ComponentProps } from "form-for";
 
 export default class Input extends React.Component<ComponentProps> {
   render() {
