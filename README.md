@@ -323,7 +323,7 @@ import { Field, FieldGroup } from "form-for";
 
 import TodoItem from "../TodoItem";
 
-export default class TodoItemsInput extends React.Component {
+export default class TodoItems extends React.Component {
   state = {
     items: this.props.value || this.props.defaultValue || []
   };

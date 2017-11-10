@@ -126,11 +126,7 @@ export default class Field extends React.Component<Props, State> {
   dispatchContextChange(value: any) {
     if (!this.context.onChange) return;
 
-    const mutator = () => {
-      this.context.object[this.props.name] = value;
-      return this.context.object;
-    };
-
+    const mutator = () => (this.context.object[this.props.name] = value);
     this.context.onChange(mutator, this.getPrefixedName(), value);
   }
 
@@ -199,8 +195,8 @@ export default class Field extends React.Component<Props, State> {
       }
 
       throw new Error(
-        `Undefined property ${this.props.name} in schema or inline type for
-        ${this.context.object.constructor.name} instance`
+        `Undefined property "${this.props.name}" in schema or inline type for
+        "${this.context.object.constructor.name}" instance`
       );
     }
 

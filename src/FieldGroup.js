@@ -68,7 +68,14 @@ export default class FieldGroup extends React.Component<Props> {
 
   handleChange = (mutator: Function, name: string, value: string) => {
     if (this.props.onChange) {
-      this.props.onChange(mutator, name, value);
+      this.props.onChange(
+        () => {
+          mutator();
+          return this.props.for;
+        },
+        name,
+        value
+      );
     }
   };
 
