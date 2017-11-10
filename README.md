@@ -24,6 +24,8 @@ const user = new User();
 </Form>
 ```
 
+Just wanna play with it? [Check out my sandboxes](https://codesandbox.io/u/pedsmoreira/sandboxes)
+
 ## Installation
 
 Install the core package:
