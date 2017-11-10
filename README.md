@@ -400,6 +400,8 @@ Field.bindComponent('todoItems[]', TodoItems);
 
 - The logo was created by Xicons.co and can be found [here](https://www.iconfinder.com/icons/2024631/document_documents_file_files_text_texts_icon).
 
+Blog post: https://medium.com/@pedsmoreira/introducing-form-for-reactjs-forms-made-easy-d82d9f5026be
+
 ## Motivation
 
 FormFor is inspired by [Simple Form](https://github.com/plataformatec/simple_form),
