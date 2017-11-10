@@ -10,8 +10,7 @@ export type Props = {
   prefix?: string,
   onChange?: Function,
   validate?: string | boolean, // mount, focus, change, blur
-  children: React.Node,
-  [key: string]: any
+  children: React.Node
 };
 
 export default class Form extends React.Component<Props> {

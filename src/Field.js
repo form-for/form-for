@@ -29,8 +29,7 @@ export type Props = {
   onValid?: Function,
   onInvalid?: Function,
   validator?: Function, // must work with promise
-  error?: string,
-  [key: string]: any
+  error?: string
 };
 
 type State = {
