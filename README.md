@@ -318,8 +318,6 @@ On the component use `<FieldGroup>`, so the `<Field>` inside it knows what objec
 - `user[todoItem][1][name]`
 
 ```javascript
-// @flow
-
 import React from "react";
 import { Field, FieldGroup } from "form-for";
 
