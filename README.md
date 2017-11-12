@@ -127,7 +127,7 @@ You can also set special properties directly to the `<Field>` tag.
 import { Field } from "form-for";
 import React from "react";
 
-class Copmonent extends React.Component {
+class Component extends React.Component {
   ...
 }
 
