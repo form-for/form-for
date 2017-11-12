@@ -16,10 +16,10 @@ const user = new User();
 <Form for={user} onSubmit={...}>
   <Field name="firstName" />
   <Field name="lastName" />
-  
+
   <Field name="email" />
   <Field name="password" />
-  
+
   <button>Submit</button>
 </Form>
 ```
@@ -39,8 +39,8 @@ Choose a components package:
 - [form-for-components](https://github.com/form-for/form-for-components): Core HTML components
 - [form-for-bootstrap-components](https://github.com/form-for/form-for-bootstrap-bootstrap): Pretty bootstrap components
 
-**Note**: If you're using [MobX](https://github.com/mobxjs/mobx), 
-check out [mobx-form-for](https://github.com/form-for/mobx-form-for) 
+**Note**: If you're using [MobX](https://github.com/mobxjs/mobx),
+check out [mobx-form-for](https://github.com/form-for/mobx-form-for)
 
 ## Schema
 
@@ -48,7 +48,7 @@ Forms are created based on a given schema. If your schema defines the type `date
 for instance, then `<Field name="date" />` will use the component bound to `last_seen`.
 
 There are three ways to provide the schema to a form.
- 
+
 ### Annotation
 
 The `@field` annotation may or may not have parameters.
@@ -58,10 +58,10 @@ import { field } from "form-for";
 
 export default class User {
     @field name; // type defaults to 'text'
-    
-    @field({ type: 'email', required: true }) 
+
+    @field({ type: 'email', required: true })
     email;
-    
+
     @field({ type: 'todoItem[]' })
     todoItems;
 }
@@ -81,7 +81,7 @@ const user = new User();
 export default class User {
     schema = {
         name: {}, // type defaults to 'text'
-        email: { type: 'email', required: true }    
+        email: { type: 'email', required: true }
         todoItems: { type: 'todoItem[]' }
     };
 }
@@ -100,7 +100,7 @@ const user = new User();
 ```javascript
 const schema = {
     name: {}, // type defaults to 'text'
-    email: { type: 'email', required: true }    
+    email: { type: 'email', required: true }
     todoItems: { type: 'todoItem[]' }
 }
 
@@ -127,7 +127,7 @@ You can also set special properties directly to the `<Field>` tag.
 import { Field } from "form-for";
 import React from "react";
 
-class Copmonent extends React.Component {
+class Component extends React.Component {
   ...
 }
 
@@ -168,16 +168,16 @@ handleFormChange = (mutator, name, value) => {
 </Form/>
 ```
 
-**Note**: If you're using [MobX](https://github.com/mobxjs/mobx), 
+**Note**: If you're using [MobX](https://github.com/mobxjs/mobx),
 [mobx-form-for](https://github.com/form-for/mobx-form-for) handles `onChange` for you, even on `strict` mode.
 
 ## Validation
 
-There are four validation trigger states: `mount, focus, change, blur` 
+There are four validation trigger states: `mount, focus, change, blur`
 
 The default validation is `validate="focus,change,blur"`. To disable validation use `validate={false}`.
 
-Validation takes into consideration both custom validators and HTML 5 validations, in this order. 
+Validation takes into consideration both custom validators and HTML 5 validations, in this order.
 
 ### Function custom validator
 
@@ -203,7 +203,7 @@ import { field } from "form-for";
 export default class User {
   @field({ validator: 'validateName' })
   name;
-  
+
   validateName(name) {
     // you can use this.something to check other things before returning an error
     if(name === 'Nobody') return 'Nobody is not a name';
@@ -278,7 +278,7 @@ This event is always called, unless `validation={false}`
 
 - `onFocus(event: Event, { value?, error? })`
 
-Triggers validation if `validation` contains `focus`.  
+Triggers validation if `validation` contains `focus`.
 
 - `onChange`
 
@@ -349,7 +349,7 @@ export default class TodoItems extends React.Component {
       this.props.onChange(null, { value: items });
     }
   }
-  
+
   render() {
     return (
       <fieldset className="form-group">
