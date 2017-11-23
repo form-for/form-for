@@ -33,7 +33,7 @@ class Demo extends React.Component<any, State> {
         email: {
           type: "email",
           required: true,
-          validator: (value, user, { type, validationMessage }) => {
+          validator: (value, user, { validationMessage }) => {
             if (validationMessage) return validationMessage;
 
             return new Promise((resolve, reject) => {

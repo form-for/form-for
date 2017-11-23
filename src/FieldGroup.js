@@ -81,7 +81,7 @@ export default class FieldGroup extends React.Component<Props> {
   getValidate(): string[] {
     if (this.props.validate === false) return [];
 
-    if (this.props.validate === true) return ["focus", "change", "blur"];
+    if (this.props.validate === true) return ["focus", "change"];
 
     if (typeof this.props.validate === "string") {
       return this.props.validate.replace(/\s/g, "").split(",");
