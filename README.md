@@ -175,7 +175,7 @@ handleFormChange = (mutator, name, value) => {
 
 There are four validation trigger states: `mount, focus, change, blur`
 
-The default validation is `validate="focus,change,blur"`. To disable validation use `validate={false}`.
+The default validation is `validate="focus,change"`. To disable validation use `validate={false}`.
 
 Validation takes into consideration both custom validators and HTML 5 validations, in this order.
 

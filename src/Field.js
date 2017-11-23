@@ -9,10 +9,10 @@ export type ComponentProps = {
   type: string,
   name: string,
   error: ?string,
-  onMount?: Function,
-  onFocus?: Function,
-  onChange?: Function,
-  onBlur?: Function,
+  onMount: Function,
+  onFocus: Function,
+  onChange: Function,
+  onBlur: Function,
   value?: any,
   defaultValue?: any
 };
@@ -25,11 +25,14 @@ type EventProps = {
 export type Props = {
   name: string,
   type?: string,
+  onFocus?: Function,
   onChange?: Function,
+  onBlur?: Function,
   onValid?: Function,
   onInvalid?: Function,
-  validator?: Function, // must work with promise
-  error?: string
+  validator?: Function,
+  error?: ?string,
+  observe?: boolean | string | string[]
 };
 
 type State = {
@@ -37,8 +40,9 @@ type State = {
 };
 
 export default class Field extends React.Component<Props, State> {
-  component: HTMLElement;
+  target: ?any;
   state = { error: undefined };
+  dispatchValidationOnUpdate: boolean = false;
 
   /*
    * Component binding
@@ -57,18 +61,26 @@ export default class Field extends React.Component<Props, State> {
   static contextTypes = {
     object: PropTypes.object.isRequired,
     schema: PropTypes.object.isRequired,
-    prefix: PropTypes.string,
-    onChange: PropTypes.func,
-    validate: PropTypes.arrayOf(PropTypes.string)
+    prefix: PropTypes.string.isRequired,
+    getValues: PropTypes.func.isRequired,
+    controlled: PropTypes.bool.isRequired,
+    onChange: PropTypes.func.isRequired,
+    validate: PropTypes.arrayOf(PropTypes.string).isRequired,
+    onValid: PropTypes.func.isRequired,
+    onInvalid: PropTypes.func.isRequired,
+    mountObserver: PropTypes.func.isRequired,
+    unmountObserver: PropTypes.func.isRequired
   };
 
   static childContextTypes = {
-    prefix: PropTypes.string
+    prefix: PropTypes.string,
+    name: PropTypes.string
   };
 
   getChildContext() {
     return {
-      prefix: this.getPrefixedName()
+      prefix: this.getPrefixedName(),
+      name: this.props.name
     };
   }
 
@@ -76,12 +88,13 @@ export default class Field extends React.Component<Props, State> {
    * Dispatchers
    */
 
-  dispatchBrowserValidation(target: any, message: string) {
+  dispatchBrowserValidation(type: string, message: string) {
+    const target = this.target;
     if (!target) return;
 
     if (Array.isArray(target)) {
       return target.forEach(el => {
-        this.dispatchValidation(el, message);
+        this.dispatchValidationForTarget(el, type, { error: message });
       });
     }
 
@@ -90,66 +103,62 @@ export default class Field extends React.Component<Props, State> {
     }
   }
 
-  dispatchValidation(event: any, type: string, value: ?any, error: ?string) {
-    if (this.props.error) return;
-
-    // $FlowFixMe
-    const target: any = (event || {}).target;
-    value = this.guessEventTargetProperty(event, value, "value");
-
-    const validator = this.getValidator();
-    if (validator) {
-      const validatorMessage = validator(value);
-
-      if (validatorMessage) {
-        error = validatorMessage;
-      }
-
-      this.dispatchBrowserValidation(target, validatorMessage || "");
-    }
-
-    error = this.guessEventTargetProperty(event, error, "validationMessage");
-
-    if (this.hasValidationType(type)) {
-      if (error !== this.state.error) {
-        this.setState({ error });
-      }
-
-      if (error && this.props.onInvalid) {
-        this.props.onInvalid(error, value);
-      } else if (!error && this.props.onValid) {
-        this.props.onValid(value);
-      }
-    }
+  dispatchValidation(type: string, props: EventProps) {
+    this.dispatchValidationForTarget(this.target, type, props);
   }
 
-  dispatchContextChange(value: any) {
-    if (!this.context.onChange) return;
+  dispatchValidationForTarget(target: any, type: string, { value, error }: EventProps) {
+    if (!this.context.validate.length || (type !== "mount" && !this.hasValidationType(type))) return;
+    this.dispatchBrowserValidation(type, "");
 
-    const mutator = () => (this.context.object[this.props.name] = value);
-    this.context.onChange(mutator, this.getPrefixedName(), value);
+    if (this.props.error) {
+      error = this.props.error;
+    } else {
+      value = this.guessTargetProperty(target, value, "value");
+
+      const validator = this.getValidator();
+      if (validator) {
+        const validatorMessage = validator(value, this.context.getValues());
+        if (validatorMessage) error = validatorMessage;
+      }
+
+      error = this.guessTargetProperty(target, error, "validationMessage");
+    }
+
+    this.dispatchError(type, { value, error });
   }
 
-  dispatchPropsChange(event: Event) {
-    if (!this.props.onChange) return;
-    this.props.onChange(event);
+  dispatchError(type: string, { value, error }: EventProps) {
+    this.dispatchBrowserValidation(type, error || "");
+
+    if (error) {
+      this.context.onInvalid(this.props.name, value, error);
+      if (this.props.onInvalid) this.props.onInvalid(value, error);
+    } else if (!error) {
+      this.context.onValid(this.props.name, value);
+      if (this.props.onValid) this.props.onValid(value);
+    }
+
+    if (this.hasValidationType(type) && error !== this.state.error) {
+      this.setState({ error });
+    }
   }
 
   /*
    * Guessers
    */
-  guessEventTargetProperty(event: Event, value: ?any, name: string): ?any {
+
+  guessTargetProperty(target: any, value: ?any, name: string): ?any {
     if (typeof value !== "undefined") {
       return value;
     }
 
-    if (event && event.target) {
-      if (Array.isArray(event.target)) {
-        return event.target[0][name];
+    if (target) {
+      if (Array.isArray(target)) {
+        return target[0][name];
       }
 
-      // $FlowFixMe
-      return event.target[name];
+      return target[name];
     }
   }
 
@@ -158,25 +167,31 @@ export default class Field extends React.Component<Props, State> {
    */
 
   handleMount(target: ?any, { value, error }: EventProps = {}) {
-    this.dispatchValidation({ target }, "mount", value, error);
+    this.target = target;
+    this.dispatchValidation("mount", { value, error });
   }
 
-  handleFocus(event: Event, { value, error }: EventProps = {}) {
-    this.dispatchValidation(event, "focus", value, error);
+  handleFocus(event: Event, props: EventProps = {}) {
+    this.target = event.target || this.target;
+    this.dispatchValidation("focus", props);
+
+    if (this.props.onFocus) this.props.onFocus(event);
   }
 
-  handleChange(event: Event, { value, error }: EventProps = {}) {
-    if (this.hasValidationType("change")) {
-      this.dispatchValidation(event, "change", value, error);
-    }
+  handleChange(event: Event, props: EventProps = {}) {
+    this.target = event.target || this.target;
+    this.dispatchValidation("change", props);
 
-    value = this.guessEventTargetProperty(event, value, "value");
-    this.dispatchContextChange(value);
-    this.dispatchPropsChange(event);
+    const value = this.guessTargetProperty(this.target, props.value, "value");
+    this.context.onChange(this.props.name, value);
+    if (this.props.onChange) this.props.onChange(event);
   }
 
-  handleBlur(event: Event, { value, error }: EventProps = {}) {
-    this.dispatchValidation(event, "blur", value, error);
+  handleBlur(event: Event, props: EventProps = {}) {
+    this.target = event.target || this.target;
+    this.dispatchValidation("blur", props);
+
+    if (this.props.onBlur) this.props.onBlur(event);
   }
 
   /*
@@ -239,7 +254,7 @@ export default class Field extends React.Component<Props, State> {
   }
 
   hasValidationType(name: string) {
-    return this.context.validate.indexOf(name) !== -1;
+    return this.context.validate.includes(name);
   }
 
   /*
@@ -250,7 +265,7 @@ export default class Field extends React.Component<Props, State> {
     if (typeof this.props.value === "undefined") {
       const contextObjectValue = this.getContextObjectValue();
 
-      if (this.context.onChange) {
+      if (this.context.controlled) {
         const value = typeof contextObjectValue !== "undefined" ? contextObjectValue : "";
         return { value };
       }
@@ -263,19 +278,6 @@ export default class Field extends React.Component<Props, State> {
     return {};
   }
 
-  buildEventProps() {
-    const onMount = this.context.validate.length > 0 ? this.handleMount.bind(this) : undefined;
-
-    const onFocus = this.hasValidationType("focus") ? this.handleFocus.bind(this) : undefined;
-
-    const hasOnChange = this.context.onChange || this.hasValidationType("change");
-    const onChange = hasOnChange ? this.handleChange.bind(this) : undefined;
-
-    const onBlur = this.hasValidationType("blur") ? this.handleBlur.bind(this) : undefined;
-
-    return { onMount, onFocus, onChange, onBlur };
-  }
-
   buildErrorProps() {
     const error = this.props.error || this.state.error;
     return error ? { error } : {};
@@ -286,16 +288,49 @@ export default class Field extends React.Component<Props, State> {
       ...this.getSchemaProperty(),
       ...this.props,
       name: this.getPrefixedName(),
+      onMount: this.handleMount.bind(this),
+      onFocus: this.handleFocus.bind(this),
+      onChange: this.handleChange.bind(this),
+      onBlur: this.handleBlur.bind(this),
       ...this.buildValueProps(),
-      ...this.buildEventProps(),
       ...this.buildErrorProps()
     };
 
     delete props.validator;
     delete props.onValid;
     delete props.onInvalid;
+    delete props.observe;
 
     return props;
+  }
+
+  /*
+  * Lifecycle
+  */
+
+  componentWillMount() {
+    const observe = this.props.observe || this.getSchemaProperty().observe;
+    this.context.mountObserver(this.props.name, {
+      fields: observe,
+      dispatcher: this.dispatchValidation.bind(this)
+    });
+  }
+
+  componentWillUnmount() {
+    this.context.unmountObserver(this.props.name);
+  }
+
+  componentWillReceiveProps(nextProps: Props) {
+    if (nextProps.error !== this.props.error) {
+      this.dispatchValidationOnUpdate = true;
+    }
+  }
+
+  componentDidUpdate() {
+    if (this.dispatchValidationOnUpdate) {
+      this.dispatchValidationOnUpdate = false;
+      this.dispatchValidation("change", { value: this.getContextObjectValue() });
+    }
   }
 
   /*

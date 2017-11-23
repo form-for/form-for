@@ -5,17 +5,33 @@ import type { Schema } from "./FieldGroup";
 import FieldGroup from "./FieldGroup";
 
 export type Props = {
-  for: any,
+  for: { [_: any]: any },
   schema?: Schema,
   prefix?: string,
+  onMount?: Function,
   onChange?: Function,
+  onValidityChange?: Function,
+  onValid?: Function,
+  onInvalid?: Function,
   validate?: string | boolean, // mount, focus, change, blur
   children: React.Node
 };
 
 export default class Form extends React.Component<Props> {
   render(): React.Node {
-    const { ["for"]: object, schema, prefix, onChange, validate, children, ...remainingProps } = { ...this.props };
+    const {
+      ["for"]: object,
+      schema,
+      prefix,
+      onMount,
+      onChange,
+      onValidityChange,
+      onValid,
+      onInvalid,
+      validate,
+      children,
+      ...remainingProps
+    } = { ...this.props };
 
     return (
       <form {...remainingProps}>
@@ -23,7 +39,11 @@ export default class Form extends React.Component<Props> {
           for={object}
           schema={schema}
           prefix={prefix}
+          onMount={onMount}
           onChange={onChange}
+          onValidityChange={onValidityChange}
+          onValid={onValid}
+          onInvalid={onInvalid}
           validate={typeof validate === "undefined" ? true : validate}
         >
           {children}

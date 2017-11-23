@@ -8,9 +8,11 @@ import Input from "./Input";
 
 Field.bindComponent("text", Input);
 Field.bindComponent("email", Input);
+Field.bindComponent("password", Input);
 
 type State = {
-  user: any
+  user: any,
+  errors: { [_: string]: string }
 };
 
 class Demo extends React.Component<any, State> {
@@ -18,8 +20,10 @@ class Demo extends React.Component<any, State> {
     super(props);
 
     const user = {
-      name: "Anonymous",
+      name: "John",
       surname: "Doe",
+      password: "admin",
+      password_confirmation: "",
 
       schema: {
         name: {
@@ -29,25 +33,47 @@ class Demo extends React.Component<any, State> {
         email: {
           type: "email",
           required: true
+        },
+        password: {
+          type: "password",
+          required: true
+        },
+        password_confirmation: {
+          type: "password",
+          observe: "password",
+          validator: (password_confirmation, { password }) => {
+            if (password !== password_confirmation) {
+              return "The password confirmation must match";
+            }
+          }
         }
       }
     };
 
-    this.state = { user };
+    this.state = { user, errors: {} };
   }
 
   handleNameValidation = name => {
     if (name === "Anonymous") return name + " is not a valid name";
   };
 
-  handleChange = mutator => {
-    this.setState({ user: mutator() });
+  handleChange = ({ values }) => {
+    this.setState({ user: values });
+  };
+
+  handleValidityChange = ({ errors }) => {
+    this.setState({ errors });
   };
 
   render() {
     return (
       <div>
-        <Form for={this.state.user} onChange={this.handleChange}>
+        <Form
+          for={this.state.user}
+          onChange={this.handleChange}
+          autoComplete="off"
+          onValidityChange={this.handleValidityChange}
+        >
           <div>
             Name: <Field name="name" autoFocus validator={this.handleNameValidation} />
           </div>
@@ -56,10 +82,19 @@ class Demo extends React.Component<any, State> {
             Email: <Field name="email" />
           </div>
 
-          <button>Submit</button>
+          <div>
+            Password: <Field name="password" />
+          </div>
+
+          <div>
+            Confirmation Password: <Field name="password_confirmation" />
+          </div>
+
+          {/*<button>test</button>*/}
+          <button disabled={!!Object.values(this.state.errors).length}>Submit</button>
         </Form>
 
-        <pre>{JSON.stringify(this.state.user, null, 2)}</pre>
+        <pre>{JSON.stringify(this.state, null, 2)}</pre>
       </div>
     );
   }
