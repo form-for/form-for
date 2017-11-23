@@ -33,7 +33,9 @@ class Demo extends React.Component<any, State> {
         email: {
           type: "email",
           required: true,
-          validator: value => {
+          validator: (value, user, { validationMessage }) => {
+            if (validationMessage) return validationMessage;
+
             return new Promise((resolve, reject) => {
               setTimeout(() => {
                 if (value === "test@gmail.com") {
@@ -41,7 +43,7 @@ class Demo extends React.Component<any, State> {
                 } else {
                   resolve();
                 }
-              }, 1000);
+              }, 5000);
             });
           }
         },

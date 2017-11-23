@@ -46,6 +46,7 @@ export default class Field extends React.Component<Props, State> {
   target: ?any;
   state = { error: undefined, waiting: false };
   dispatchValidationOnUpdate: boolean = false;
+  waitingPromise: ?Promise;
 
   /*
    * Component binding
@@ -123,9 +124,10 @@ export default class Field extends React.Component<Props, State> {
       value = this.guessTargetProperty(target, value, "value");
 
       try {
-        const validatorMessage = await this.dispatchValidator(type, value);
-        error = this.guessTargetProperty(target, validatorMessage || error, "validationMessage");
+        const validationMessage = await this.dispatchValidator(target, type, value);
+        error = this.guessTargetProperty(target, validationMessage || error, "validationMessage");
       } catch (exception) {
+        if (!exception) return;
         error = exception;
       }
     }
@@ -133,11 +135,15 @@ export default class Field extends React.Component<Props, State> {
     this.dispatchError(type, { value, error });
   }
 
-  async dispatchValidator(type: string, value: any) {
+  async dispatchValidator(target: any, type: string, value: any) {
     const validator = this.getValidator();
     if (!validator) return undefined;
 
-    const validatorResponse = validator(value, this.context.getValues(), type);
+    const validatorResponse = validator(value, this.context.getValues(), {
+      type,
+      target,
+      validationMessage: this.guessTargetProperty(target, undefined, "validationMessage")
+    });
 
     if (isPromise(validatorResponse)) {
       this.setState({ waiting: true });
@@ -145,16 +151,21 @@ export default class Field extends React.Component<Props, State> {
 
       let error;
       try {
+        this.waitingPromise = validatorResponse;
         await validatorResponse;
       } catch (exception) {
         error = exception;
       }
 
+      if (this.waitingPromise !== validatorResponse) throw undefined;
+
       this.dispatchBrowserValidation(type, "");
       this.setState({ waiting: false });
+      this.waitingPromise = undefined;
 
-      return error;
+      if (error) throw error;
     } else {
+      this.waitingPromise = null;
       return validatorResponse;
     }
   }
@@ -180,9 +191,7 @@ export default class Field extends React.Component<Props, State> {
    */
 
   guessTargetProperty(target: any, value: ?any, name: string): ?any {
-    if (typeof value !== "undefined") {
-      return value;
-    }
+    if (value) return value;
 
     if (target) {
       if (Array.isArray(target)) {
