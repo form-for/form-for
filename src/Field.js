@@ -16,7 +16,8 @@ export type ComponentProps = {
   onBlur: Function,
   value?: any,
   defaultValue?: any,
-  waiting?: boolean
+  waiting: boolean,
+  valid: boolean
 };
 
 type EventProps = {
@@ -39,14 +40,15 @@ export type Props = {
 
 type State = {
   error: ?string,
-  waiting: boolean
+  waiting: boolean,
+  valid: boolean
 };
 
 export default class Field extends React.Component<Props, State> {
   target: ?any;
-  state = { error: undefined, waiting: false };
+  state = { error: undefined, waiting: false, valid: false };
   dispatchValidationOnUpdate: boolean = false;
-  waitingPromise: ?Promise;
+  waitingPromise: ?Promise<>;
 
   /*
    * Component binding
@@ -159,6 +161,7 @@ export default class Field extends React.Component<Props, State> {
 
       if (this.waitingPromise !== validatorResponse) throw undefined;
 
+      // Clear error to avoid show it when succeeded
       this.dispatchBrowserValidation(type, "");
       this.setState({ waiting: false });
       this.waitingPromise = undefined;
@@ -166,6 +169,7 @@ export default class Field extends React.Component<Props, State> {
       if (error) throw error;
     } else {
       this.waitingPromise = null;
+      this.setState({ waiting: false });
       return validatorResponse;
     }
   }
@@ -181,8 +185,8 @@ export default class Field extends React.Component<Props, State> {
       if (this.props.onValid) this.props.onValid(value);
     }
 
-    if (this.hasValidationType(type) && error !== this.state.error) {
-      this.setState({ error });
+    if (this.hasValidationType(type)) {
+      this.setState({ error, valid: !error });
     }
   }
 
@@ -318,9 +322,12 @@ export default class Field extends React.Component<Props, State> {
     return {};
   }
 
-  buildErrorProps() {
-    const error = this.props.error || this.state.error;
-    return error ? { error } : {};
+  buildStatusProps() {
+    return {
+      error: this.props.error || this.state.error,
+      valid: this.state.valid,
+      waiting: this.state.waiting
+    };
   }
 
   buildProps() {
@@ -333,7 +340,7 @@ export default class Field extends React.Component<Props, State> {
       onChange: this.handleChange.bind(this),
       onBlur: this.handleBlur.bind(this),
       ...this.buildValueProps(),
-      ...this.buildErrorProps()
+      ...this.buildStatusProps()
     };
 
     delete props.validator;

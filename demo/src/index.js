@@ -33,7 +33,7 @@ class Demo extends React.Component<any, State> {
         email: {
           type: "email",
           required: true,
-          validator: (value, user, { validationMessage }) => {
+          validator: (value, user, { type, validationMessage }) => {
             if (validationMessage) return validationMessage;
 
             return new Promise((resolve, reject) => {
@@ -43,7 +43,7 @@ class Demo extends React.Component<any, State> {
                 } else {
                   resolve();
                 }
-              }, 5000);
+              }, 2000);
             });
           }
         },
