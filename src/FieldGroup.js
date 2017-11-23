@@ -141,10 +141,11 @@ export default class FieldGroup extends React.Component<Props> {
 
   handleChange = (name: string, value: any) => {
     this.values = { ...this.values, [name]: value };
-    this.dispatchObservers(name, "change");
 
     if (this.props.onChange) this.props.onChange({ name, value, values: this.values, errors: this.errors });
     if (this.context.onChange) this.context.onChange(this.context.name, this.values);
+
+    this.dispatchObservers(name, "change");
   };
 
   handleValid = (name: any, value: any) => {

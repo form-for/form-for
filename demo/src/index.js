@@ -20,7 +20,7 @@ class Demo extends React.Component<any, State> {
     super(props);
 
     const user = {
-      name: "John",
+      name: "Anonymous",
       surname: "Doe",
       password: "admin",
       password_confirmation: "",
@@ -43,7 +43,7 @@ class Demo extends React.Component<any, State> {
           observe: "password",
           validator: (password_confirmation, { password }) => {
             if (password !== password_confirmation) {
-              return "The password confirmation must match";
+              return "The confirmation does not match the password";
             }
           }
         }
