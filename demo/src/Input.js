@@ -22,6 +22,8 @@ export default class Input extends React.Component<ComponentProps> {
       <div>
         <input ref={el => (this.input = el)} {...props} />
         <div style={{ color: "#d00" }}> {error}</div>
+
+        {this.props.waiting && "waiting ⌛"}
       </div>
     );
   }

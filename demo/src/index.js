@@ -32,7 +32,18 @@ class Demo extends React.Component<any, State> {
         },
         email: {
           type: "email",
-          required: true
+          required: true,
+          validator: value => {
+            return new Promise((resolve, reject) => {
+              setTimeout(() => {
+                if (value === "test@gmail.com") {
+                  reject("This email is already in use");
+                } else {
+                  resolve();
+                }
+              }, 1000);
+            });
+          }
         },
         password: {
           type: "password",
@@ -90,8 +101,7 @@ class Demo extends React.Component<any, State> {
             Confirmation Password: <Field name="password_confirmation" />
           </div>
 
-          {/*<button>test</button>*/}
-          <button disabled={!!Object.values(this.state.errors).length}>Submit</button>
+          <button>Submit</button>
         </Form>
 
         <pre>{JSON.stringify(this.state, null, 2)}</pre>
