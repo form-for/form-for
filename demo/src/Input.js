@@ -21,9 +21,31 @@ export default class Input extends React.Component<ComponentProps> {
     return (
       <div>
         <input ref={el => (this.input = el)} {...props} />
-        {touched && error && <div style={{ color: "#d00" }}> {error}</div>}
-        {touched && !error && <span style={{ color: "green" }}>✓</span>}
+        {this.renderIcon()}
+
+        {this.renderError()}
       </div>
     );
+  }
+
+  renderError() {
+    if (!this.props.touched || !this.props.error) return null;
+    return <div style={{ color: "#d00" }}>{this.props.error}</div>;
+  }
+
+  renderIcon() {
+    if (!this.props.touched) return null;
+
+    let icon;
+    let color;
+    if (this.props.error) {
+      icon = "✖";
+      color = "#d00";
+    } else {
+      icon = "✓";
+      color = "green";
+    }
+
+    return <span style={{ color: color }}> {icon}</span>;
   }
 }
