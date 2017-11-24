@@ -24,14 +24,17 @@ export type Props = {
 } & FormProps;
 
 export default class FieldGroup extends React.Component<Props> {
-  _isMounted: boolean;
   values: { [_: any]: any };
   errors: { [_: any]: string } = {};
   observer: { [_: string]: Observer } = {};
 
+  /*
+   * Context
+   */
+
   static contextTypes = {
     prefix: PropTypes.string,
-    validate: PropTypes.arrayOf(PropTypes.string),
+    touchOnMount: PropTypes.bool,
     onChange: PropTypes.func
   };
 
@@ -41,13 +44,31 @@ export default class FieldGroup extends React.Component<Props> {
     prefix: PropTypes.string,
     getValues: PropTypes.func,
     controlled: PropTypes.bool,
+    skipValidation: PropTypes.bool,
+    touchOnMount: PropTypes.bool,
     onChange: PropTypes.func,
-    validate: PropTypes.arrayOf(PropTypes.string),
     onValid: PropTypes.func,
     onInvalid: PropTypes.func,
     mountObserver: PropTypes.func,
     unmountObserver: PropTypes.func
   };
+
+  getChildContext() {
+    return {
+      object: this.props.for,
+      schema: this.getSchema(),
+      prefix: this.getPrefix(),
+      getValues: this.getValues,
+      controlled: this.isControlled(),
+      skipValidation: this.props.skipValidation,
+      touchOnMount: this.props.touchOnMount,
+      onChange: this.handleChange,
+      onValid: this.handleValidationSuccess,
+      onInvalid: this.handleValidationError,
+      mountObserver: this.handleMountObserver,
+      unmountObserver: this.handleUnmountObserver
+    };
+  }
 
   /*
    * Getters
@@ -78,18 +99,6 @@ export default class FieldGroup extends React.Component<Props> {
     return this.values;
   };
 
-  getValidate(): string[] {
-    if (this.props.validate === false) return [];
-
-    if (this.props.validate === true) return ["focus", "change"];
-
-    if (typeof this.props.validate === "string") {
-      return this.props.validate.replace(/\s/g, "").split(",");
-    }
-
-    return this.context.validate;
-  }
-
   isValid(): boolean {
     return !Object.values(this.errors).length;
   }
@@ -102,7 +111,7 @@ export default class FieldGroup extends React.Component<Props> {
    * Dispatchers
    */
 
-  dispatchObservers(propertyChanged: string, type: string): void {
+  dispatchObservers(propertyChanged: string): void {
     Object.keys(this.observer).forEach(name => {
       if (name === propertyChanged) return;
 
@@ -114,25 +123,27 @@ export default class FieldGroup extends React.Component<Props> {
         fields === propertyChanged ||
         (Array.isArray(fields) && fields.includes(propertyChanged))
       ) {
-        observer.fn(type, { value: this.values[name] });
+        observer.fn();
       }
     });
   }
 
-  dispatchValidityChange(values: { [_: any]: any }) {
-    if (this.props.onValidityChange) {
-      this.props.onValidityChange({ values, errors: this.errors });
-    }
+  dispatchChange() {
+    if (this.props.onChange) this.props.onChange(this.values, this.errors);
+    if (this.context.onChange) this.context.onChange(this.context.name, this.values);
   }
 
-  dispatchValid(props: { name?: string, value?: any, values?: { [_: any]: any } }) {
-    if (this.props.onValid) this.props.onValid(props);
-    if (this.context.onValid) this.context.onValid(this.context.name, props.values);
+  dispatchValidation() {
+    if (this.isValid()) this.dispatchValidationSuccess();
+    else this.dispatchValidationError();
   }
 
-  dispatchInvalid(props: { name?: string, value?: any, error?: string, values?: { [_: any]: any } }) {
-    if (this.props.onInvalid) this.props.onInvalid({ errors: this.errors, ...props });
-    if (this.context.onInvalid) this.context.onInvalid(this.context.name, props.values, props.error);
+  dispatchValidationSuccess() {
+    if (this.context.onValid) this.context.onValid(this.context.name);
+  }
+
+  dispatchValidationError() {
+    if (this.context.onInvalid) this.context.onInvalid(this.context.name, this.errors);
   }
 
   /*
@@ -141,36 +152,22 @@ export default class FieldGroup extends React.Component<Props> {
 
   handleChange = (name: string, value: any) => {
     this.values = { ...this.values, [name]: value };
-
-    if (this.props.onChange) this.props.onChange({ name, value, values: this.values, errors: this.errors });
-    if (this.context.onChange) this.context.onChange(this.context.name, this.values);
-
-    this.dispatchObservers(name, "change");
+    this.dispatchChange();
+    this.dispatchObservers(name);
   };
 
-  handleValid = (name: any, value: any) => {
-    const hasError = this.errors[name];
-    if (!hasError && this.values[name] === value) return;
-
-    delete this.errors[name];
-    if (!this._isMounted) return;
-
-    const values = { ...this.values, [name]: value };
-    if (hasError) this.dispatchValidityChange(values);
-
-    if (this.isValid()) this.dispatchValid({ name, value, values });
+  handleValidationSuccess = (name: string) => {
+    if (this.errors[name]) {
+      delete this.errors[name];
+      this.dispatchValidationSuccess();
+    }
   };
 
-  handleInvalid = (name: any, value: any, error: string) => {
-    const hasSameError = this.errors[name] === error;
-    if (hasSameError && this.values[name] === value) return;
-
-    this.errors[name] = error;
-    if (!this._isMounted) return;
-
-    const values = { ...this.values, [name]: value };
-    if (!hasSameError) this.dispatchValidityChange(values);
-    this.dispatchInvalid({ name, value, error, values });
+  handleValidationError = (name: string, error: string) => {
+    if (this.errors[name] !== error) {
+      this.errors[name] = error;
+      this.dispatchValidationError();
+    }
   };
 
   handleMountObserver = (name: string, observer: Observer): void => {
@@ -187,39 +184,13 @@ export default class FieldGroup extends React.Component<Props> {
    * Lifecycle
    */
 
-  getChildContext() {
-    return {
-      object: this.props.for,
-      schema: this.getSchema(),
-      prefix: this.getPrefix(),
-      getValues: this.getValues,
-      controlled: this.isControlled(),
-      onChange: this.handleChange,
-      validate: this.getValidate(),
-      onValid: this.handleValid,
-      onInvalid: this.handleInvalid,
-      mountObserver: this.handleMountObserver,
-      unmountObserver: this.handleUnmountObserver
-    };
-  }
-
   componentWillMount() {
     this.values = this.props.for;
   }
 
   componentDidMount() {
-    this._isMounted = true;
-
-    if (this.isValid()) {
-      this.dispatchValid({ values: this.values });
-    } else {
-      this.dispatchValidityChange(this.values);
-      this.dispatchInvalid({ values: this.values });
-    }
-
-    if (this.props.onMount) {
-      this.props.onMount({ errors: this.errors, values: this.values });
-    }
+    this.dispatchValidation();
+    if (this.errors) this.dispatchChange();
   }
 
   componentWillReceiveProps(nextProps: Props) {

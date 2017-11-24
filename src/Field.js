@@ -13,12 +13,11 @@ export type ComponentProps = {
   onMount: Function,
   onFocus: Function,
   onChange: Function,
-  onBlur: Function,
   value?: any,
   defaultValue?: any
 };
 
-type EventProps = {
+type ChangeEventProps = {
   value?: any,
   error?: ?string
 };
@@ -28,9 +27,6 @@ export type Props = {
   type?: string,
   onFocus?: Function,
   onChange?: Function,
-  onBlur?: Function,
-  onValid?: Function,
-  onInvalid?: Function,
   validator?: Function,
   error?: ?string,
   observe?: boolean | string | string[]
@@ -43,8 +39,11 @@ type State = {
 
 export default class Field extends React.Component<Props, State> {
   target: ?any;
-  state = { error: undefined, touched: false };
+  value: ?any;
+  error: ?string;
   dispatchValidationOnUpdate: boolean = false;
+
+  state = { error: undefined, touched: false };
 
   /*
    * Component binding
@@ -66,8 +65,9 @@ export default class Field extends React.Component<Props, State> {
     prefix: PropTypes.string.isRequired,
     getValues: PropTypes.func.isRequired,
     controlled: PropTypes.bool.isRequired,
+    skipValidation: PropTypes.bool,
+    touchOnMount: PropTypes.bool,
     onChange: PropTypes.func.isRequired,
-    validate: PropTypes.arrayOf(PropTypes.string).isRequired,
     onValid: PropTypes.func.isRequired,
     onInvalid: PropTypes.func.isRequired,
     mountObserver: PropTypes.func.isRequired,
@@ -145,19 +145,6 @@ export default class Field extends React.Component<Props, State> {
     return validator;
   }
 
-  hasValidationType(name: string): boolean {
-    return this.context.validate.includes(name);
-  }
-
-  isValidationDisabled(): boolean {
-    return !this.context.validate.length;
-  }
-
-  hasValidationTypeMounting(type: string): boolean {
-    if (this.isValidationDisabled()) return false;
-    return type === "mount" || this.hasValidationType(type);
-  }
-
   /*
    * Setters
    */
@@ -179,29 +166,28 @@ export default class Field extends React.Component<Props, State> {
    * Actions
    */
 
-  validate(type: string, props: EventProps) {
-    this.validateTarget(this.target, type, props);
+  validate() {
+    this.validateTarget(this.target);
   }
 
-  validateTarget(target: any, type: string, props: EventProps): void {
-    if (!this.hasValidationTypeMounting(type)) return;
+  validateTarget(target: any): void {
+    if (this.context.skipValidation) return;
     this.clearBrowserCustomValidity();
 
     target = target || {};
-    const value = props.value || target.value;
+    const value = this.value || target.value;
 
     let error;
     if (this.props.error) {
       error = this.props.error;
     } else {
       const validatorResponse = this.validator(value);
-      error = validatorResponse || props.error || target.validationMessage;
+      error = validatorResponse || this.error || target.validationMessage;
     }
 
     this.setBrowserCustomValidity(error);
-    this.dispatchValidation(value, error);
-
-    if (this.hasValidationType(type)) this.setState({ error: error, touched: true });
+    this.dispatchValidation(error);
+    this.setState({ error: error });
   }
 
   validator(value: any) {
@@ -211,66 +197,61 @@ export default class Field extends React.Component<Props, State> {
     return validator(value, this.context.getValues());
   }
 
+  touch() {
+    if (!this.context.skipValidation && !this.state.touched) this.setState({ touched: true });
+  }
+
   /*
    * Dispatchers
    */
 
-  dispatchValidation(value: any, error: ?string) {
-    if (error) {
-      this.dispatchValidationError(value, error);
-    } else {
-      this.dispatchValidationSuccess(value);
-    }
+  dispatchValidation(error: ?string) {
+    if (error) this.dispatchValidationError(error);
+    else this.dispatchValidationSuccess();
   }
 
-  dispatchValidationSuccess(value: any) {
-    this.context.onValid(this.props.name, value);
-    if (this.props.onValid) this.props.onValid(value);
+  dispatchValidationSuccess() {
+    this.context.onValid(this.props.name);
   }
 
-  dispatchValidationError(value: any, error: ?string) {
-    this.context.onInvalid(this.props.name, value, error);
-    if (this.props.onInvalid) this.props.onInvalid(value, error);
+  dispatchValidationError(error: ?string) {
+    this.context.onInvalid(this.props.name, error);
   }
 
   dispatchFocus(event: Event) {
     if (this.props.onFocus) this.props.onFocus(event);
   }
 
-  dispatchChange(event: Event, value: any) {
-    this.context.onChange(this.props.name, value);
-    if (this.props.onChange) this.props.onChange(event);
-  }
+  dispatchChange(event: Event, { value, error }: ChangeEventProps) {
+    const target: any = event.target || {} || {};
 
-  dispatchBlur(event: Event) {
-    if (this.props.onBlur) this.props.onBlur(event);
+    this.value = value;
+    this.error = error;
+
+    this.context.onChange(this.props.name, value || target.value);
+    if (this.props.onChange) this.props.onChange(event);
   }
 
   /*
    * Handlers
    */
 
-  handleMount(target: ?any, { value, error }: EventProps = {}) {
+  handleMount(target: ?any) {
     this.target = target;
-    this.validate("mount", { value, error });
+    this.validate();
+    if (this.context.touchOnMount) this.touch();
   }
 
-  handleFocus(event: Event, props: EventProps = {}) {
+  handleFocus(event: Event) {
     this.target = event.target || this.target;
-    this.validate("focus", props);
     this.dispatchFocus(event);
+    this.touch();
   }
 
-  handleChange(event: Event, props: EventProps = {}) {
+  handleChange(event: Event, props: ChangeEventProps = {}) {
     this.target = event.target || this.target;
-    this.validate("change", props);
-    this.dispatchChange(event, props.value || (this.target || {}).value);
-  }
-
-  handleBlur(event: Event, props: EventProps = {}) {
-    this.target = event.target || this.target;
-    this.validate("blur", props);
-    this.dispatchBlur(event);
+    this.validate();
+    this.dispatchChange(event, props);
   }
 
   /*
@@ -309,14 +290,11 @@ export default class Field extends React.Component<Props, State> {
       onMount: this.handleMount.bind(this),
       onFocus: this.handleFocus.bind(this),
       onChange: this.handleChange.bind(this),
-      onBlur: this.handleBlur.bind(this),
       ...this.buildValueProps(),
       ...this.buildStatusProps()
     };
 
     delete props.validator;
-    delete props.onValid;
-    delete props.onInvalid;
     delete props.observe;
 
     return props;
@@ -347,7 +325,11 @@ export default class Field extends React.Component<Props, State> {
   componentDidUpdate() {
     if (this.dispatchValidationOnUpdate) {
       this.dispatchValidationOnUpdate = false;
-      this.validate("change", { value: this.getContextObjectValue() });
+
+      this.value = undefined;
+      this.error = undefined;
+
+      this.validate();
     }
   }
 

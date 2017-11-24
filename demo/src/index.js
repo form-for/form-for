@@ -57,12 +57,13 @@ class Demo extends React.Component<any, State> {
     if (name === "Anonymous") return name + " is not a valid name";
   };
 
-  handleChange = ({ values }) => {
-    this.setState({ user: values });
+  handleChange = (user, errors) => {
+    this.setState({ user, errors });
   };
 
-  handleValidityChange = ({ errors }) => {
-    this.setState({ errors });
+  handleSubmit = (event, user) => {
+    console.log(user);
+    event.preventDefault();
   };
 
   render() {
@@ -70,9 +71,11 @@ class Demo extends React.Component<any, State> {
       <div>
         <Form
           for={this.state.user}
-          onChange={this.handleChange}
           autoComplete="off"
-          onValidityChange={this.handleValidityChange}
+          // onChange={this.handleChange}
+          onSubmit={this.handleSubmit}
+          // skipValidation={true}
+          // touchOnMount={true}
         >
           <div>
             Name: <Field name="name" autoFocus validator={this.handleNameValidation} />
@@ -90,7 +93,7 @@ class Demo extends React.Component<any, State> {
             Confirmation Password: <Field name="password_confirmation" />
           </div>
 
-          <button>Submit</button>
+          <button disabled={Object.values(this.state.errors).length}>Submit</button>
         </Form>
 
         <pre>{JSON.stringify(this.state, null, 2)}</pre>
