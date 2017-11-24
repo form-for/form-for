@@ -12,7 +12,8 @@ Field.bindComponent("password", Input);
 
 type State = {
   user: any,
-  errors: { [_: string]: string }
+  errors: { [_: string]: string },
+  skipValidation?: boolean
 };
 
 class Demo extends React.Component<any, State> {
@@ -69,13 +70,23 @@ class Demo extends React.Component<any, State> {
   render() {
     return (
       <div>
+        <button
+          onClick={() =>
+            this.setState({
+              skipValidation: !this.state.skipValidation
+            })}
+        >
+          Toggle validation
+        </button>
+
         <Form
+          key={this.state.skipValidation}
           for={this.state.user}
           autoComplete="off"
-          // onChange={this.handleChange}
+          onChange={this.handleChange}
           onSubmit={this.handleSubmit}
-          // skipValidation={true}
-          // touchOnMount={true}
+          skipValidation={this.state.skipValidation}
+          touchOnMount={true}
         >
           <div>
             Name: <Field name="name" autoFocus validator={this.handleNameValidation} />
