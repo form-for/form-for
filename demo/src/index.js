@@ -18,10 +18,8 @@ type State = {
 };
 
 class Demo extends React.Component<any, State> {
-  constructor(props: any) {
-    super(props);
-
-    const user = {
+  state = {
+    user: {
       name: "Anonymous",
       surname: "Doe",
       password: "admin",
@@ -50,10 +48,9 @@ class Demo extends React.Component<any, State> {
           }
         }
       }
-    };
-
-    this.state = { user, errors: {} };
-  }
+    },
+    errors: {}
+  };
 
   handleNameValidation = name => {
     if (name === "Anonymous") return name + " is not a valid name";
