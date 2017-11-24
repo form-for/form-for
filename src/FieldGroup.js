@@ -16,7 +16,7 @@ export type Schema = {
 
 type Observer = {
   fields: boolean | string | string[],
-  dispatcher: Function
+  fn: Function
 };
 
 export type Props = {
@@ -114,7 +114,7 @@ export default class FieldGroup extends React.Component<Props> {
         fields === propertyChanged ||
         (Array.isArray(fields) && fields.includes(propertyChanged))
       ) {
-        observer.dispatcher(type, { value: this.values[name] });
+        observer.fn(type, { value: this.values[name] });
       }
     });
   }
@@ -174,7 +174,7 @@ export default class FieldGroup extends React.Component<Props> {
   };
 
   handleMountObserver = (name: string, observer: Observer): void => {
-    if (name && observer.fields && observer.dispatcher) {
+    if (name && observer.fields && observer.fn) {
       this.observer[name] = observer;
     }
   };

@@ -330,7 +330,7 @@ export default class Field extends React.Component<Props, State> {
     const observe = this.props.observe || this.getSchemaProperty().observe;
     this.context.mountObserver(this.props.name, {
       fields: observe,
-      dispatcher: this.dispatchValidation.bind(this)
+      fn: this.validate.bind(this)
     });
   }
 
