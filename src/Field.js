@@ -4,20 +4,18 @@ import * as React from "react";
 
 import PropTypes from "prop-types";
 import type { SchemaProperty } from "./FieldGroup";
-import { isPromise } from "./helpers";
 
 export type ComponentProps = {
   type: string,
   name: string,
   error: ?string,
+  touched: boolean,
   onMount: Function,
   onFocus: Function,
   onChange: Function,
   onBlur: Function,
   value?: any,
-  defaultValue?: any,
-  waiting: boolean,
-  valid: boolean
+  defaultValue?: any
 };
 
 type EventProps = {
@@ -40,15 +38,13 @@ export type Props = {
 
 type State = {
   error: ?string,
-  waiting: boolean,
-  valid: boolean
+  touched: boolean
 };
 
 export default class Field extends React.Component<Props, State> {
   target: ?any;
-  state = { error: undefined, waiting: false, valid: false };
+  state = { error: undefined, touched: false };
   dispatchValidationOnUpdate: boolean = false;
-  waitingPromise: ?Promise<>;
 
   /*
    * Component binding
@@ -88,154 +84,6 @@ export default class Field extends React.Component<Props, State> {
       prefix: this.getPrefixedName(),
       name: this.props.name
     };
-  }
-
-  /*
-   * Dispatchers
-   */
-
-  dispatchBrowserValidation(type: string, message: string) {
-    const target = this.target;
-    if (!target) return;
-
-    if (Array.isArray(target)) {
-      return target.forEach(el => {
-        this.dispatchValidationForTarget(el, type, { error: message });
-      });
-    }
-
-    if (target.setCustomValidity) {
-      target.setCustomValidity(message);
-    }
-  }
-
-  dispatchValidation(type: string, props: EventProps) {
-    this.dispatchValidationForTarget(this.target, type, props);
-  }
-
-  async dispatchValidationForTarget(target: any, type: string, { value, error }: EventProps): Promise<void> {
-    if (!this.context.validate.length || (type !== "mount" && !this.hasValidationType(type))) {
-      return;
-    }
-
-    this.dispatchBrowserValidation(type, "");
-
-    if (this.props.error) {
-      error = this.props.error;
-    } else {
-      value = this.guessTargetProperty(target, value, "value");
-
-      try {
-        const validationMessage = await this.dispatchValidator(target, type, value);
-        error = this.guessTargetProperty(target, validationMessage || error, "validationMessage");
-      } catch (exception) {
-        if (!exception) return;
-        error = exception;
-      }
-    }
-
-    this.dispatchError(type, { value, error });
-  }
-
-  async dispatchValidator(target: any, type: string, value: any) {
-    const validator = this.getValidator();
-    if (!validator) return undefined;
-
-    const validatorResponse = validator(value, this.context.getValues(), {
-      type,
-      target,
-      validationMessage: this.guessTargetProperty(target, undefined, "validationMessage")
-    });
-
-    if (isPromise(validatorResponse)) {
-      this.setState({ waiting: true });
-      this.dispatchError(type, { value: value, error: "⌛" });
-
-      let error;
-      try {
-        this.waitingPromise = validatorResponse;
-        await validatorResponse;
-      } catch (exception) {
-        error = exception;
-      }
-
-      if (this.waitingPromise !== validatorResponse) throw undefined;
-
-      // Clear error to avoid show it when succeeded
-      this.dispatchBrowserValidation(type, "");
-      this.setState({ waiting: false });
-      this.waitingPromise = undefined;
-
-      if (error) throw error;
-    } else {
-      this.waitingPromise = null;
-      this.setState({ waiting: false });
-      return validatorResponse;
-    }
-  }
-
-  dispatchError(type: string, { value, error }: EventProps) {
-    this.dispatchBrowserValidation(type, error || "");
-
-    if (error) {
-      this.context.onInvalid(this.props.name, value, error);
-      if (this.props.onInvalid) this.props.onInvalid(value, error);
-    } else if (!error) {
-      this.context.onValid(this.props.name, value);
-      if (this.props.onValid) this.props.onValid(value);
-    }
-
-    if (this.hasValidationType(type)) {
-      this.setState({ error, valid: !error });
-    }
-  }
-
-  /*
-   * Guessers
-   */
-
-  guessTargetProperty(target: any, value: ?any, name: string): ?any {
-    if (value) return value;
-
-    if (target) {
-      if (Array.isArray(target)) {
-        return target[0][name];
-      }
-
-      return target[name];
-    }
-  }
-
-  /*
-   * Handlers
-   */
-
-  handleMount(target: ?any, { value, error }: EventProps = {}) {
-    this.target = target;
-    this.dispatchValidation("mount", { value, error });
-  }
-
-  handleFocus(event: Event, props: EventProps = {}) {
-    this.target = event.target || this.target;
-    this.dispatchValidation("focus", props);
-
-    if (this.props.onFocus) this.props.onFocus(event);
-  }
-
-  handleChange(event: Event, props: EventProps = {}) {
-    this.target = event.target || this.target;
-    this.dispatchValidation("change", props);
-
-    const value = this.guessTargetProperty(this.target, props.value, "value");
-    this.context.onChange(this.props.name, value);
-    if (this.props.onChange) this.props.onChange(event);
-  }
-
-  handleBlur(event: Event, props: EventProps = {}) {
-    this.target = event.target || this.target;
-    this.dispatchValidation("blur", props);
-
-    if (this.props.onBlur) this.props.onBlur(event);
   }
 
   /*
@@ -285,7 +133,7 @@ export default class Field extends React.Component<Props, State> {
     return this.props.name;
   }
 
-  getValidator() {
+  getValidatorFunction(): ?Function {
     if (this.props.validator) return this.props.validator;
 
     const validator = this.getSchemaProperty().validator;
@@ -297,8 +145,132 @@ export default class Field extends React.Component<Props, State> {
     return validator;
   }
 
-  hasValidationType(name: string) {
+  hasValidationType(name: string): boolean {
     return this.context.validate.includes(name);
+  }
+
+  isValidationDisabled(): boolean {
+    return !this.context.validate.length;
+  }
+
+  hasValidationTypeMounting(type: string): boolean {
+    if (this.isValidationDisabled()) return false;
+    return type === "mount" || this.hasValidationType(type);
+  }
+
+  /*
+   * Setters
+   */
+
+  setBrowserCustomValidity(message: ?string): void {
+    if (!this.target) return;
+
+    const targets = Array.isArray(this.target) ? this.target : [this.target];
+    targets.forEach(element => {
+      if (element.setCustomValidity) element.setCustomValidity(message);
+    });
+  }
+
+  clearBrowserCustomValidity() {
+    this.setBrowserCustomValidity("");
+  }
+
+  /*
+   * Actions
+   */
+
+  validate(type: string, props: EventProps) {
+    this.validateTarget(this.target, type, props);
+  }
+
+  validateTarget(target: any, type: string, props: EventProps): void {
+    if (!this.hasValidationTypeMounting(type)) return;
+    this.clearBrowserCustomValidity();
+
+    target = target || {};
+    const value = props.value || target.value;
+
+    let error;
+    if (this.props.error) {
+      error = this.props.error;
+    } else {
+      const validatorResponse = this.validator(value);
+      error = validatorResponse || props.error || target.validationMessage;
+    }
+
+    this.setBrowserCustomValidity(error);
+    this.dispatchValidation(value, error);
+
+    if (this.hasValidationType(type)) this.setState({ error: error, touched: true });
+  }
+
+  validator(value: any) {
+    const validator = this.getValidatorFunction();
+    if (!validator) return undefined;
+
+    return validator(value, this.context.getValues());
+  }
+
+  /*
+   * Dispatchers
+   */
+
+  dispatchValidation(value: any, error: ?string) {
+    if (error) {
+      this.dispatchValidationError(value, error);
+    } else {
+      this.dispatchValidationSuccess(value);
+    }
+  }
+
+  dispatchValidationSuccess(value: any) {
+    this.context.onValid(this.props.name, value);
+    if (this.props.onValid) this.props.onValid(value);
+  }
+
+  dispatchValidationError(value: any, error: ?string) {
+    this.context.onInvalid(this.props.name, value, error);
+    if (this.props.onInvalid) this.props.onInvalid(value, error);
+  }
+
+  dispatchFocus(event: Event) {
+    if (this.props.onFocus) this.props.onFocus(event);
+  }
+
+  dispatchChange(event: Event, value: any) {
+    this.context.onChange(this.props.name, value);
+    if (this.props.onChange) this.props.onChange(event);
+  }
+
+  dispatchBlur(event: Event) {
+    if (this.props.onBlur) this.props.onBlur(event);
+  }
+
+  /*
+   * Handlers
+   */
+
+  handleMount(target: ?any, { value, error }: EventProps = {}) {
+    this.target = target;
+    this.validate("mount", { value, error });
+  }
+
+  handleFocus(event: Event, props: EventProps = {}) {
+    this.target = event.target || this.target;
+    this.validate("focus", props);
+    this.dispatchFocus(event);
+  }
+
+  handleChange(event: Event, props: EventProps = {}) {
+    this.target = event.target || this.target;
+    this.validate("change", props);
+    this.dispatchChange(event, props.value || (this.target || {}).value);
+  }
+
+  handleBlur(event: Event, props: EventProps = {}) {
+    this.target = event.target || this.target;
+    this.validate("blur", props);
+    this.dispatchBlur(event);
   }
 
   /*
@@ -325,8 +297,7 @@ export default class Field extends React.Component<Props, State> {
   buildStatusProps() {
     return {
       error: this.props.error || this.state.error,
-      valid: this.state.valid,
-      waiting: this.state.waiting
+      touched: this.state.touched
     };
   }
 
@@ -376,7 +347,7 @@ export default class Field extends React.Component<Props, State> {
   componentDidUpdate() {
     if (this.dispatchValidationOnUpdate) {
       this.dispatchValidationOnUpdate = false;
-      this.dispatchValidation("change", { value: this.getContextObjectValue() });
+      this.validate("change", { value: this.getContextObjectValue() });
     }
   }
 

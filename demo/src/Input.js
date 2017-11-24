@@ -11,7 +11,7 @@ export default class Input extends React.Component<ComponentProps> {
   }
 
   render() {
-    const { valid, error, waiting, onMount, ...props } = this.props;
+    const { touched, error, onMount, ...props } = this.props;
 
     if (error) {
       // $FlowFixMe
@@ -21,10 +21,9 @@ export default class Input extends React.Component<ComponentProps> {
     return (
       <div>
         <input ref={el => (this.input = el)} {...props} />
-        {error && !waiting && <div style={{ color: "#d00" }}> {error}</div>}
+        {error && <div style={{ color: "#d00" }}> {error}</div>}
 
-        {waiting && "waiting ⌛"}
-        {valid && <span style={{ color: "green" }}>✓</span>}
+        {touched && !error && <span style={{ color: "green" }}>✓</span>}
       </div>
     );
   }

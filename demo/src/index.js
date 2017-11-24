@@ -32,20 +32,7 @@ class Demo extends React.Component<any, State> {
         },
         email: {
           type: "email",
-          required: true,
-          validator: (value, user, { validationMessage }) => {
-            if (validationMessage) return validationMessage;
-
-            return new Promise((resolve, reject) => {
-              setTimeout(() => {
-                if (value === "test@gmail.com") {
-                  reject("This email is already in use");
-                } else {
-                  resolve();
-                }
-              }, 2000);
-            });
-          }
+          required: true
         },
         password: {
           type: "password",
