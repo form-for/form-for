@@ -1,7 +1,7 @@
 // @flow
 
 import React from "react";
-import type { ComponentProps } from "../../src/Field";
+import type { ComponentProps } from "../../../src/Field";
 
 export default class Input extends React.Component<ComponentProps> {
   input: ?HTMLInputElement;

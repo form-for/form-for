@@ -2,13 +2,17 @@
 
 import React from "react";
 import { render } from "react-dom";
-
 import { Form, Field } from "../../src";
-import Input from "./Input";
+
+import User from "./models/User";
+
+import Input from "./components/Input";
+import TodoItems from "./components/TodoItems";
 
 Field.bindComponent("text", Input);
 Field.bindComponent("email", Input);
 Field.bindComponent("password", Input);
+Field.bindComponent("todoItem[]", TodoItems);
 
 type State = {
   user: any,
@@ -18,39 +22,15 @@ type State = {
 };
 
 class Demo extends React.Component<any, State> {
-  state = {
-    user: {
-      name: "Anonymous",
-      surname: "Doe",
-      password: "admin",
-      password_confirmation: "",
+  constructor(props: any) {
+    super(props);
 
-      schema: {
-        name: {
-          required: true,
-          placeholder: "First name"
-        },
-        email: {
-          type: "email",
-          required: true
-        },
-        password: {
-          type: "password",
-          required: true
-        },
-        password_confirmation: {
-          type: "password",
-          observe: "password",
-          validator: (password_confirmation, { password }) => {
-            if (password !== password_confirmation) {
-              return "The confirmation does not match the password";
-            }
-          }
-        }
-      }
-    },
-    errors: {}
-  };
+    const user = new User();
+    user.name = "Anonymous";
+    user.password = "admin";
+
+    this.state = { user, errors: {} };
+  }
 
   handleNameValidation = name => {
     if (name === "Anonymous") return name + " is not a valid name";
@@ -87,7 +67,7 @@ class Demo extends React.Component<any, State> {
         </button>
 
         <Form
-          key={`${this.state.skipValidation}|${this.state.touchOnMount}`}
+          key={`${this.state.skipValidation ? 1 : 0}|${this.state.touchOnMount ? 1 : 0}`}
           for={this.state.user}
           autoComplete="off"
           onChange={this.handleChange}
@@ -110,6 +90,8 @@ class Demo extends React.Component<any, State> {
           <div>
             Confirmation Password: <Field name="password_confirmation" />
           </div>
+
+          <Field name="todoItems" />
 
           <button disabled={Object.values(this.state.errors).length}>Submit</button>
         </Form>
