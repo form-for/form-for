@@ -13,14 +13,21 @@ import { Form, Field } from "form-for";
 
 const user = new User();
 
-<Form for={user} onSubmit={...}>
-  <Field name="firstName" />
-  <Field name="lastName" />
+handleSubmit(event, values) {
+    doSomething(data);
+}
 
-  <Field name="email" />
-  <Field name="password" />
+render() {
+    return <Form for={user} onSubmit={handleSubmit}>
+        <Field name="firstName" />
+        <Field name="lastName" />
 
-  <button>Submit</button>
+        <Field name="email" />
+        <Field name="password" />
+
+        <button>Submit</button>
+    </Form>;
+}
 </Form>
 ```
 
@@ -137,7 +144,7 @@ Field.bindComponent('type', Component);
 ## Uncontrolled form
 
 If you do not provide a `onChange` prop to your form, this means it's uncontrolled. This implies `defaultValue`
-will be provided to the field components.
+will be provided to the field components instead of `value`.
 
 ```javascript
 <Form for={...} />
@@ -152,15 +159,14 @@ For more about uncontrolled components, check out [React's documentation](https:
 Proving `onChange` the the form makes it controlled. Therefore you must use some kind of state management to update the
 content passed through `for`.
 
-The `onChange` method receives three parameters:
+The `onChange` method receives these parameters:
 
-- Mutator: a function that mutates the field updated by a change
-- Name: the name of the field updated. Keep in mind that this may be a nested field, such as `user[todoItem][title]`
-- Value: the value updated.
+- values: the updated fields
+- errors: the errors
 
 ```javascript
-handleFormChange = (mutator, name, value) => {
-  this.setState({ user: mutator() })
+handleFormChange = (user, errors) => {
+  this.setState({ user, errors })
 };
 
 <Form for={this.state.user} onChange={this.handleFormChange} />
@@ -173,13 +179,17 @@ handleFormChange = (mutator, name, value) => {
 
 ## Validation
 
-There are four validation trigger states: `mount, focus, change, blur`
+Validations are enabled by default. To disable it use `<Form ... skipValidation={true}>`.
 
-The default validation is `validate="focus,change"`. To disable validation use `validate={false}`.
+There are two parts of validating, the `error` and `touched`. If you wish to trigger touched on mount, you can do so like this
+`<Form touchOnMount={true}>`. 
 
-Validation takes into consideration both custom validators and HTML 5 validations, in this order.
+### Custom validation
 
-### Function custom validator
+Beyond HTML5 validations, you can provide a function to validate the field on change. Validators receive two arguments,
+`value` and `values`. The value is the value that has just changed, while `values` the rest of the form values.
+
+#### Function custom validator
 
 Provide a function to validate a given value. If the new value is invalid, return an error message.
 
@@ -193,7 +203,7 @@ function validateName(name) {
 </Form>
 ```
 
-### Named custom validator
+#### Named custom validator
 
 Provide the name of the method responsible for validating.
 
@@ -211,6 +221,35 @@ export default class User {
 }
 ```
 
+#### Validator in schema
+
+```javascript
+const schema = {
+  phone: {
+    validator: (value) => {
+      if(value === '000-000') return "This is not a valid number";
+    }  
+  }
+}
+```
+
+### Observe
+
+There may be cases when a field must trigger validation on another field. For these cases, use `observe`, it can be either
+`true`, to trigger when any input changes, `string` or `string[]` for specific names.
+
+```javascript
+const schema = {
+  confirm_password: {
+    type: 'email',
+    observer: "password",
+    validator: (confirm_password, { password }) => {
+      if(password !== confirm_password) return "The password must match";
+    }  
+  }
+}
+```
+
 ## Creating components
 
 If you're using `flow` for typing, you can import the component props: `import type { ComponentProps } from "form-for";`.
@@ -220,15 +259,15 @@ These are the fields passed to a component: **(the ? means it may or may not be 
 
 ```javascript
 {
-  type: string,
-  name: string,
-  error: ?string,
-  onMount?: Function,
-  onFocus?: Function,
-  onChange?: Function,
-  onBlur?: Function,
-  value?: any,
-  defaultValue?: any
+    type: string,
+    name: string,
+    error: ?string,
+    touched: boolean,
+    onMount: Function,
+    onFocus: Function,
+    onChange: Function,
+    value?: any,
+    defaultValue?: any
 }
 ```
 
@@ -267,26 +306,12 @@ both entries.
 
 ### Validation Events
 
-For all the events, if value and error are not provided they are guessed from the `targed` or `event.target`
+- `onMount(target: ?HTMLElement, error: ?string)`: `error` is only necessary if `event.target.validationMessage` is not available
+- `onFocus(event: Event)`
+- `onChange(event: Event, value?: any, error?: ?string)`: `value` and `error` are only necessary if `event.target.value` and
+    `event.target.validationMessage` are not available in the event target 
 
-- `onMount(target: ?HTMLElement, { value?, error? })`
-
-This event is used to `setCustomValidity`, prevent the form from being submitted with pending custom validations and
-allowing to focus on the field with error.
-
-This event is always called, unless `validation={false}`
-
-- `onFocus(event: Event, { value?, error? })`
-
-Triggers validation if `validation` contains `focus`.
-
-- `onChange`
-
-Triggers validation if `validation` contains `change`. It also calls `onChange` assigned to `<Form>` and `<Field>`, if any.
-
-- `onBlur`
-
-Triggers validation if `validation` contains `blur`.
+These events must be called accordingly to ensure the proper validation lifecycle. 
 
 **Note:** For an implementation example of all these methods, checkout the
 [core checkbox component](https://github.com/form-for/form-for-components/blob/master/src/Checkbox.js)
@@ -337,7 +362,7 @@ export default class TodoItems extends React.Component {
     this.setState({ items });
 
     if (this.props.onChange) {
-      this.props.onChange(null, { value: items });
+      this.props.onChange(items);
     }
   };
 
@@ -346,7 +371,7 @@ export default class TodoItems extends React.Component {
     this.setState({ items });
 
     if (this.props.onChange) {
-      this.props.onChange(null, { value: items });
+      this.props.onChange(items);
     }
   }
 
