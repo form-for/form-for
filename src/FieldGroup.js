@@ -4,6 +4,7 @@ import * as React from "react";
 import PropTypes from "prop-types";
 
 import type { Props as FormProps } from "./Form";
+import { clone } from "./helpers";
 
 export type SchemaProperty = {
   type?: string,
@@ -161,8 +162,7 @@ export default class FieldGroup extends React.Component<Props> {
         throw `Nested field group without index for ${this.data.toString()}.`;
       }
 
-      const contextData = this.context.getData();
-      const data = Array.isArray(contextData) ? [...contextData] : { ...contextData };
+      const data = clone(this.context.getData());
       data[index] = this.data;
 
       this.context.onChange(this.context.name, data);
@@ -187,13 +187,8 @@ export default class FieldGroup extends React.Component<Props> {
    */
 
   handleChange = (name: string, value: any) => {
-    const oldData = this.data;
-    if (oldData.constructor) {
-      this.data = new oldData.constructor();
-      Object.assign(this.data, oldData, { [name]: value });
-    } else {
-      this.data = { ...this.data, [name]: value };
-    }
+    this.data = clone(this.data);
+    this.data[name] = value;
 
     this.dispatchChange(name, value);
     this.dispatchObservers(name);
