@@ -20,7 +20,7 @@ export default class Form extends React.Component<Props> {
 
   handleSubmit = (event: Event) => {
     if (this.props.onSubmit) {
-      return this.props.onSubmit(event, (this.fieldGroup || {}).values);
+      return this.props.onSubmit(event, (this.fieldGroup || {}).data);
     }
   };
 

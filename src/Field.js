@@ -17,11 +17,6 @@ export type ComponentProps = {
   defaultValue?: any
 };
 
-type ChangeEventProps = {
-  value?: any,
-  error?: ?string
-};
-
 export type Props = {
   name: string,
   type?: string,
@@ -63,7 +58,7 @@ export default class Field extends React.Component<Props, State> {
     object: PropTypes.object.isRequired,
     schema: PropTypes.object.isRequired,
     prefix: PropTypes.string.isRequired,
-    getValues: PropTypes.func.isRequired,
+    getData: PropTypes.func.isRequired,
     controlled: PropTypes.bool.isRequired,
     skipValidation: PropTypes.bool,
     touchOnMount: PropTypes.bool,
@@ -76,13 +71,15 @@ export default class Field extends React.Component<Props, State> {
 
   static childContextTypes = {
     prefix: PropTypes.string,
-    name: PropTypes.string
+    name: PropTypes.string,
+    getData: PropTypes.func
   };
 
   getChildContext() {
     return {
       prefix: this.getPrefixedName(),
-      name: this.props.name
+      name: this.props.name,
+      getData: this.getData
     };
   }
 
@@ -93,6 +90,10 @@ export default class Field extends React.Component<Props, State> {
   getContextObjectValue() {
     return this.context.object[this.props.name];
   }
+
+  getData = (): any => {
+    return this.context.getData()[this.props.name];
+  };
 
   getSchemaProperty(): SchemaProperty {
     const property = this.context.schema[this.props.name];
@@ -194,7 +195,7 @@ export default class Field extends React.Component<Props, State> {
     const validator = this.getValidatorFunction();
     if (!validator) return undefined;
 
-    return validator(value, this.context.getValues());
+    return validator(value, this.context.getData());
   }
 
   touch() {
@@ -222,22 +223,23 @@ export default class Field extends React.Component<Props, State> {
     if (this.props.onFocus) this.props.onFocus(event);
   }
 
-  dispatchChange(event: Event, { value, error }: ChangeEventProps) {
-    const target: any = event.target || {} || {};
+  dispatchChange(event: Event, value?: any, error?: ?string) {
+    const target: any = (event || {}).target || {};
 
     this.value = value;
     this.error = error;
 
     this.context.onChange(this.props.name, value || target.value);
-    if (this.props.onChange) this.props.onChange(event);
+    if (this.props.onChange) this.props.onChange(event, value, error);
   }
 
   /*
    * Handlers
    */
 
-  handleMount(target: ?any) {
+  handleMount(target: ?any, error: ?string) {
     this.target = target;
+    this.error = error;
     this.validate();
     if (this.context.touchOnMount) this.touch();
   }
@@ -248,10 +250,10 @@ export default class Field extends React.Component<Props, State> {
     this.touch();
   }
 
-  handleChange(event: Event, props: ChangeEventProps = {}) {
-    this.target = event.target || this.target;
+  handleChange(event: Event, value: any, error: ?string) {
+    this.target = (event || {}).target || this.target;
     this.validate();
-    this.dispatchChange(event, props);
+    this.dispatchChange(event, value, error);
   }
 
   /*

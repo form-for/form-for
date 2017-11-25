@@ -24,7 +24,7 @@ export type Props = {
 } & FormProps;
 
 export default class FieldGroup extends React.Component<Props> {
-  values: { [_: any]: any };
+  data: { [_: any]: any };
   errors: { [_: any]: string } = {};
   observer: { [_: string]: Observer } = {};
 
@@ -33,7 +33,9 @@ export default class FieldGroup extends React.Component<Props> {
    */
 
   static contextTypes = {
+    name: PropTypes.string,
     prefix: PropTypes.string,
+    getData: PropTypes.func,
     touchOnMount: PropTypes.bool,
     onChange: PropTypes.func
   };
@@ -42,7 +44,7 @@ export default class FieldGroup extends React.Component<Props> {
     object: PropTypes.object,
     schema: PropTypes.object,
     prefix: PropTypes.string,
-    getValues: PropTypes.func,
+    getData: PropTypes.func,
     controlled: PropTypes.bool,
     skipValidation: PropTypes.bool,
     touchOnMount: PropTypes.bool,
@@ -58,7 +60,7 @@ export default class FieldGroup extends React.Component<Props> {
       object: this.props.for,
       schema: this.getSchema(),
       prefix: this.getPrefix(),
-      getValues: this.getValues,
+      getData: this.getData,
       controlled: this.isControlled(),
       skipValidation: this.props.skipValidation,
       touchOnMount: this.props.touchOnMount,
@@ -95,9 +97,27 @@ export default class FieldGroup extends React.Component<Props> {
     return prefix;
   }
 
-  getValues = (): { [_: any]: any } => {
-    return this.values;
+  getData = (): { [_: any]: any } => {
+    return this.data;
   };
+
+  getMutatorFor(name: ?string, value: ?any): Function {
+    const fn = () => {
+      if (name) {
+        const index = this.props.index;
+        if (this.props.index) {
+          this.props.for[name][index] = value;
+        } else {
+          this.props.for[name] = value;
+        }
+      }
+    };
+
+    fn.propertyName = name;
+    fn.propertyValue = value;
+
+    return fn;
+  }
 
   isValid(): boolean {
     return !Object.values(this.errors).length;
@@ -128,9 +148,25 @@ export default class FieldGroup extends React.Component<Props> {
     });
   }
 
-  dispatchChange() {
-    if (this.props.onChange) this.props.onChange(this.values, this.errors);
-    if (this.context.onChange) this.context.onChange(this.context.name, this.values);
+  dispatchChange(name?: string, value?: any) {
+    const onChangeProp = this.props.onChange;
+    if (onChangeProp) {
+      const mutator = this.getMutatorFor(name, value);
+      onChangeProp(this.data, this.errors, mutator);
+    }
+
+    if (this.context.onChange) {
+      const index = this.props.index;
+      if (typeof index === "undefined") {
+        throw `Nested field group without index for ${this.data.toString()}.`;
+      }
+
+      const contextData = this.context.getData();
+      const data = Array.isArray(contextData) ? [...contextData] : { ...contextData };
+      data[index] = this.data;
+
+      this.context.onChange(this.context.name, data);
+    }
   }
 
   dispatchValidation() {
@@ -151,8 +187,15 @@ export default class FieldGroup extends React.Component<Props> {
    */
 
   handleChange = (name: string, value: any) => {
-    this.values = { ...this.values, [name]: value };
-    this.dispatchChange();
+    const oldData = this.data;
+    if (oldData.constructor) {
+      this.data = new oldData.constructor();
+      Object.assign(this.data, oldData, { [name]: value });
+    } else {
+      this.data = { ...this.data, [name]: value };
+    }
+
+    this.dispatchChange(name, value);
     this.dispatchObservers(name);
   };
 
@@ -185,7 +228,7 @@ export default class FieldGroup extends React.Component<Props> {
    */
 
   componentWillMount() {
-    this.values = this.props.for;
+    this.data = this.props.for;
   }
 
   componentDidMount() {
@@ -195,7 +238,7 @@ export default class FieldGroup extends React.Component<Props> {
 
   componentWillReceiveProps(nextProps: Props) {
     if (this.isControlled()) {
-      this.values = nextProps.for;
+      this.data = nextProps.for;
     }
   }
 

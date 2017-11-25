@@ -13,7 +13,7 @@ import { Form, Field } from "form-for";
 
 const user = new User();
 
-handleSubmit(event, values) {
+handleSubmit(event, data) {
     doSomething(data);
 }
 
@@ -161,7 +161,7 @@ content passed through `for`.
 
 The `onChange` method receives these parameters:
 
-- values: the updated fields
+- data: the updated fields
 - errors: the errors
 
 ```javascript
@@ -187,7 +187,7 @@ There are two parts of validating, the `error` and `touched`. If you wish to tri
 ### Custom validation
 
 Beyond HTML5 validations, you can provide a function to validate the field on change. Validators receive two arguments,
-`value` and `values`. The value is the value that has just changed, while `values` the rest of the form values.
+`value` and `data`. The `value` is the value that has just changed, while `data` the rest of the form values.
 
 #### Function custom validator
 
