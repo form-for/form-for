@@ -7,6 +7,8 @@ import FieldGroup from "./FieldGroup";
 export type Props = {
   for: { [_: any]: any },
   schema?: Schema,
+  immutable?: boolean,
+  mutationWrapper?: Function,
   prefix?: string,
   onChange?: Function,
   onSubmit?: Function,
@@ -16,18 +18,35 @@ export type Props = {
 };
 
 export default class Form extends React.Component<Props> {
+  form: ?HTMLFormElement;
   fieldGroup: ?FieldGroup;
 
-  handleSubmit = (event: Event) => {
-    if (this.props.onSubmit) {
-      return this.props.onSubmit(event, (this.fieldGroup || {}).data);
+  handleChange = (values: any) => {
+    const onChange = this.props.onChange;
+
+    if (onChange && this.form) {
+      onChange(values, this.form.checkValidity());
     }
   };
+
+  handleSubmit = () => {
+    if (this.props.onSubmit) {
+      return this.props.onSubmit((this.fieldGroup || {}).data);
+    }
+  };
+
+  componentDidMount() {
+    if (this.form && !this.form.checkValidity()) {
+      this.handleChange(this.props.for);
+    }
+  }
 
   render(): React.Node {
     const {
       ["for"]: object,
       schema,
+      immutable,
+      mutationWrapper,
       prefix,
       onChange,
       skipValidation,
@@ -38,13 +57,15 @@ export default class Form extends React.Component<Props> {
     } = { ...this.props };
 
     return (
-      <form {...remainingProps} onSubmit={this.handleSubmit}>
+      <form ref={el => (this.form = el)} {...remainingProps} onSubmit={this.handleSubmit}>
         <FieldGroup
           ref={el => (this.fieldGroup = el)}
           for={object}
           schema={schema}
+          immutable={immutable}
+          mutationWrapper={mutationWrapper}
           prefix={prefix}
-          onChange={onChange}
+          onChange={this.handleChange}
           skipValidation={skipValidation}
           touchOnMount={touchOnMount}
           validate={typeof validate === "undefined" ? true : validate}

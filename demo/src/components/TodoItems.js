@@ -47,12 +47,7 @@ export default class TodoItems extends React.Component {
   renderTodoItem(item: TodoItem, index: number) {
     return (
       <div key={item.uid} className="form-inline form-group clearfix">
-        <button
-          type="button"
-          className="btn btn-danger btn-sm ml-2"
-          onClick={() => this.removeTodoItem(item)}
-          style={{ float: "right" }}
-        >
+        <button type="button" onClick={() => this.removeTodoItem(item)} style={{ float: "right" }}>
           X
         </button>
 

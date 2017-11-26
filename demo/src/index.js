@@ -16,7 +16,7 @@ Field.bindComponent("todoItem[]", TodoItems);
 
 type State = {
   user: any,
-  errors: { [_: string]: string },
+  valid: boolean,
   skipValidation?: boolean,
   touchOnMount?: boolean
 };
@@ -26,18 +26,20 @@ class Demo extends React.Component<any, State> {
     super(props);
 
     const user = new User();
-    user.name = "Anonymous";
+    user.name = "test";
+    user.email = "test@gmail.com";
     user.password = "admin";
+    user.password_confirmation = "admin";
 
-    this.state = { user, errors: {} };
+    this.state = { user, valid: true };
   }
 
   handleNameValidation = name => {
     if (name === "Anonymous") return name + " is not a valid name";
   };
 
-  handleChange = (user, errors) => {
-    this.setState({ user, errors });
+  handleChange = (user, valid) => {
+    this.setState({ user, valid });
   };
 
   handleSubmit = (event, user) => {
@@ -69,6 +71,7 @@ class Demo extends React.Component<any, State> {
         <Form
           key={`${this.state.skipValidation ? 1 : 0}|${this.state.touchOnMount ? 1 : 0}`}
           for={this.state.user}
+          immutable
           autoComplete="off"
           onChange={this.handleChange}
           onSubmit={this.handleSubmit}
@@ -93,7 +96,7 @@ class Demo extends React.Component<any, State> {
 
           <Field name="todoItems" />
 
-          <button disabled={Object.values(this.state.errors).length}>Submit</button>
+          <button disabled={!this.state.valid}>Submit</button>
         </Form>
 
         <pre>{JSON.stringify(this.state, null, 2)}</pre>

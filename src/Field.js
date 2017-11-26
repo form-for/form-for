@@ -8,7 +8,7 @@ import type { SchemaProperty } from "./FieldGroup";
 export type ComponentProps = {
   type: string,
   name: string,
-  error: ?string,
+  error?: any,
   touched: boolean,
   onMount: Function,
   onFocus: Function,
@@ -23,20 +23,19 @@ export type Props = {
   onFocus?: Function,
   onChange?: Function,
   validator?: Function,
-  error?: ?string,
+  error?: any,
   observe?: boolean | string | string[]
 };
 
 type State = {
-  error: ?string,
+  error: ?any,
   touched: boolean
 };
 
 export default class Field extends React.Component<Props, State> {
   target: ?any;
   value: ?any;
-  error: ?string;
-  dispatchValidationOnUpdate: boolean = false;
+  error: ?any;
 
   state = { error: undefined, touched: false };
 
@@ -58,28 +57,24 @@ export default class Field extends React.Component<Props, State> {
     object: PropTypes.object.isRequired,
     schema: PropTypes.object.isRequired,
     prefix: PropTypes.string.isRequired,
-    getData: PropTypes.func.isRequired,
-    controlled: PropTypes.bool.isRequired,
+    onChange: PropTypes.func.isRequired,
     skipValidation: PropTypes.bool,
     touchOnMount: PropTypes.bool,
-    onChange: PropTypes.func.isRequired,
-    onValid: PropTypes.func.isRequired,
-    onInvalid: PropTypes.func.isRequired,
+    getData: PropTypes.func.isRequired,
+    controlled: PropTypes.bool.isRequired,
     mountObserver: PropTypes.func.isRequired,
     unmountObserver: PropTypes.func.isRequired
   };
 
   static childContextTypes = {
     prefix: PropTypes.string,
-    name: PropTypes.string,
-    getData: PropTypes.func
+    name: PropTypes.string
   };
 
   getChildContext() {
     return {
       prefix: this.getPrefixedName(),
-      name: this.props.name,
-      getData: this.getData
+      name: this.props.name
     };
   }
 
@@ -128,7 +123,8 @@ export default class Field extends React.Component<Props, State> {
 
   getPrefixedName() {
     if (this.context.prefix) {
-      return `${this.context.prefix}[${this.props.name}]`;
+      const suffix = this.props.name ? `[${this.props.name}]` : "";
+      return `${this.context.prefix}${suffix}`;
     }
 
     return this.props.name;
@@ -187,7 +183,6 @@ export default class Field extends React.Component<Props, State> {
     }
 
     this.setBrowserCustomValidity(error);
-    this.dispatchValidation(error);
     this.setState({ error: error });
   }
 
@@ -206,38 +201,24 @@ export default class Field extends React.Component<Props, State> {
    * Dispatchers
    */
 
-  dispatchValidation(error: ?string) {
-    if (error) this.dispatchValidationError(error);
-    else this.dispatchValidationSuccess();
-  }
-
-  dispatchValidationSuccess() {
-    this.context.onValid(this.props.name);
-  }
-
-  dispatchValidationError(error: ?string) {
-    this.context.onInvalid(this.props.name, error);
-  }
-
   dispatchFocus(event: Event) {
     if (this.props.onFocus) this.props.onFocus(event);
   }
 
-  dispatchChange(event: Event, value?: any, error?: ?string) {
-    const target: any = (event || {}).target || {};
+  dispatchChange(event: Event) {
+    this.target = (event || {}).target || this.target;
+    const target: any = this.target || {};
 
-    this.value = value;
-    this.error = error;
-
-    this.context.onChange(this.props.name, value || target.value);
-    if (this.props.onChange) this.props.onChange(event, value, error);
+    const value = this.value || target.value;
+    this.context.onChange(this.props.name, value);
+    if (this.props.onChange) this.props.onChange(event, value, this.error);
   }
 
   /*
    * Handlers
    */
 
-  handleMount(target: ?any, error: ?string) {
+  handleMount(target: ?any, error: ?any) {
     this.target = target;
     this.error = error;
     this.validate();
@@ -250,10 +231,12 @@ export default class Field extends React.Component<Props, State> {
     this.touch();
   }
 
-  handleChange(event: Event, value: any, error: ?string) {
-    this.target = (event || {}).target || this.target;
+  handleChange(event: Event, value: any, error: ?any) {
+    this.value = value;
+    this.error = error;
+
     this.validate();
-    this.dispatchChange(event, value, error);
+    this.dispatchChange(event);
   }
 
   /*
@@ -316,23 +299,6 @@ export default class Field extends React.Component<Props, State> {
 
   componentWillUnmount() {
     this.context.unmountObserver(this.props.name);
-  }
-
-  componentWillReceiveProps(nextProps: Props) {
-    if (nextProps.error !== this.props.error) {
-      this.dispatchValidationOnUpdate = true;
-    }
-  }
-
-  componentDidUpdate() {
-    if (this.dispatchValidationOnUpdate) {
-      this.dispatchValidationOnUpdate = false;
-
-      this.value = undefined;
-      this.error = undefined;
-
-      this.validate();
-    }
   }
 
   /*

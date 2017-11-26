@@ -24,9 +24,10 @@ export type Props = {
   index?: any
 } & FormProps;
 
+const DEFAULT_MUTATION_WRAPPER = (mutator, name, value) => mutator();
+
 export default class FieldGroup extends React.Component<Props> {
   data: { [_: any]: any };
-  errors: { [_: any]: string } = {};
   observer: { [_: string]: Observer } = {};
 
   /*
@@ -34,9 +35,13 @@ export default class FieldGroup extends React.Component<Props> {
    */
 
   static contextTypes = {
+    immutable: PropTypes.bool,
+    mutationWrapper: PropTypes.func,
     name: PropTypes.string,
     prefix: PropTypes.string,
     getData: PropTypes.func,
+    controlled: PropTypes.bool,
+    skipValidation: PropTypes.bool,
     touchOnMount: PropTypes.bool,
     onChange: PropTypes.func
   };
@@ -44,14 +49,14 @@ export default class FieldGroup extends React.Component<Props> {
   static childContextTypes = {
     object: PropTypes.object,
     schema: PropTypes.object,
+    immutable: PropTypes.bool,
+    mutationWrapper: PropTypes.func,
     prefix: PropTypes.string,
-    getData: PropTypes.func,
-    controlled: PropTypes.bool,
+    onChange: PropTypes.func,
     skipValidation: PropTypes.bool,
     touchOnMount: PropTypes.bool,
-    onChange: PropTypes.func,
-    onValid: PropTypes.func,
-    onInvalid: PropTypes.func,
+    getData: PropTypes.func,
+    controlled: PropTypes.bool,
     mountObserver: PropTypes.func,
     unmountObserver: PropTypes.func
   };
@@ -60,14 +65,14 @@ export default class FieldGroup extends React.Component<Props> {
     return {
       object: this.props.for,
       schema: this.getSchema(),
+      immutable: this.isImmutable(),
+      mutationWrapper: this.getMutationWrapper(),
       prefix: this.getPrefix(),
-      getData: this.getData,
-      controlled: this.isControlled(),
-      skipValidation: this.props.skipValidation,
-      touchOnMount: this.props.touchOnMount,
       onChange: this.handleChange,
-      onValid: this.handleValidationSuccess,
-      onInvalid: this.handleValidationError,
+      controlled: this.isControlled(),
+      skipValidation: this.hasSkipValidation(),
+      touchOnMount: this.hasTouchOnMount(),
+      getData: this.getData,
       mountObserver: this.handleMountObserver,
       unmountObserver: this.handleUnmountObserver
     };
@@ -82,10 +87,19 @@ export default class FieldGroup extends React.Component<Props> {
     const schema = this.props.schema || object.schema || {};
 
     if (!schema) {
-      throw new Error("Undefined schema for " + object.constructor.name + "instance");
+      throw "Undefined schema for " + object.constructor.name + "instance";
     }
 
     return schema;
+  }
+
+  isImmutable(): boolean {
+    if (typeof this.props.immutable !== "undefined") return this.props.immutable;
+    return this.context.immutable;
+  }
+
+  getMutationWrapper(): Function {
+    return this.props.mutationWrapper || this.context.mutationWrapper || DEFAULT_MUTATION_WRAPPER;
   }
 
   getPrefix(): string {
@@ -102,30 +116,25 @@ export default class FieldGroup extends React.Component<Props> {
     return this.data;
   };
 
-  getMutatorFor(name: ?string, value: ?any): Function {
-    const fn = () => {
-      if (name) {
-        const index = this.props.index;
-        if (this.props.index) {
-          this.props.for[name][index] = value;
-        } else {
-          this.props.for[name] = value;
-        }
-      }
-    };
-
-    fn.propertyName = name;
-    fn.propertyValue = value;
-
-    return fn;
-  }
-
-  isValid(): boolean {
-    return !Object.values(this.errors).length;
-  }
-
   isControlled(): boolean {
     return !!(this.props.onChange || this.context.controlled);
+  }
+
+  hasSkipValidation(): boolean {
+    return !!(this.props.skipValidation || this.context.skipValidation);
+  }
+
+  hasTouchOnMount(): boolean {
+    return !!(this.props.touchOnMount || this.context.touchOnMount);
+  }
+
+  requestIndex(): any {
+    const index = this.props.index;
+    if (typeof index === "undefined") {
+      throw `Nested field group without index for ${this.data.toString()}.`;
+    }
+
+    return index;
   }
 
   /*
@@ -149,37 +158,18 @@ export default class FieldGroup extends React.Component<Props> {
     });
   }
 
-  dispatchChange(name?: string, value?: any) {
-    const onChangeProp = this.props.onChange;
-    if (onChangeProp) {
-      const mutator = this.getMutatorFor(name, value);
-      onChangeProp(this.data, this.errors, mutator);
-    }
+  dispatchChange() {
+    if (this.props.onChange) this.props.onChange(this.data);
 
     if (this.context.onChange) {
-      const index = this.props.index;
-      if (typeof index === "undefined") {
-        throw `Nested field group without index for ${this.data.toString()}.`;
+      let data = this.context.getData()[this.context.name] || {};
+      if (this.isImmutable()) {
+        data = clone(data);
+        data[this.requestIndex()] = this.data;
       }
-
-      const data = clone(this.context.getData());
-      data[index] = this.data;
 
       this.context.onChange(this.context.name, data);
     }
-  }
-
-  dispatchValidation() {
-    if (this.isValid()) this.dispatchValidationSuccess();
-    else this.dispatchValidationError();
-  }
-
-  dispatchValidationSuccess() {
-    if (this.context.onValid) this.context.onValid(this.context.name);
-  }
-
-  dispatchValidationError() {
-    if (this.context.onInvalid) this.context.onInvalid(this.context.name, this.errors);
   }
 
   /*
@@ -187,25 +177,13 @@ export default class FieldGroup extends React.Component<Props> {
    */
 
   handleChange = (name: string, value: any) => {
-    this.data = clone(this.data);
-    this.data[name] = value;
+    if (this.isImmutable()) this.data = clone(this.data);
 
-    this.dispatchChange(name, value);
+    const mutator = () => (this.data[name] = value);
+    this.getMutationWrapper()(mutator, name, value);
+
+    this.dispatchChange();
     this.dispatchObservers(name);
-  };
-
-  handleValidationSuccess = (name: string) => {
-    if (this.errors[name]) {
-      delete this.errors[name];
-      this.dispatchValidationSuccess();
-    }
-  };
-
-  handleValidationError = (name: string, error: string) => {
-    if (this.errors[name] !== error) {
-      this.errors[name] = error;
-      this.dispatchValidationError();
-    }
   };
 
   handleMountObserver = (name: string, observer: Observer): void => {
@@ -224,11 +202,6 @@ export default class FieldGroup extends React.Component<Props> {
 
   componentWillMount() {
     this.data = this.props.for;
-  }
-
-  componentDidMount() {
-    this.dispatchValidation();
-    if (this.errors) this.dispatchChange();
   }
 
   componentWillReceiveProps(nextProps: Props) {
