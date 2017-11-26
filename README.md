@@ -162,15 +162,17 @@ content passed through `for`.
 The `onChange` method receives these parameters:
 
 - data: the updated fields
-- errors: the errors
+- valid: wether or not the form is valid
 
 ```javascript
-handleFormChange = (user, errors) => {
-  this.setState({ user, errors })
+handleFormChange = (user, valid) => {
+  this.setState({ user, valid })
 };
 
 <Form for={this.state.user} onChange={this.handleFormChange} />
   ...
+  
+  <button disabled="!this.state.valid">Submit</button>
 </Form/>
 ```
 
@@ -253,15 +255,15 @@ const schema = {
 ## Creating components
 
 If you're using `flow` for typing, you can import the component props: `import type { ComponentProps } from "form-for";`.
-PR's for Typescripts typings are welcome.
+*(PR's for Typescripts typings are welcome)*
 
-These are the fields passed to a component: **(the ? means it may or may not be passed)**
+Any props aside from `validator` and `observe` are passed down to the component, plus the following props: **(the ? means it may or may not be passed)**
 
 ```javascript
 {
     type: string,
     name: string,
-    error: ?string,
+    error?: any,
     touched: boolean,
     onMount: Function,
     onFocus: Function,
@@ -271,9 +273,7 @@ These are the fields passed to a component: **(the ? means it may or may not be 
 }
 ```
 
-Any other attributes provided through the `<Field>` tag will also be available through the `props`.
-
-Here's a simple example:
+Here is a simple component example. 
 
 ```javascript
 // @flow
@@ -283,6 +283,12 @@ import { render } from "react-dom";
 import type { ComponentProps } from "form-for";
 
 export default class Input extends React.Component<ComponentProps> {
+  input: ?HTMLInputElement;
+  
+  onMount() {
+    this.props.onMount(this.input);
+  }
+  
   render() {
     const { error, onMount, ...props } = this.props;
 
@@ -291,9 +297,11 @@ export default class Input extends React.Component<ComponentProps> {
       props["aria-invalid"] = true;
     }
 
-    return <input {...props} />;
+    return <input ref={el => this.input = el} {...props} />;
   }
 }
+
+<Input placeholder="Example placeholder" />
 ```
 
 **Note:** Check out [form-for-components](https://github.com/form-for/form-for-components): Core HTML components. It'll probably help you.
@@ -306,8 +314,9 @@ both entries.
 
 ### Validation Events
 
-- `onMount(target: ?HTMLElement, error: ?string)`: `error` is only necessary if `event.target.validationMessage` is not available
-- `onFocus(event: Event)`
+- `onMount(target: ?HTMLElement, error: ?string)`: This event is important to bootstrap the component.
+    - The `error` parameter is only necessary if `event.target.validationMessage` is not available
+- `onFocus(event: Event)`: This event triggers the `touched` property
 - `onChange(event: Event, value?: any, error?: ?string)`: `value` and `error` are only necessary if `event.target.value` and
     `event.target.validationMessage` are not available in the event target 
 
@@ -348,9 +357,9 @@ On the component use `<FieldGroup>`, so the `<Field>` inside it knows what objec
 
 ```javascript
 import React from "react";
-import { Field, FieldGroup } from "form-for";
+import { Field, FieldGroup } from "../../../src";
 
-import TodoItem from "../TodoItem";
+import TodoItem from "../models/TodoItem";
 
 export default class TodoItems extends React.Component {
   state = {
@@ -362,7 +371,7 @@ export default class TodoItems extends React.Component {
     this.setState({ items });
 
     if (this.props.onChange) {
-      this.props.onChange(items);
+      this.props.onChange(null, items);
     }
   };
 
@@ -371,8 +380,12 @@ export default class TodoItems extends React.Component {
     this.setState({ items });
 
     if (this.props.onChange) {
-      this.props.onChange(items);
+      this.props.onChange(null, items);
     }
+  }
+
+  componentWillReceiveProps(props) {
+    this.setState({ items: props.value || props.defaultValue });
   }
 
   render() {
@@ -392,14 +405,13 @@ export default class TodoItems extends React.Component {
   renderTodoItem(item: TodoItem, index: number) {
     return (
       <div key={item.uid} className="form-inline form-group clearfix">
-        <FieldGroup for={item} index={index}>
-          <Field name="checked" label={false} />
-          <Field name="title" label={false} style={{ width: "400px" }} />
-        </FieldGroup>
-
-        <button type="button" className="btn btn-danger btn-sm ml-2" onClick={() => this.removeTodoItem(item)}>
+        <button type="button" onClick={() => this.removeTodoItem(item)} style={{ float: "right" }}>
           X
         </button>
+
+        <FieldGroup for={item} index={index}>
+          <Field name="title" style={{ width: "400px" }} />
+        </FieldGroup>
       </div>
     );
   }
