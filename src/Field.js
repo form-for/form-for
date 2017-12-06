@@ -157,15 +157,15 @@ export default class Field extends React.Component<Props, State> {
    * Handlers
    */
 
-  handleMount(target: ?any, { value, error }: EventProps = {}) {
+  handleMount = (target: ?any, { value, error }: EventProps = {}) => {
     this.dispatchValidation({ target }, "mount", value, error);
   }
 
-  handleFocus(event: Event, { value, error }: EventProps = {}) {
+  handleFocus = (event: Event, { value, error }: EventProps = {}) => {
     this.dispatchValidation(event, "focus", value, error);
   }
 
-  handleChange(event: Event, { value, error }: EventProps = {}) {
+  handleChange = (event: Event, { value, error }: EventProps = {}) => {
     if (this.hasValidationType("change")) {
       this.dispatchValidation(event, "change", value, error);
     }
@@ -175,7 +175,7 @@ export default class Field extends React.Component<Props, State> {
     this.dispatchPropsChange(event);
   }
 
-  handleBlur(event: Event, { value, error }: EventProps = {}) {
+  handleBlur = (event: Event, { value, error }: EventProps = {}) => {
     this.dispatchValidation(event, "blur", value, error);
   }
 
@@ -264,14 +264,14 @@ export default class Field extends React.Component<Props, State> {
   }
 
   buildEventProps() {
-    const onMount = this.context.validate.length > 0 ? this.handleMount.bind(this) : undefined;
+    const onMount = this.context.validate.length > 0 ? this.handleMount : undefined;
 
-    const onFocus = this.hasValidationType("focus") ? this.handleFocus.bind(this) : undefined;
+    const onFocus = this.hasValidationType("focus") ? this.handleFocus : undefined;
 
     const hasOnChange = this.context.onChange || this.hasValidationType("change");
-    const onChange = hasOnChange ? this.handleChange.bind(this) : undefined;
+    const onChange = hasOnChange ? this.handleChange : undefined;
 
-    const onBlur = this.hasValidationType("blur") ? this.handleBlur.bind(this) : undefined;
+    const onBlur = this.hasValidationType("blur") ? this.handleBlur : undefined;
 
     return { onMount, onFocus, onChange, onBlur };
   }
