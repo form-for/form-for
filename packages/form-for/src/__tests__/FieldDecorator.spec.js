@@ -1,32 +1,38 @@
-import { field } from "form-for";
+import { field } from "../index";
 
 describe("field annotation", () => {
   let testInstance;
 
   class TestClass {
-    @field({ placeholder: "John Doe" })
-    name;
+    @field name;
+
+    @field({ placeholder: "Doe" })
+    surname;
 
     @field({ type: "number", min: 0 })
-    price;
+    money;
   }
 
   beforeEach(() => {
     testInstance = new TestClass();
   });
 
-  it("sets schema properties", () => {
-    expect(Object.keys(testInstance.schema)).toEqual(["name", "price"]);
+  it("sets only schema properties", () => {
+    expect(Object.keys(testInstance.schema)).toEqual(["name", "surname", "money"]);
+  });
+
+  it("sets schema property without parameters", () => {
+    expect(testInstance.schema.name).toMatchObject({});
   });
 
   it("does not set the type if not given", () => {
-    expect(testInstance.schema.name).toMatchObject({
-      placeholder: "John Doe"
+    expect(testInstance.schema.surname).toMatchObject({
+      placeholder: "Doe"
     });
   });
 
   it("sets type when give", () => {
-    expect(testInstance.schema.price).toMatchObject({
+    expect(testInstance.schema.money).toMatchObject({
       type: "number",
       min: 0
     });
