@@ -35,7 +35,6 @@ export default class Radio extends React.Component<Props> {
           className={inputClasses.join(" ")}
           map={this.renderRadio.bind(this)}
           options={humanizeOptions(options)}
-          // $FlowFixMe
           {...(props: RadioProps)}
         />
 

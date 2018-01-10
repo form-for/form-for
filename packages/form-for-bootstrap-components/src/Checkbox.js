@@ -29,7 +29,6 @@ export default class Checkbox extends React.Component<Props> {
           className={inputClasses.join(" ")}
           aria-label={label || humanizedName}
           aria-describedby={helpProps.id}
-          // $FlowFixMe
           {...(props: CheckboxProps)}
         />
         <span className="custom-control-indicator" />

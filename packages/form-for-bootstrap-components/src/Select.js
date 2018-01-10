@@ -35,7 +35,6 @@ export default class Select extends React.Component<Props> {
           className={selectClasses.join(" ")}
           aria-describedby={helpProps.id}
           options={humanizeOptions(options)}
-          // $FlowFixMe
           {...(props: SelectProps)}
         />
 

@@ -33,7 +33,6 @@ export default class Input extends React.Component<Props> {
           id={id}
           className={inputClasses.join(" ")}
           aria-describedby={helpProps.id}
-          // $FlowFixMe
           {...(props: InputProps)}
         />
 
