@@ -4,8 +4,8 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "node ./scripts/build.js",
-    "build:package": "node ./scripts/build-package.js",
+    "build": "cross-env NODE_ENV=production node ./scripts/build.js",
+    "build:package": "cross-env NODE_ENV=production node ./scripts/build-package.js",
     "test": "jest",
     "test:coverage": "jest --coverage",
     "test:watch": "jest --watch",
@@ -19,11 +19,14 @@
     "babel-core": "^6.26.0",
     "babel-jest": "^22.0.4",
     "babel-plugin-external-helpers": "^6.22.0",
+    "babel-plugin-transform-decorators-legacy": "^1.3.4",
     "babel-preset-env": "^1.6.1",
+    "babel-preset-es2015": "^6.24.1",
     "babel-preset-react": "^6.24.1",
     "babel-preset-stage-2": "^6.24.1",
     "concurrently": "^3.5.1",
     "cpy": "^6.0.0",
+    "cross-env": "^5.1.3",
     "flow-bin": "^0.57.3",
     "fs-extra": "^5.0.0",
     "husky": "^0.14.3",
@@ -48,7 +51,9 @@
     ]
   },
   "jest": {
-    "projects": ["<rootDir>/packages/*"]
+    "projects": [
+      "<rootDir>/packages/*"
+    ]
   },
   "prettier": {
     "print-width": 120
