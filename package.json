@@ -6,13 +6,12 @@
   "scripts": {
     "build": "node ./scripts/build.js",
     "build:package": "node ./scripts/build-package.js",
-    "test": "cross-env NODE_ENV=development jest",
-    "test:coverage": "cross-env NODE_ENV=development jest --coverage",
-    "test:watch": "cross-env NODE_ENV=development jest --watch",
+    "test": "jest",
+    "test:coverage": "jest --coverage",
+    "test:watch": "jest --watch",
     "flow": "flow",
-    "prettier": "prettier --write --print-width 120 \"{demo,packages/*/src}/**/*.js\"",
-    "prettier-lint-staged": "prettier --write --print-width 120",
-    "precommit": "lint-staged && flow"
+    "prettier": "prettier --write \"{demo,packages/*/src}/**/*.js\"",
+    "precommit": "lint-staged"
   },
   "devDependencies": {
     "@types/jest": "^22.0.1",
@@ -25,7 +24,6 @@
     "babel-preset-stage-2": "^6.24.1",
     "concurrently": "^3.5.1",
     "cpy": "^6.0.0",
-    "cross-env": "^5.1.3",
     "flow-bin": "^0.57.3",
     "fs-extra": "^5.0.0",
     "husky": "^0.14.3",
@@ -45,8 +43,14 @@
   },
   "lint-staged": {
     "*.js": [
-      "prettier-lint-staged",
+      "prettier --write",
       "git add"
     ]
+  },
+  "jest": {
+    "projects": ["<rootDir>/packages/*"]
+  },
+  "prettier": {
+    "print-width": 120
   }
 }
