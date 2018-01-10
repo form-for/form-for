@@ -26,7 +26,7 @@ export type Props = {
 
 const DEFAULT_MUTATION_WRAPPER = (mutator, name, value) => mutator();
 
-export default class FieldGroup extends React.Component<Props> {
+export default class FieldGroup extends React.PureComponent<Props> {
   data: { [_: any]: any };
   observer: { [_: string]: Observer } = {};
 
@@ -160,16 +160,17 @@ export default class FieldGroup extends React.Component<Props> {
 
   dispatchChange() {
     if (this.props.onChange) this.props.onChange(this.data);
+    if (this.context.onChange) this.dispatchParentChange();
+  }
 
-    if (this.context.onChange) {
-      let data = this.context.getData()[this.context.name] || {};
-      if (this.isImmutable()) {
-        data = clone(data);
-        data[this.requestIndex()] = this.data;
-      }
-
-      this.context.onChange(this.context.name, data);
+  dispatchParentChange() {
+    let data = this.context.getData()[this.context.name] || {};
+    if (this.isImmutable()) {
+      data = clone(data);
+      data[this.requestIndex()] = this.data;
     }
+
+    this.context.onChange(this.context.name, data);
   }
 
   /*

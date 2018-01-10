@@ -1,62 +1,45 @@
 {
-  "name": "form-for",
-  "version": "0.3.6",
-  "description": "ReactJS forms made easy.",
-  "main": "lib/index.js",
-  "umd:main": "umd/form-for.js",
-  "module": "es/index.js",
-  "files": [
-    "es",
-    "lib",
-    "umd"
+  "private": true,
+  "workspaces": [
+    "packages/*"
   ],
   "scripts": {
-    "build": "nwb build-react-component && npm run flow-copy-source",
-    "clean": "nwb clean-module && nwb clean-demo",
-    "start": "nwb serve-react-demo",
-    "prettier": "prettier --write --print-width 120 \"{demo/src,src,test}/**/*.js\"",
-    "prettier-lint-staged": "prettier --write --print-width 120",
+    "build": "node ./scripts/build.js",
+    "build:package": "node ./scripts/build-package.js",
+    "test": "cross-env NODE_ENV=development jest",
+    "test:coverage": "cross-env NODE_ENV=development jest --coverage",
+    "test:watch": "cross-env NODE_ENV=development jest --watch",
     "flow": "flow",
-    "flow-copy-source": "flow-copy-source src lib && flow-copy-source src es",
-    "test": "nwb test-react",
-    "test:coverage": "nwb test-react --coverage",
-    "test:watch": "nwb test-react --server",
-    "precommit": "lint-staged",
-    "preversion": "npm test",
-    "version": "npm run build && git add package.json",
-    "postversion": "git push && git push --tags"
-  },
-  "author": "Pedro Moreira",
-  "homepage": "https://github.com/form-for/form-for",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/form-for/form-for.git"
-  },
-  "bugs": {
-    "url": "https://github.com/form-for/form-for/issues"
-  },
-  "keywords": [
-    "react-component",
-    "react",
-    "reactjs",
-    "form",
-    "forms",
-    "simple-form"
-  ],
-  "peerDependencies": {
-    "react": "> 15.x"
+    "prettier": "prettier --write --print-width 120 \"{demo,packages/*/src}/**/*.js\"",
+    "prettier-lint-staged": "prettier --write --print-width 120",
+    "precommit": "lint-staged && flow"
   },
   "devDependencies": {
+    "async": "^2.6.0",
+    "babel-core": "^6.26.0",
+    "babel-jest": "^22.0.4",
+    "babel-plugin-external-helpers": "^6.22.0",
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-react": "^6.24.1",
+    "babel-preset-stage-2": "^6.24.1",
+    "concurrently": "^3.5.1",
+    "cpy": "^6.0.0",
     "flow-bin": "^0.57.3",
-    "flow-copy-source": "^1.2.1",
+    "fs-extra": "^5.0.0",
     "husky": "^0.14.3",
+    "jest": "^22.0.4",
     "lint-staged": "^4.3.0",
-    "nwb": "0.19.x",
+    "mobx": "^3.4.1",
+    "mobx-react": "^4.3.5",
     "prettier": "^1.7.4",
     "prop-types": "^15.6.0",
     "react": "^16.0.0",
-    "react-dom": "^16.0.0"
+    "react-dom": "^16.2.0",
+    "rollup": "^0.53.3",
+    "rollup-plugin-babel": "^3.0.3",
+    "rollup-plugin-commonjs": "^8.2.6",
+    "rollup-plugin-node-resolve": "^3.0.0",
+    "rollup-plugin-uglify": "^2.0.1"
   },
   "lint-staged": {
     "*.js": [

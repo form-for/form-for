@@ -32,7 +32,10 @@ type State = {
   touched: boolean
 };
 
-export default class Field extends React.Component<Props, State> {
+export default class Field extends React.PureComponent<Props, State> {
+  static autoBind: boolean = false;
+  static pendingAutoBindComponents: { [name: string]: React.ComponentType<*> } = {};
+
   target: ?any;
   value: ?any;
   error: ?any;
@@ -45,8 +48,26 @@ export default class Field extends React.Component<Props, State> {
 
   static componentBindings: { [_: string]: React.ComponentType<*> } = {};
 
+  static registerComponentExistance(type: string, component: React.ComponentType<*>): void {
+    if (this.autoBind) Field.bindComponent(type, component);
+    else Field.pendingAutoBindComponents[type] = component;
+  }
+
   static bindComponent(type: string, component: React.ComponentType<*>): void {
     Field.componentBindings[type] = component;
+  }
+
+  static enableAutoBind(): void {
+    Field.autoBind = true;
+    Field.bindPendingAutoBindComponents();
+  }
+
+  static bindPendingAutoBindComponents(): void {
+    Object.keys(Field.pendingAutoBindComponents).forEach(type => {
+      Field.bindComponent(type, Field.pendingAutoBindComponents[type]);
+    });
+
+    Field.pendingAutoBindComponents = {};
   }
 
   /*
@@ -163,9 +184,9 @@ export default class Field extends React.Component<Props, State> {
    * Actions
    */
 
-  validate() {
+  validate = () => {
     this.validateTarget(this.target);
-  }
+  };
 
   validateTarget(target: any): void {
     if (this.context.skipValidation) return;
@@ -218,26 +239,26 @@ export default class Field extends React.Component<Props, State> {
    * Handlers
    */
 
-  handleMount(target: ?any, error: ?any) {
+  handleMount = (target: ?any, error: ?any) => {
     this.target = target;
     this.error = error;
     this.validate();
     if (this.context.touchOnMount) this.touch();
-  }
+  };
 
-  handleFocus(event: Event) {
+  handleFocus = (event: Event) => {
     this.target = event.target || this.target;
     this.dispatchFocus(event);
     this.touch();
-  }
+  };
 
-  handleChange(event: Event, value: any, error: ?any) {
+  handleChange = (event: Event, value: any, error: ?any) => {
     this.value = value;
     this.error = error;
 
     this.validate();
     this.dispatchChange(event);
-  }
+  };
 
   /*
    * Builders
@@ -272,9 +293,9 @@ export default class Field extends React.Component<Props, State> {
       ...this.getSchemaProperty(),
       ...this.props,
       name: this.getPrefixedName(),
-      onMount: this.handleMount.bind(this),
-      onFocus: this.handleFocus.bind(this),
-      onChange: this.handleChange.bind(this),
+      onMount: this.handleMount,
+      onFocus: this.handleFocus,
+      onChange: this.handleChange,
       ...this.buildValueProps(),
       ...this.buildStatusProps()
     };
@@ -293,7 +314,7 @@ export default class Field extends React.Component<Props, State> {
     const observe = this.props.observe || this.getSchemaProperty().observe;
     this.context.mountObserver(this.props.name, {
       fields: observe,
-      fn: this.validate.bind(this)
+      fn: this.validate
     });
   }
 

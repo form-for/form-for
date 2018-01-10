@@ -1,7 +1,7 @@
 # Contributing
 
 We'd love to have your contribution added to Jewell. If you decide to do so, please follow the
-[code of conduct](./CODE_OF_CONDUCT.md)
+[code of conduct](CODE_OF_CONDUCT.md)
 
 ## Prerequisites
 
@@ -37,11 +37,19 @@ The project uses [prettier](https://github.com/prettier/prettier). To format you
 npm run prettier
 ```
  
+or
+ 
+```bash
+yarn prettier
+```
+
+Don't worry too much about the formatting, prettier will sort things out before publishing a new version.
+
 ## Releasing
 
 To release a new version, define the number following the [semantic versioning](http://semver.org/).
 
 ``` bash
-npm version <newversion> -m "Release %s"
-npm publish
+$ npm version <newversion> -m "Releasing %s"
+$ npm publish
 ```

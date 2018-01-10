@@ -17,7 +17,7 @@ export type Props = {
   children: React.Node
 };
 
-export default class Form extends React.Component<Props> {
+export default class Form extends React.PureComponent<Props> {
   form: ?HTMLFormElement;
   fieldGroup: ?FieldGroup;
 
