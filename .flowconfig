@@ -1,9 +1,10 @@
 [ignore]
 <PROJECT_ROOT>/node_modules/fbjs/.*
 <PROJECT_ROOT>/node_modules/nwb/templates
-<PROJECT_ROOT>/packages/.*/dist/.*
+<PROJECT_ROOT>/packages/.*/dist
 
 [include]
+<PROJECT_ROOT>/packages/.*/src
 
 [libs]
 
