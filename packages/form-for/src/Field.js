@@ -83,6 +83,7 @@ export default class Field extends React.PureComponent<Props, State> {
     touchOnMount: PropTypes.bool,
     getData: PropTypes.func.isRequired,
     controlled: PropTypes.bool.isRequired,
+    autoRendering: PropTypes.bool.isRequired,
     mountObserver: PropTypes.func.isRequired,
     unmountObserver: PropTypes.func.isRequired
   };
@@ -278,6 +279,7 @@ export default class Field extends React.PureComponent<Props, State> {
       }
     }
 
+    // The  `value` prop will be present on `...this.props`
     return {};
   }
 
@@ -314,7 +316,10 @@ export default class Field extends React.PureComponent<Props, State> {
     const observe = this.props.observe || this.getSchemaProperty().observe;
     this.context.mountObserver(this.props.name, {
       fields: observe,
-      fn: this.validate
+      fn: this.validate,
+      selfFn: () => {
+        if (this.context.controlled && !this.context.autoRendering) this.forceUpdate();
+      }
     });
   }
 

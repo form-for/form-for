@@ -1,7 +1,7 @@
 // @flow
 
 import * as React from "react";
-import type { ComponentProps } from "form-for";
+import type { ComponentProps } from "../../index";
 
 export type Props = {
   ref?: Function

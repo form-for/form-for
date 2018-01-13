@@ -17,7 +17,8 @@ export type Schema = {
 
 type Observer = {
   fields: boolean | string | string[],
-  fn: Function
+  fn: Function,
+  selfFn: Function
 };
 
 export type Props = {
@@ -57,6 +58,7 @@ export default class FieldGroup extends React.PureComponent<Props> {
     touchOnMount: PropTypes.bool,
     getData: PropTypes.func,
     controlled: PropTypes.bool,
+    autoRendering: PropTypes.bool,
     mountObserver: PropTypes.func,
     unmountObserver: PropTypes.func
   };
@@ -70,6 +72,7 @@ export default class FieldGroup extends React.PureComponent<Props> {
       prefix: this.getPrefix(),
       onChange: this.handleChange,
       controlled: this.isControlled(),
+      autoRendering: this.hasAutoRendering(),
       skipValidation: this.hasSkipValidation(),
       touchOnMount: this.hasTouchOnMount(),
       getData: this.getData,
@@ -117,7 +120,12 @@ export default class FieldGroup extends React.PureComponent<Props> {
   };
 
   isControlled(): boolean {
+    if (this.props.uncontrolled) return false;
     return !!(this.props.onChange || this.context.controlled);
+  }
+
+  hasAutoRendering(): boolean {
+    return !!(this.props.autoRendering || this.context.autoRendering);
   }
 
   hasSkipValidation(): boolean {
@@ -143,17 +151,17 @@ export default class FieldGroup extends React.PureComponent<Props> {
 
   dispatchObservers(propertyChanged: string): void {
     Object.keys(this.observer).forEach(name => {
-      if (name === propertyChanged) return;
-
       const observer = this.observer[name];
       const fields = observer.fields;
 
-      if (
+      if (name === propertyChanged) {
+        observer.selfFn();
+      } else if (
         fields === true ||
         fields === propertyChanged ||
         (Array.isArray(fields) && fields.includes(propertyChanged))
       ) {
-        observer.fn();
+        observer.fn(propertyChanged);
       }
     });
   }
@@ -188,9 +196,7 @@ export default class FieldGroup extends React.PureComponent<Props> {
   };
 
   handleMountObserver = (name: string, observer: Observer): void => {
-    if (name && observer.fields && observer.fn) {
-      this.observer[name] = observer;
-    }
+    this.observer[name] = observer;
   };
 
   handleUnmountObserver = (name: string): void => {

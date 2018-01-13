@@ -1,0 +1,51 @@
+import React, { Component } from "react";
+import { shallow, mount, render } from "enzyme";
+import { Form, Field } from "../index";
+import Input from "./fixture/Input";
+
+Field.bindComponent("text", Input);
+
+describe("Controlled state form", () => {
+  class ControlledTest extends Component {
+    constructor(props) {
+      super(props);
+      this.state = { hash: props.hash };
+    }
+
+    handleChange = hash => {
+      this.setState({ hash });
+    };
+
+    render() {
+      return (
+        <Form for={this.state.hash} onChange={this.handleChange} __testing_valid__={true}>
+          <Field name="name" />
+          <Field name="surname" />
+        </Form>
+      );
+    }
+  }
+
+  it("updates the data reference on update props", () => {
+    const hash = {
+      schema: {
+        name: { type: "text" },
+        surname: {}
+      }
+    };
+
+    const wrapper = mount(<ControlledTest hash={hash} />);
+    wrapper
+      .find("input")
+      .first()
+      .simulate("change", { target: { value: "My new value" } });
+
+    expect(hash.name).toEqual("My new value");
+    expect(
+      wrapper
+        .find("input")
+        .first()
+        .props().value
+    ).toEqual("My new value");
+  });
+});

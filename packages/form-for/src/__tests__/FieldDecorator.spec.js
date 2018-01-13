@@ -1,6 +1,6 @@
 import { field } from "../index";
 
-describe("field annotation", () => {
+describe("Field decorator", () => {
   let testInstance;
 
   class TestClass {

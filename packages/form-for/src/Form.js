@@ -11,6 +11,8 @@ export type Props = {
   mutationWrapper?: Function,
   prefix?: string,
   onChange?: Function,
+  uncontrolled?: boolean,
+  autoRendering?: boolean,
   onSubmit?: Function,
   skipValidation?: boolean,
   touchOnMount?: boolean,
@@ -21,12 +23,17 @@ export default class Form extends React.PureComponent<Props> {
   form: ?HTMLFormElement;
   fieldGroup: ?FieldGroup;
 
+  isValid(): boolean {
+    // $FlowFixMe
+    const testingValid = this.props.__testing_valid__;
+    if (typeof testingValid !== "undefined") return testingValid;
+
+    return !!this.form && this.form.checkValidity();
+  }
+
   handleChange = (values: any) => {
     const onChange = this.props.onChange;
-
-    if (onChange && this.form) {
-      onChange(values, this.form.checkValidity());
-    }
+    if (onChange) onChange(values, this.isValid());
   };
 
   handleSubmit = () => {
@@ -36,9 +43,7 @@ export default class Form extends React.PureComponent<Props> {
   };
 
   componentDidMount() {
-    if (this.form && !this.form.checkValidity()) {
-      this.handleChange(this.props.for);
-    }
+    if (!this.isValid()) this.handleChange(this.props.for);
   }
 
   render(): React.Node {
@@ -48,13 +53,16 @@ export default class Form extends React.PureComponent<Props> {
       immutable,
       mutationWrapper,
       prefix,
-      onChange,
+      uncontrolled,
       skipValidation,
       touchOnMount,
       validate,
       children,
       ...remainingProps
     } = { ...this.props };
+
+    delete remainingProps.onChange;
+    delete remainingProps.__testing_valid__;
 
     return (
       <form ref={el => (this.form = el)} {...remainingProps} onSubmit={this.handleSubmit}>
@@ -69,6 +77,7 @@ export default class Form extends React.PureComponent<Props> {
           skipValidation={skipValidation}
           touchOnMount={touchOnMount}
           validate={typeof validate === "undefined" ? true : validate}
+          uncontrolled={uncontrolled}
         >
           {children}
         </FieldGroup>
