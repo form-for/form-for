@@ -14,12 +14,12 @@ describe("Custom schema", () => {
 
   it("is used when provided without object schema", () => {
     const wrapper = mount(
-      <Form for={{ name: "John" }} schema={schema} __testing_valid__={true}>
+      <Form for={{ name: "John" }} schema={schema} __testing_valid__>
         <Field name="name" />
       </Form>
     );
 
-    const input = wrapper.find("input[name='name']").first();
+    const input = wrapper.find("input").first();
     expect(input.props().defaultValue).toEqual("John");
   });
 
@@ -27,12 +27,12 @@ describe("Custom schema", () => {
     const value = { name: "John", schema: { name: { type: "Nothing" } } };
 
     const wrapper = mount(
-      <Form for={value} schema={schema} __testing_valid__={true}>
+      <Form for={value} schema={schema} __testing_valid__>
         <Field name="name" />
       </Form>
     );
 
-    const input = wrapper.find("input[name='name']").first();
+    const input = wrapper.find("input").first();
     expect(input.props().defaultValue).toEqual("John");
   });
 });

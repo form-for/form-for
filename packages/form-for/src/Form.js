@@ -53,6 +53,7 @@ export default class Form extends React.PureComponent<Props> {
       immutable,
       mutationWrapper,
       prefix,
+      onChange,
       uncontrolled,
       skipValidation,
       touchOnMount,
@@ -61,7 +62,6 @@ export default class Form extends React.PureComponent<Props> {
       ...remainingProps
     } = { ...this.props };
 
-    delete remainingProps.onChange;
     delete remainingProps.__testing_valid__;
 
     return (
@@ -73,7 +73,7 @@ export default class Form extends React.PureComponent<Props> {
           immutable={immutable}
           mutationWrapper={mutationWrapper}
           prefix={prefix}
-          onChange={this.handleChange}
+          onChange={onChange ? this.handleChange : undefined}
           skipValidation={skipValidation}
           touchOnMount={touchOnMount}
           validate={typeof validate === "undefined" ? true : validate}

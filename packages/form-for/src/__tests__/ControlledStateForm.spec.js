@@ -18,7 +18,7 @@ describe("Controlled state form", () => {
 
     render() {
       return (
-        <Form for={this.state.hash} onChange={this.handleChange} __testing_valid__={true}>
+        <Form for={this.state.hash} onChange={this.handleChange} __testing_valid__>
           <Field name="name" />
           <Field name="surname" />
         </Form>

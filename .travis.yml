@@ -4,10 +4,6 @@ language: node_js
 node_js:
   - 6
 
-email:
-  on_failure: change
-  on_success: never
-
 after_success:
   - npm install -g codeclimate-test-reporter
   - codeclimate-test-reporter < coverage/lcov.info
@@ -15,3 +11,6 @@ after_success:
 addons:
   code_climate:
     repo_token: 0fd9fd3dd341b40489d80a9dcfd562f192b00fce2a8f66a944593a081a9b3e76
+
+notifications:
+  email: false
