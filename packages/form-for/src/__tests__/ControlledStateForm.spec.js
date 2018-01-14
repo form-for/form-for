@@ -3,9 +3,9 @@ import { mount } from "enzyme";
 import { Field, Form } from "../index";
 import Input from "./fixture/Input";
 
-Field.bindComponent("text", Input);
-
 describe("Controlled state form", () => {
+  Field.bindComponent("text", Input);
+
   class ControlledTest extends Component {
     constructor(props) {
       super(props);

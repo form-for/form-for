@@ -3,9 +3,9 @@ import { mount } from "enzyme";
 import { Field, Form } from "../index";
 import Input from "./fixture/Input";
 
-Field.bindComponent("text", Input);
-
 describe("Custom schema", () => {
+  Field.bindComponent("text", Input);
+
   const schema = {
     name: {
       type: "text"
