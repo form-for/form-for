@@ -8,13 +8,24 @@ Field.bindComponent("text", Input);
 describe("Field error", () => {
   const object = {
     name: "John",
-    schema: { name: { type: "text", validator: () => "State error" } }
+    schema: { name: { type: "text" } }
   };
+
+  it("does not show error if not existent", () => {
+    const wrapper = mount(
+      <Form for={object} __testing_valid__>
+        <Field name="name" />
+      </Form>
+    );
+
+    wrapper.find("input").simulate("change");
+    expect(wrapper.find("input").props()["data-error"]).toBeUndefined();
+  });
 
   it("shows state error", () => {
     const wrapper = mount(
       <Form for={object} __testing_valid__>
-        <Field name="name" />
+        <Field name="name" validator={() => "State error"} />
       </Form>
     );
 
