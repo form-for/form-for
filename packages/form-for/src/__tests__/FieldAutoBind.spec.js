@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { mount } from "enzyme";
 import { Field, Form } from "../index";
-import "./fixture/registerComponents";
+import "../fixture/registerComponents";
 
 describe("Custom schema", () => {
   Field.enableAutoBind();

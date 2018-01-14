@@ -83,7 +83,7 @@ export default class Field extends React.PureComponent<Props, State> {
     touchOnMount: PropTypes.bool,
     getData: PropTypes.func.isRequired,
     controlled: PropTypes.bool.isRequired,
-    autoRendering: PropTypes.bool.isRequired,
+    autoRender: PropTypes.bool.isRequired,
     mountObserver: PropTypes.func.isRequired,
     unmountObserver: PropTypes.func.isRequired
   };
@@ -316,9 +316,12 @@ export default class Field extends React.PureComponent<Props, State> {
     const observe = this.props.observe || this.getSchemaProperty().observe;
     this.context.mountObserver(this.props.name, {
       fields: observe,
-      fn: this.validate,
-      selfFn: () => {
-        if (this.context.controlled && !this.context.autoRendering) this.forceUpdate();
+      fn: (name: string) => {
+        const isAnotherField = name !== this.props.name;
+        if (isAnotherField) this.validate();
+
+        const isControlledManaged = this.context.controlled && !this.context.autoRender;
+        if (isControlledManaged) this.forceUpdate();
       }
     });
   }

@@ -1,13 +1,13 @@
 // @flow
 
 import * as React from "react";
-import type { ComponentProps } from "../../index";
+import type { ComponentProps } from "../index";
 
 export type Props = {
   ref?: Function
 } & ComponentProps;
 
-export default class Input extends React.PureComponent<Props> {
+export default class Input extends React.Component<Props> {
   input: ?HTMLInputElement;
 
   handleRef = (el: ?HTMLInputElement) => {
@@ -24,8 +24,7 @@ export default class Input extends React.PureComponent<Props> {
 
   render() {
     const { error, touched, onMount, ...props } = { ...this.props };
-    if (error) props["aria-invalid"] = true;
 
-    return <input ref={this.handleRef} {...props} />;
+    return <input ref={this.handleRef} data-error={error} data-touched={touched} {...props} />;
   }
 }

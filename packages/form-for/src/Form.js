@@ -12,7 +12,7 @@ export type Props = {
   prefix?: string,
   onChange?: Function,
   uncontrolled?: boolean,
-  autoRendering?: boolean,
+  autoRender?: boolean,
   onSubmit?: Function,
   skipValidation?: boolean,
   touchOnMount?: boolean,
@@ -55,6 +55,7 @@ export default class Form extends React.PureComponent<Props> {
       prefix,
       onChange,
       uncontrolled,
+      autoRender,
       skipValidation,
       touchOnMount,
       validate,
@@ -74,6 +75,7 @@ export default class Form extends React.PureComponent<Props> {
           mutationWrapper={mutationWrapper}
           prefix={prefix}
           onChange={onChange ? this.handleChange : undefined}
+          autoRender={autoRender}
           skipValidation={skipValidation}
           touchOnMount={touchOnMount}
           validate={typeof validate === "undefined" ? true : validate}

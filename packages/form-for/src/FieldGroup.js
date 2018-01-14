@@ -17,8 +17,7 @@ export type Schema = {
 
 type Observer = {
   fields: boolean | string | string[],
-  fn: Function,
-  selfFn: Function
+  fn: Function
 };
 
 export type Props = {
@@ -58,7 +57,7 @@ export default class FieldGroup extends React.PureComponent<Props> {
     touchOnMount: PropTypes.bool,
     getData: PropTypes.func,
     controlled: PropTypes.bool,
-    autoRendering: PropTypes.bool,
+    autoRender: PropTypes.bool,
     mountObserver: PropTypes.func,
     unmountObserver: PropTypes.func
   };
@@ -72,7 +71,7 @@ export default class FieldGroup extends React.PureComponent<Props> {
       prefix: this.getPrefix(),
       onChange: this.handleChange,
       controlled: this.isControlled(),
-      autoRendering: this.hasAutoRendering(),
+      autoRender: this.hasAutoRender(),
       skipValidation: this.hasSkipValidation(),
       touchOnMount: this.hasTouchOnMount(),
       getData: this.getData,
@@ -124,8 +123,8 @@ export default class FieldGroup extends React.PureComponent<Props> {
     return !!(this.props.onChange || this.context.controlled);
   }
 
-  hasAutoRendering(): boolean {
-    return !!(this.props.autoRendering || this.context.autoRendering);
+  hasAutoRender(): boolean {
+    return !!(this.props.autoRender || this.context.autoRender);
   }
 
   hasSkipValidation(): boolean {
@@ -154,9 +153,8 @@ export default class FieldGroup extends React.PureComponent<Props> {
       const observer = this.observer[name];
       const fields = observer.fields;
 
-      if (name === propertyChanged) {
-        observer.selfFn();
-      } else if (
+      if (
+        name === propertyChanged ||
         fields === true ||
         fields === propertyChanged ||
         (Array.isArray(fields) && fields.includes(propertyChanged))
