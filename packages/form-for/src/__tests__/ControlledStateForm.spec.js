@@ -1,6 +1,6 @@
 import React, { Component } from "react";
-import { shallow, mount, render } from "enzyme";
-import { Form, Field } from "../index";
+import { mount } from "enzyme";
+import { Field, Form } from "../index";
 import Input from "./fixture/Input";
 
 Field.bindComponent("text", Input);
