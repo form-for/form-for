@@ -194,7 +194,7 @@ export default class Field extends React.PureComponent<Props, State> {
     this.clearBrowserCustomValidity();
 
     target = target || {};
-    const value = this.value || target.value;
+    const value = this.value || target.value || this.getContextObjectValue();
 
     let error;
     if (this.props.error) {
@@ -320,8 +320,8 @@ export default class Field extends React.PureComponent<Props, State> {
         const isAnotherField = name !== this.props.name;
         if (isAnotherField) this.validate();
 
-        const isControlledManaged = this.context.controlled && !this.context.autoRender;
-        if (isControlledManaged) this.forceUpdate();
+        const shouldRerender = !this.context.autoRender && (this.context.controlled || isAnotherField);
+        if (shouldRerender) this.forceUpdate();
       }
     });
   }

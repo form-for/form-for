@@ -6,7 +6,7 @@ import Input from "../fixture/Input";
 describe("Controlled auto render form", () => {
   Field.bindComponent("text", Input);
 
-  class ControlledTest extends Component {
+  class ControlledAutoRenderFormTest extends Component {
     constructor(props) {
       super(props);
       this.state = {
@@ -33,7 +33,7 @@ describe("Controlled auto render form", () => {
   }
 
   it("does not call render internally", () => {
-    const wrapper = mount(<ControlledTest />);
+    const wrapper = mount(<ControlledAutoRenderFormTest />);
     wrapper
       .find("input")
       .first()
