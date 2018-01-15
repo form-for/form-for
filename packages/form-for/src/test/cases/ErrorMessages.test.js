@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { mount, render } from "enzyme";
-import { Field, Form } from "../index";
+import { Field, Form } from "../../index";
 import Input from "../fixture/Input";
 
 describe("Error messages", () => {

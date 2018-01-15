@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { mount } from "enzyme";
-import { Field, Form } from "../index";
+import { Field, Form } from "../../index";
 import Input from "../fixture/Input";
 import Counter from "../fixture/Counter";
 
