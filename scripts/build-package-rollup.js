@@ -1,3 +1,4 @@
+const fs = require("fs");
 const { rollup } = require("rollup");
 const resolve = require("rollup-plugin-node-resolve");
 const commonjs = require("rollup-plugin-commonjs");
@@ -10,11 +11,11 @@ module.exports = async function(pkg, format) {
   const minify = formatSplit.length === 2 && formatSplit[1] === "min";
   const sourcemap = formatType === "umd";
 
-  const globals = {
-    react: "React",
-    "prop-types": "PropTypes",
-    "mobx-react": "mobxReact"
-  };
+  const packageJson = JSON.parse(fs.readFileSync("packages/" + pkg + "/package.json"));
+  const globals = [];
+  Object.keys(packageJson.peerDependencies).forEach(key => {
+    globals[key] = key.split("-").join("_");
+  });
 
   const plugins = [
     babel({
@@ -34,7 +35,7 @@ module.exports = async function(pkg, format) {
   try {
     console.log("[" + pkg + "] rollup " + format);
     const result = await rollup({
-      input: "packages/form-for/src/index.js",
+      input: "packages/" + pkg + "/src/index.js",
       external: Object.keys(globals),
       plugins
     });

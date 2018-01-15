@@ -1,12 +1,12 @@
-import React, { Component } from "react";
+import React from "react";
 import { mount } from "enzyme";
 import { Field, Form } from "../../index";
 import Input from "../fixture/Input";
 import Counter from "../fixture/Counter";
 
 describe("Field observe", () => {
-  Field.bindComponent("text", Input);
-  Field.bindComponent("counter", Counter);
+  Field.connect("text", Input);
+  Field.connect("counter", Counter);
 
   const object = {
     schema: {

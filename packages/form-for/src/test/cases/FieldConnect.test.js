@@ -1,10 +1,12 @@
-import React, { Component } from "react";
+import React from "react";
 import { mount } from "enzyme";
 import { Field, Form } from "../../index";
-import "../fixture/registerComponents";
+import Input from "../fixture/Input";
+import Select from "../fixture/Select";
 
-describe("Custom schema", () => {
-  Field.enableAutoBind();
+describe("Field connect", () => {
+  Field.connect("text", Input);
+  Field.connect("select", Select);
 
   const object = {
     schema: { name: { type: "text" }, role: { type: "select" } }
