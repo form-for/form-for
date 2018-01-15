@@ -4,7 +4,7 @@ import { Field, Form } from "../index";
 import Input from "../fixture/Input";
 import Counter from "../fixture/Counter";
 
-describe("Controlled state form", () => {
+describe("Field observe", () => {
   Field.bindComponent("text", Input);
   Field.bindComponent("counter", Counter);
 

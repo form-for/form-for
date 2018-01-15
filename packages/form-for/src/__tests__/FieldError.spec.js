@@ -22,7 +22,7 @@ describe("Field error", () => {
     expect(wrapper.find("input").props()["data-error"]).toBeUndefined();
   });
 
-  it("shows state error", () => {
+  it("shows validate (state) error", () => {
     const wrapper = mount(
       <Form for={object} __testing_valid__>
         <Field name="name" validator={() => "State error"} />

@@ -86,10 +86,11 @@ export default class FieldGroup extends React.PureComponent<Props> {
 
   getSchema(): Schema {
     const object = this.props.for;
-    const schema = this.props.schema || object.schema || {};
+    const schema = this.props.schema || object.schema;
 
     if (!schema) {
-      throw "Undefined schema for " + object.constructor.name + "instance";
+      const constructor = object.constructor.name;
+      throw `Undefined schema for "${constructor}" instance`;
     }
 
     return schema;
@@ -220,6 +221,6 @@ export default class FieldGroup extends React.PureComponent<Props> {
    */
 
   render(): React.Node {
-    return this.props.children;
+    return this.props.children || null;
   }
 }

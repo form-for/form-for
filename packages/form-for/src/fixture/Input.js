@@ -3,19 +3,11 @@
 import * as React from "react";
 import type { ComponentProps } from "../index";
 
-export type Props = {
-  ref?: Function
-} & ComponentProps;
-
-export default class Input extends React.Component<Props> {
+export default class Input extends React.Component<ComponentProps> {
   input: ?HTMLInputElement;
 
   handleRef = (el: ?HTMLInputElement) => {
     this.input = el;
-
-    if (this.props.ref) {
-      this.props.ref(el);
-    }
   };
 
   componentDidMount() {

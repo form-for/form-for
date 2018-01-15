@@ -115,17 +115,12 @@ export default class Field extends React.PureComponent<Props, State> {
   getSchemaProperty(): SchemaProperty {
     const property = this.context.schema[this.props.name];
     if (!property) {
-      if (this.props.type) {
-        return { type: this.props.type };
-      }
-
-      throw new Error(
-        `Undefined property "${this.props.name}" in schema or inline type for
-        "${this.context.object.constructor.name}" instance`
-      );
+      const name = this.props.name;
+      const constructor = this.context.object.constructor.name;
+      console.warn(`Undefined property "${name}" in schema for "${constructor}" instance`);
     }
 
-    return property;
+    return property || {};
   }
 
   getType(): string {
@@ -137,7 +132,9 @@ export default class Field extends React.PureComponent<Props, State> {
     const component = Field.componentBindings[type];
 
     if (!component) {
-      throw new Error(`Unbound component field type ${type} for ${this.props.name}`);
+      const name = this.props.name;
+      const constructor = this.context.object.constructor.name;
+      throw new Error(`Unbound component type "${type}" requested for property "${name}" in "${constructor}" instance`);
     }
 
     return component;
