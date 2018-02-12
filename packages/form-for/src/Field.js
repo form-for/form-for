@@ -167,16 +167,16 @@ export default class Field extends React.Component<Props> {
     this.validate();
   };
 
-  handleFocus = (event: Event) => {
-    this.target = event.target || this.target;
+  handleFocus = (event?: Event) => {
+    this.target = (event || {}).target || this.target;
     this.validate();
     this.touchAndRender();
 
     if (this.props.onFocus) this.props.onFocus(event);
   };
 
-  handleChange = (event: Event, value?: any, error?: any) => {
-    this.target = event.target || this.target;
+  handleChange = (event?: Event, value?: any, error?: any) => {
+    this.target = (event || {}).target || this.target;
     this.setValue(value);
     this.validate(error);
     this.touch();

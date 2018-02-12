@@ -1,8 +1,8 @@
 import React from 'react';
 import { mount } from 'enzyme';
 import { Field, Form } from '../../index';
-import { TodoItem, TodoItems } from '../fixture/TodoItems';
-import Input from '../fixture/Input';
+import { TodoItem, TodoItems } from '../fixtures/TodoItems';
+import Input from '../fixtures/Input';
 
 describe('Nested fields', () => {
   Field.connect('TodoItem{}', TodoItems);

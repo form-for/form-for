@@ -8,7 +8,7 @@ import cloneObject from './cloneObject';
 export type Props = {
   for: Object,
   schema?: Schema,
-  index?: number,
+  index?: any,
   children: React.Node
 };
 
@@ -40,7 +40,7 @@ export default class FieldGroup extends React.Component<Props> {
     return this.props.schema || this.props.for.schema || this.throwUndefinedSchema();
   }
 
-  getNewObjectFor(name: string, value: any, index: ?number) {
+  getNewObjectFor(name: string, value: any, index: ?any) {
     if (typeof index === 'undefined') return cloneObject(this.props.for, { [name]: value });
 
     const previousValue = this.props.for[name];
@@ -77,7 +77,7 @@ export default class FieldGroup extends React.Component<Props> {
    * Handlers
    */
 
-  handleChange = (name: string, value: any, index?: number) => {
+  handleChange = (name: string, value: any, index?: any) => {
     const newObject = this.getNewObjectFor(name, value, index);
     this.dispatchChange(newObject);
   };

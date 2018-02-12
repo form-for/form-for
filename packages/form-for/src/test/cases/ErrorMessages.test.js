@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from 'enzyme';
 import { Field, Form } from '../../index';
-import Input from '../fixture/Input';
+import Input from '../fixtures/Input';
 
 describe('Error messages', () => {
   it('throws on missing schema', () => {

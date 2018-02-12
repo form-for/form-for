@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from 'enzyme';
 import { Field, Form } from '../../index';
-import Input from '../fixture/Input';
+import Input from '../fixtures/Input';
 
 describe('Field type', () => {
   Field.connect('text', Input);

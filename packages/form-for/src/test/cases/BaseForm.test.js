@@ -1,7 +1,7 @@
 import React from 'react';
 import { mount } from 'enzyme';
 import { Field, BaseForm } from '../../index';
-import Input from '../fixture/Input';
+import Input from '../fixtures/Input';
 
 describe('BaseForm', () => {
   Field.connect('text', Input);

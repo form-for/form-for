@@ -1,8 +1,8 @@
 import React from 'react';
 import { mount } from 'enzyme';
 import { Field, Form } from '../../index';
-import Input from '../fixture/Input';
-import Counter from '../fixture/Counter';
+import Input from '../fixtures/Input';
+import Counter from '../fixtures/Counter';
 
 describe('Form', () => {
   Field.connect('text', Input);

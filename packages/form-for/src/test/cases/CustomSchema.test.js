@@ -1,7 +1,7 @@
 import React from 'react';
 import { mount } from 'enzyme';
 import { Field, Form } from '../../index';
-import Input from '../fixture/Input';
+import Input from '../fixtures/Input';
 
 describe('Custom schema', () => {
   Field.connect('text', Input);
