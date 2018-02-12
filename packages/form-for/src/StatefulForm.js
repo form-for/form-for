@@ -5,11 +5,9 @@ import Form from './Form';
 
 /*
  * setState(...) only keeps enumerable properties, which causes `schema` created using @field to disappear
- * To work around that it's used setState with a counter
+ * To work around that it's used the `data` and setState({})
  */
 export default class StatefulForm extends Form {
-  state = { counter: 0 };
-
   data: Object;
   counter: number = 0;
 
@@ -22,13 +20,9 @@ export default class StatefulForm extends Form {
     return this.data;
   }
 
-  stateHandler = (prevState: { counter: number }) => {
-    return { counter: prevState.counter + 1 };
-  };
-
   onChange(values: Object) {
     this.data = values;
-    this.setState(this.stateHandler);
+    this.setState({});
     super.onChange(values);
   }
 }
