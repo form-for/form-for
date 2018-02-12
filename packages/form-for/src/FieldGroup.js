@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import PropTypes from 'prop-types';
-import type { Schema } from './Form';
+import type { Schema } from './BaseForm';
 import cloneObject from './cloneObject';
 
 export type Props = {

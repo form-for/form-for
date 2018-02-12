@@ -1,10 +1,10 @@
 import React from 'react';
 import { mount } from 'enzyme';
-import { Field, StatefulForm } from '../../index';
+import { Field, Form } from '../../index';
 import Input from '../fixture/Input';
 import Counter from '../fixture/Counter';
 
-describe('Stateful Form', () => {
+describe('Form', () => {
   Field.connect('text', Input);
   Field.connect('counter', Counter);
 
@@ -17,10 +17,10 @@ describe('Stateful Form', () => {
 
   beforeAll(() => {
     wrapper = mount(
-      <StatefulForm for={object} schema={schema} onChange={onChange} onSubmit={onSubmit} __testing_valid__>
+      <Form for={object} schema={schema} onChange={onChange} onSubmit={onSubmit} __testing_valid__>
         <Field name="name" />
         <Field name="counter" />
-      </StatefulForm>
+      </Form>
     );
 
     wrapper

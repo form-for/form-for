@@ -3,7 +3,7 @@
 import * as React from 'react';
 
 import PropTypes from 'prop-types';
-import type { SchemaProperty } from './Form';
+import type { SchemaProperty } from './BaseForm';
 
 export type Props = {
   name: string,

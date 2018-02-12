@@ -1,9 +1,9 @@
 import React from 'react';
 import { mount } from 'enzyme';
-import { Field, Form } from '../../index';
+import { Field, BaseForm } from '../../index';
 import Input from '../fixture/Input';
 
-describe('Stateless Form', () => {
+describe('BaseForm', () => {
   Field.connect('text', Input);
 
   const object = {
@@ -13,9 +13,9 @@ describe('Stateless Form', () => {
 
   it('does not update field value on its own', () => {
     const wrapper = mount(
-      <Form for={object} __testing_valid__>
+      <BaseForm for={object} __testing_valid__>
         <Field name="name" />
-      </Form>
+      </BaseForm>
     );
 
     wrapper

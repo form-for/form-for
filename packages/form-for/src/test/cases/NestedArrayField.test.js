@@ -1,6 +1,6 @@
 import React from 'react';
 import { mount } from 'enzyme';
-import { Field, StatefulForm as Form } from '../../index';
+import { Field, Form } from '../../index';
 import { TodoItem, TodoItems } from '../fixture/TodoItems';
 import Input from '../fixture/Input';
 
