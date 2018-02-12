@@ -19,20 +19,16 @@ export type Props = {
   children: React.Node,
   onSubmit?: Function,
   onChange?: Function,
-  stateless?: boolean,
   touchOnMount?: boolean,
   noValidate?: boolean
 };
 
 export default class Form extends React.Component<Props> {
   form: ?HTMLFormElement;
-  data: Object;
 
-  constructor(props: Props) {
-    super(props);
-    this.data = props.for || {};
-  }
-
+  /*
+   * Getters
+   */
   static childContextTypes = {
     onChange: PropTypes.func,
     touchOnMount: PropTypes.bool,
@@ -48,14 +44,14 @@ export default class Form extends React.Component<Props> {
   }
 
   getData(): Object {
-    return !this.props.stateless ? this.data : this.props.for || {};
+    return this.props.for || {};
   }
 
   getForm(): HTMLFormElement {
     return this.form || this.throwUndefinedForm();
   }
 
-  checkValidity() {
+  isValid() {
     // $FlowFixMe
     const testingValid = this.props.__testing_valid__;
     if (typeof testingValid !== 'undefined') return testingValid;
@@ -66,37 +62,37 @@ export default class Form extends React.Component<Props> {
   getEventProps(): { data: Object, valid: boolean } {
     return {
       data: this.getData(),
-      valid: this.checkValidity()
+      valid: this.isValid()
     };
   }
 
-  handleChange = (value: Object) => {
-    if (!this.props.stateless) {
-      /*
-       * setState(...) only keeps enumerable properties, which causes `schema` created using @field to disappear
-       */
-      this.data = value;
-      this.forceUpdate();
-    }
+  /*
+   * Handlers
+   */
 
+  onChange(values: Object) {
     const onChange = this.props.onChange;
-    if (onChange) {
-      const props = this.getEventProps();
-      if (!this.props.stateless) props.data = value;
+    if (onChange) onChange(this.getEventProps());
+  }
 
-      onChange(props);
-    }
+  /**
+   * Since onChange is used by classes that extend Form, such as StatefulForm, handleChange exists to do .bind()
+   */
+  handleChange = (value: Object) => {
+    this.onChange(value);
   };
 
   handleSubmit = (event: Event) => {
     const onSubmit = this.props.onSubmit;
-    if (!onSubmit) return;
-
-    onSubmit(event, this.getEventProps());
+    if (onSubmit) onSubmit(event, this.getEventProps());
   };
 
+  /*
+   * Lifecycle
+   */
+
   render(): React.Node {
-    const { ['for']: object, schema, stateless, children, ...formProps } = { ...this.props };
+    const { ['for']: object, schema, children, ...formProps } = { ...this.props };
     delete formProps.onChange; // Prevent the browser onChange event to be called
     delete formProps.touchOnMount;
     delete formProps.__testing_valid__;
@@ -105,10 +101,8 @@ export default class Form extends React.Component<Props> {
     if (!object) {
       content = children;
     } else {
-      const statedObject = !stateless ? this.data : object || {};
       content = (
-        // $FlowFixMe
-        <FieldGroup for={statedObject} schema={schema}>
+        <FieldGroup for={this.getData()} schema={schema}>
           {children}
         </FieldGroup>
       );
@@ -120,6 +114,10 @@ export default class Form extends React.Component<Props> {
       </form>
     );
   }
+
+  /*
+   * Errors
+   */
 
   throwUndefinedForm(): any {
     throw new Error('Undefined form HTML element');

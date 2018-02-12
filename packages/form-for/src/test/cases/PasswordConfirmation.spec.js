@@ -1,6 +1,6 @@
 import React from 'react';
 import { mount } from 'enzyme';
-import { field, Field, Form } from '../../index';
+import { field, Field, StatefulForm as Form } from '../../index';
 import Input from '../fixture/Input';
 
 describe('Password Confirmation', () => {

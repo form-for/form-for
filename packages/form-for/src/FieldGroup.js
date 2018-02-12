@@ -40,11 +40,7 @@ export default class FieldGroup extends React.Component<Props> {
     return this.props.schema || this.props.for.schema || this.throwUndefinedSchema();
   }
 
-  /*
-   * Actions
-   */
-
-  buildNewObject(name: string, value: any, index: ?number) {
+  getNewObjectFor(name: string, value: any, index: ?number) {
     if (typeof index === 'undefined') return cloneObject(this.props.for, { [name]: value });
 
     const previousValue = this.props.for[name];
@@ -82,7 +78,7 @@ export default class FieldGroup extends React.Component<Props> {
    */
 
   handleChange = (name: string, value: any, index?: number) => {
-    const newObject = this.buildNewObject(name, value, index);
+    const newObject = this.getNewObjectFor(name, value, index);
     this.dispatchChange(newObject);
   };
 
