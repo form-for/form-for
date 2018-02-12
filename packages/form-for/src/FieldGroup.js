@@ -3,6 +3,7 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import type { Schema } from './Form';
+import cloneObject from './cloneObject';
 
 export type Props = {
   for: Object,
@@ -44,7 +45,7 @@ export default class FieldGroup extends React.Component<Props> {
    */
 
   buildNewObject(name: string, value: any, index: ?number) {
-    if (typeof index === 'undefined') return { ...this.props.for, [name]: value };
+    if (typeof index === 'undefined') return cloneObject(this.props.for, { [name]: value });
 
     const previousValue = this.props.for[name];
     let newValue;
@@ -53,18 +54,11 @@ export default class FieldGroup extends React.Component<Props> {
       newValue = [...previousValue];
       newValue[index] = value;
     } else {
-      newValue = { ...previousValue, [index]: value };
+      // $FlowFixMe
+      newValue = cloneObject(previousValue, { [index]: value });
     }
 
-    return { ...this.props.for, [name]: newValue };
-  }
-
-  transitionSchema(callback: Function) {
-    const schema = this.props.for.schema;
-    const newObject = callback();
-
-    if (schema) Object.defineProperty(newObject, 'schema', { value: schema });
-    return newObject;
+    return cloneObject(this.props.for, { [name]: newValue });
   }
 
   /*
@@ -88,7 +82,7 @@ export default class FieldGroup extends React.Component<Props> {
    */
 
   handleChange = (name: string, value: any, index?: number) => {
-    const newObject = this.transitionSchema(() => this.buildNewObject(name, value, index));
+    const newObject = this.buildNewObject(name, value, index);
     this.dispatchChange(newObject);
   };
 

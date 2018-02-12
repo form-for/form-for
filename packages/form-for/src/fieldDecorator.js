@@ -2,10 +2,6 @@
 
 function decorate(target: any, key: string, descriptor: any, properties: { [_: string]: any }) {
   if (!target.schema) target.schema = {};
-  if (properties.error && typeof target[properties.error] === 'function') {
-    properties.error = target[properties.error];
-  }
-
   target.schema[key] = properties;
   descriptor.writable = true;
 }

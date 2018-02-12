@@ -95,10 +95,6 @@ export default class Field extends React.Component<Props> {
 
     let error = this.getSchemaProperty()['error'];
     if (error) {
-      /*
-       * When the error hasn't been linked yet.
-       * This happens when the target is not a function or the schema wasn't built with @field
-       */
       if (typeof error === 'string') {
         error = this.context.object[error];
       }

@@ -12,8 +12,12 @@ describe('Password Confirmation', () => {
     @field({ error: 'check' })
     password_confirmation: { type: 'text', error: 'check' };
 
+    passwordsMatch() {
+      return this.password === this.password_confirmation;
+    }
+
     check() {
-      return this.password !== this.password_confirmation && 'Passwords do not match';
+      return !this.passwordsMatch() && 'Passwords do not match';
     }
   }
 
