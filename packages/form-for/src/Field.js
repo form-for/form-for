@@ -144,8 +144,14 @@ export default class Field extends React.Component<Props> {
 
   touchAndRender() {
     if (!this.isTouched()) {
+      /*
+       * Touched does not use setState(...) because it is also fired `onChange` and the state updated should come
+       * from one of Field's parents
+       */
       this.touch();
       this.forceUpdate();
+    } else {
+      this.touch();
     }
   }
 

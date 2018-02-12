@@ -72,6 +72,10 @@ export default class Form extends React.Component<Props> {
 
   handleChange = (value: Object) => {
     if (!this.props.stateless) {
+      /*
+       * setState(...) does not keep non-enumerable properties, which causes `schema` and linked `error`
+       * to seize existing when using @field
+       */
       this.data = value;
       this.forceUpdate();
     }
