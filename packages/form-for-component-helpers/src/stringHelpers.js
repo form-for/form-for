@@ -1,8 +1,8 @@
-export function replaceSnakeUnderscore(str: string, glue: string = " "): string {
+export function replaceSnakeUnderscore(str: string, glue: string = ' '): string {
   return str.split(/[_|-]/).join(glue);
 }
 
-export function replaceCamels(str: string, glue: string = " "): string {
+export function replaceCamels(str: string, glue: string = ' '): string {
   return str.replace(/([A-Z])/g, value => glue + value.toLowerCase());
 }
 
@@ -11,7 +11,7 @@ export function capitalize(str: string): string {
 }
 
 export function simplifyFieldName(str: string): string {
-  const lastIndexOfBracket = str.lastIndexOf("[");
+  const lastIndexOfBracket = str.lastIndexOf('[');
   if (lastIndexOfBracket === -1) return str;
 
   return str.substring(lastIndexOfBracket + 1, str.length - 1);

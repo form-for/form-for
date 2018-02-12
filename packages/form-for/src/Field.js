@@ -1,73 +1,35 @@
 // @flow
 
-import * as React from "react";
+import * as React from 'react';
 
-import PropTypes from "prop-types";
-import type { SchemaProperty } from "./FieldGroup";
-
-export type ComponentProps = {
-  type: string,
-  name: string,
-  error?: any,
-  touched: boolean,
-  onMount: Function,
-  onFocus: Function,
-  onChange: Function,
-  value?: any,
-  defaultValue?: any
-};
+import PropTypes from 'prop-types';
+import type { SchemaProperty } from './Form';
 
 export type Props = {
   name: string,
   type?: string,
+  error?: string,
   onFocus?: Function,
-  onChange?: Function,
-  validator?: Function,
-  error?: any,
-  observe?: boolean | string | string[]
+  onChange?: Function
 };
 
-type State = {
-  error: ?any,
-  touched: boolean
+export type ComponentProps = Props & {
+  value: any
 };
 
-export default class Field extends React.PureComponent<Props, State> {
-  static autoBind: boolean = false;
-  static pendingAutoBindComponents: { [name: string]: React.ComponentType<*> } = {};
-
-  target: ?any;
-  value: ?any;
-  error: ?any;
-
-  state = { error: undefined, touched: false };
+export default class Field extends React.Component<Props> {
+  target: Object;
+  touched: ?boolean;
+  incomingError: ?string;
 
   /*
    * Component binding
    */
 
-  static componentBindings: { [_: string]: React.ComponentType<*> } = {};
+  static connectedComponents: { [_: string]: React.ComponentType<*> } = {};
 
-  static registerComponentExistance(type: string, component: React.ComponentType<*>): void {
-    if (this.autoBind) Field.bindComponent(type, component);
-    else Field.pendingAutoBindComponents[type] = component;
-  }
-
-  static bindComponent(type: string, component: React.ComponentType<*>): void {
-    Field.componentBindings[type] = component;
-  }
-
-  static enableAutoBind(): void {
-    Field.autoBind = true;
-    Field.bindPendingAutoBindComponents();
-  }
-
-  static bindPendingAutoBindComponents(): void {
-    Object.keys(Field.pendingAutoBindComponents).forEach(type => {
-      Field.bindComponent(type, Field.pendingAutoBindComponents[type]);
-    });
-
-    Field.pendingAutoBindComponents = {};
+  static connect(type: string, component: React.ComponentType<*>): void {
+    Field.connectedComponents[type] = component;
   }
 
   /*
@@ -77,25 +39,17 @@ export default class Field extends React.PureComponent<Props, State> {
   static contextTypes = {
     object: PropTypes.object.isRequired,
     schema: PropTypes.object.isRequired,
-    prefix: PropTypes.string.isRequired,
     onChange: PropTypes.func.isRequired,
-    skipValidation: PropTypes.bool,
-    touchOnMount: PropTypes.bool,
-    getData: PropTypes.func.isRequired,
-    controlled: PropTypes.bool.isRequired,
-    autoRender: PropTypes.bool.isRequired,
-    mountObserver: PropTypes.func.isRequired,
-    unmountObserver: PropTypes.func.isRequired
+    touchOnMount: PropTypes.bool.isRequired,
+    noValidate: PropTypes.bool.isRequired
   };
 
   static childContextTypes = {
-    prefix: PropTypes.string,
     name: PropTypes.string
   };
 
   getChildContext() {
     return {
-      prefix: this.getPrefixedName(),
       name: this.props.name
     };
   }
@@ -108,62 +62,64 @@ export default class Field extends React.PureComponent<Props, State> {
     return this.context.object[this.props.name];
   }
 
-  getData = (): any => {
-    return this.context.getData()[this.props.name];
-  };
-
   getSchemaProperty(): SchemaProperty {
     const property = this.context.schema[this.props.name];
-    if (!property) {
-      const name = this.props.name;
-      const constructor = this.context.object.constructor.name;
-      console.warn(`Undefined property "${name}" in schema for "${constructor}" instance`);
-    }
+    if (!property) this.warnMissingSchemaProperty();
 
     return property || {};
   }
 
   getType(): string {
-    return this.props.type || this.getSchemaProperty().type || "text";
+    return this.props.type || this.getSchemaProperty().type || 'text';
   }
 
   getComponent(): React.ComponentType<*> {
-    const type = this.getType();
-    const component = Field.componentBindings[type];
-
-    if (!component) {
-      const name = this.props.name;
-      const constructor = this.context.object.constructor.name;
-      throw new Error(`Unbound component type "${type}" requested for property "${name}" in "${constructor}" instance`);
-    }
-
-    return component;
+    return Field.connectedComponents[this.getType()] || this.throwMissingTypeConnection();
   }
 
-  getPrefixedName() {
-    if (this.context.prefix) {
-      const suffix = this.props.name ? `[${this.props.name}]` : "";
-      return `${this.context.prefix}${suffix}`;
-    }
-
-    return this.props.name;
+  getValue(incomingValue?: any) {
+    return typeof incomingValue !== 'undefined' ? incomingValue : this.getTargetValue();
   }
 
-  getValidatorFunction(): ?Function {
-    if (this.props.validator) return this.props.validator;
+  getTargetValue(): any {
+    return this.target.value || this.target.checked;
+  }
 
-    const validator = this.getSchemaProperty().validator;
+  isTouched(): boolean {
+    return this.touched || this.context.touchOnMount;
+  }
 
-    if (typeof validator === "string") {
-      return this.context.object[validator].bind(validator);
+  getError(): ?any {
+    if (this.context.noValidate) return null;
+    if (this.props.error) return this.props.error;
+
+    let error = this.getSchemaProperty()['error'];
+    if (error) {
+      /*
+       * When the error hasn't been linked yet.
+       * This happens when the target is not a function or the schema wasn't built with @field
+       */
+      if (typeof error === 'string') {
+        error = this.context.object[error];
+      }
+
+      if (typeof error === 'function') {
+        return error.bind(this.context.object)(this.context.object, this.props.name);
+      }
+
+      return error;
     }
 
-    return validator;
+    return this.incomingError || (this.target || {}).validationMessage;
   }
 
   /*
    * Setters
    */
+
+  setValue(incomingValue: ?any) {
+    this.context.onChange(this.props.name, this.getValue(incomingValue));
+  }
 
   setBrowserCustomValidity(message: ?string): void {
     if (!this.target) return;
@@ -175,164 +131,88 @@ export default class Field extends React.PureComponent<Props, State> {
   }
 
   clearBrowserCustomValidity() {
-    this.setBrowserCustomValidity("");
+    this.setBrowserCustomValidity('');
   }
 
   /*
    * Actions
    */
 
-  validate = () => {
-    this.validateTarget(this.target);
-  };
+  touch() {
+    this.touched = true;
+  }
 
-  validateTarget(target: any): void {
-    if (this.context.skipValidation) return;
+  touchAndRender() {
+    if (!this.isTouched()) {
+      this.touch();
+      this.forceUpdate();
+    }
+  }
+
+  validate(incomingError?: any) {
     this.clearBrowserCustomValidity();
 
-    target = target || {};
-    const value = this.value || target.value || this.getContextObjectValue();
-
-    let error;
-    if (this.props.error) {
-      error = this.props.error;
-    } else {
-      const validatorResponse = this.validator(value);
-      error = validatorResponse || this.error || target.validationMessage;
-    }
-
-    this.setBrowserCustomValidity(error);
-    this.setState({ error: error });
-  }
-
-  validator(value: any) {
-    const validator = this.getValidatorFunction();
-    if (!validator) return undefined;
-
-    return validator(value, this.context.getData());
-  }
-
-  touch() {
-    if (!this.context.skipValidation && !this.state.touched) this.setState({ touched: true });
-  }
-
-  /*
-   * Dispatchers
-   */
-
-  dispatchFocus(event: Event) {
-    if (this.props.onFocus) this.props.onFocus(event);
-  }
-
-  dispatchChange(event: Event) {
-    this.target = (event || {}).target || this.target;
-    const target: any = this.target || {};
-
-    const value = this.value || target.value;
-    this.context.onChange(this.props.name, value);
-    if (this.props.onChange) this.props.onChange(event, value, this.error);
+    this.incomingError = incomingError;
+    this.setBrowserCustomValidity(this.getError());
   }
 
   /*
    * Handlers
    */
 
-  handleMount = (target: ?any, error: ?any) => {
+  handleMount = (target: Object) => {
     this.target = target;
-    this.error = error;
     this.validate();
-    if (this.context.touchOnMount) this.touch();
   };
 
   handleFocus = (event: Event) => {
     this.target = event.target || this.target;
-    this.dispatchFocus(event);
-    this.touch();
-  };
-
-  handleChange = (event: Event, value: any, error: ?any) => {
-    this.value = value;
-    this.error = error;
-
     this.validate();
-    this.dispatchChange(event);
+    this.touchAndRender();
+
+    if (this.props.onFocus) this.props.onFocus(event);
+  };
+
+  handleChange = (event: Event, value?: any, error?: any) => {
+    this.target = event.target || this.target;
+    this.setValue(value);
+    this.validate(error);
+    this.touch();
+
+    if (this.props.onChange) this.props.onChange(event);
   };
 
   /*
-   * Builders
-   */
-
-  buildValueProps() {
-    if (typeof this.props.value === "undefined") {
-      const contextObjectValue = this.getContextObjectValue();
-
-      if (this.context.controlled) {
-        const value = typeof contextObjectValue !== "undefined" ? contextObjectValue : "";
-        return { value };
-      }
-
-      if (!this.props.defaultValue) {
-        return { defaultValue: contextObjectValue };
-      }
-    }
-
-    // The  `value` prop will be present on `...this.props`
-    return {};
-  }
-
-  buildStatusProps() {
-    return {
-      error: this.props.error || this.state.error,
-      touched: this.state.touched
-    };
-  }
-
-  buildProps() {
-    const props = {
-      ...this.getSchemaProperty(),
-      ...this.props,
-      name: this.getPrefixedName(),
-      onMount: this.handleMount,
-      onFocus: this.handleFocus,
-      onChange: this.handleChange,
-      ...this.buildValueProps(),
-      ...this.buildStatusProps()
-    };
-
-    delete props.validator;
-    delete props.observe;
-
-    return props;
-  }
-
-  /*
-  * Lifecycle
-  */
-
-  componentWillMount() {
-    const observe = this.props.observe || this.getSchemaProperty().observe;
-    this.context.mountObserver(this.props.name, {
-      fields: observe,
-      fn: (name: string) => {
-        const isAnotherField = name !== this.props.name;
-        if (isAnotherField) this.validate();
-
-        const shouldRerender = !this.context.autoRender && (this.context.controlled || isAnotherField);
-        if (shouldRerender) this.forceUpdate();
-      }
-    });
-  }
-
-  componentWillUnmount() {
-    this.context.unmountObserver(this.props.name);
-  }
-
-  /*
-   * Render
+   * Lifecycle
    */
 
   render() {
-    let component = this.getComponent();
-    return React.createElement(component, this.buildProps());
+    return React.createElement(this.getComponent(), {
+      ...this.getSchemaProperty(),
+      ...this.props,
+      value: this.getContextObjectValue() || '',
+      error: this.getError(),
+      touched: this.isTouched(),
+      onMount: this.handleMount,
+      onFocus: this.handleFocus,
+      onChange: this.handleChange
+    });
+  }
+
+  /*
+   * Errors
+   */
+
+  warnMissingSchemaProperty() {
+    const name = this.props.name;
+    const constructor = this.context.object.constructor.name;
+    console.warn(`Undefined property "${name}" in schema for "${constructor}" instance`);
+  }
+
+  throwMissingTypeConnection() {
+    const type = this.getType();
+    const name = this.props.name;
+    const constructor = this.context.object.constructor.name;
+    throw new Error(`Missing "${type}" connection requested for property "${name}" in "${constructor}" instance`);
   }
 }

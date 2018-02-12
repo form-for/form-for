@@ -1,38 +1,38 @@
-import React, { Component } from "react";
-import { mount } from "enzyme";
-import { Field, Form } from "../../index";
-import Input from "../fixture/Input";
+import React from 'react';
+import { mount } from 'enzyme';
+import { Field, Form } from '../../index';
+import Input from '../fixture/Input';
 
-describe("Custom schema", () => {
-  Field.bindComponent("text", Input);
+describe('Custom schema', () => {
+  Field.connect('text', Input);
 
   const schema = {
     name: {
-      type: "text"
+      type: 'text'
     }
   };
 
-  it("is used when provided without object schema", () => {
+  it('is used when provided without object schema', () => {
     const wrapper = mount(
-      <Form for={{ name: "John" }} schema={schema} __testing_valid__>
+      <Form for={{ name: 'John' }} schema={schema}>
         <Field name="name" />
       </Form>
     );
 
-    const input = wrapper.find("input").first();
-    expect(input.props().defaultValue).toEqual("John");
+    const input = wrapper.find('input').first();
+    expect(input.props().value).toEqual('John');
   });
 
-  it("takes precedence over `for` schema", () => {
-    const value = { name: "John", schema: { name: { type: "Nothing" } } };
+  it('takes precedence over `for` schema', () => {
+    const value = { name: 'John', schema: { name: { type: 'Nothing' } } };
 
     const wrapper = mount(
-      <Form for={value} schema={schema} __testing_valid__>
+      <Form for={value} schema={schema}>
         <Field name="name" />
       </Form>
     );
 
-    const input = wrapper.find("input").first();
-    expect(input.props().defaultValue).toEqual("John");
+    const input = wrapper.find('input').first();
+    expect(input.props().value).toEqual('John');
   });
 });

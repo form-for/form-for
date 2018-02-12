@@ -1,226 +1,111 @@
 // @flow
 
-import * as React from "react";
-import PropTypes from "prop-types";
-
-import type { Props as FormProps } from "./Form";
-import { clone } from "./helpers";
-
-export type SchemaProperty = {
-  type?: string,
-  [key: string]: any
-};
-
-export type Schema = {
-  [key: string]: SchemaProperty
-};
-
-type Observer = {
-  fields: boolean | string | string[],
-  fn: Function
-};
+import * as React from 'react';
+import PropTypes from 'prop-types';
+import type { Schema } from './Form';
 
 export type Props = {
-  index?: any
-} & FormProps;
+  for: Object,
+  schema?: Schema,
+  index?: number,
+  children: React.Node
+};
 
-const DEFAULT_MUTATION_WRAPPER = (mutator, name, value) => mutator();
-
-export default class FieldGroup extends React.PureComponent<Props> {
-  data: { [_: any]: any };
-  observer: { [_: string]: Observer } = {};
-
-  /*
-   * Context
-   */
-
+export default class FieldGroup extends React.Component<Props> {
   static contextTypes = {
-    immutable: PropTypes.bool,
-    mutationWrapper: PropTypes.func,
-    name: PropTypes.string,
-    prefix: PropTypes.string,
-    getData: PropTypes.func,
-    controlled: PropTypes.bool,
-    skipValidation: PropTypes.bool,
-    touchOnMount: PropTypes.bool,
-    onChange: PropTypes.func
+    onChange: PropTypes.func.isRequired,
+    name: PropTypes.string
   };
 
   static childContextTypes = {
     object: PropTypes.object,
     schema: PropTypes.object,
-    immutable: PropTypes.bool,
-    mutationWrapper: PropTypes.func,
-    prefix: PropTypes.string,
-    onChange: PropTypes.func,
-    skipValidation: PropTypes.bool,
-    touchOnMount: PropTypes.bool,
-    getData: PropTypes.func,
-    controlled: PropTypes.bool,
-    autoRender: PropTypes.bool,
-    mountObserver: PropTypes.func,
-    unmountObserver: PropTypes.func
+    onChange: PropTypes.func
   };
-
-  getChildContext() {
-    return {
-      object: this.props.for,
-      schema: this.getSchema(),
-      immutable: this.isImmutable(),
-      mutationWrapper: this.getMutationWrapper(),
-      prefix: this.getPrefix(),
-      onChange: this.handleChange,
-      controlled: this.isControlled(),
-      autoRender: this.hasAutoRender(),
-      skipValidation: this.hasSkipValidation(),
-      touchOnMount: this.hasTouchOnMount(),
-      getData: this.getData,
-      mountObserver: this.handleMountObserver,
-      unmountObserver: this.handleUnmountObserver
-    };
-  }
 
   /*
    * Getters
    */
 
+  getChildContext() {
+    return {
+      object: this.props.for,
+      schema: this.getSchema(),
+      onChange: this.handleChange
+    };
+  }
+
   getSchema(): Schema {
-    const object = this.props.for;
-    const schema = this.props.schema || object.schema;
+    return this.props.schema || this.props.for.schema || this.throwUndefinedSchema();
+  }
 
-    if (!schema) {
-      const constructor = object.constructor.name;
-      throw `Undefined schema for "${constructor}" instance`;
+  /*
+   * Actions
+   */
+
+  buildNewObject(name: string, value: any, index: ?number) {
+    if (typeof index === 'undefined') return { ...this.props.for, [name]: value };
+
+    const previousValue = this.props.for[name];
+    let newValue;
+
+    if (Array.isArray(previousValue)) {
+      newValue = [...previousValue];
+      newValue[index] = value;
+    } else {
+      newValue = { ...previousValue, [index]: value };
     }
 
-    return schema;
+    return { ...this.props.for, [name]: newValue };
   }
 
-  isImmutable(): boolean {
-    if (typeof this.props.immutable !== "undefined") return this.props.immutable;
-    return this.context.immutable;
-  }
+  transitionSchema(callback: Function) {
+    const schema = this.props.for.schema;
+    const newObject = callback();
 
-  getMutationWrapper(): Function {
-    return this.props.mutationWrapper || this.context.mutationWrapper || DEFAULT_MUTATION_WRAPPER;
-  }
-
-  getPrefix(): string {
-    let prefix = this.props.prefix || this.context.prefix || "";
-
-    if (typeof this.props.index !== "undefined") {
-      prefix += `[${this.props.index}]`;
-    }
-
-    return prefix;
-  }
-
-  getData = (): { [_: any]: any } => {
-    return this.data;
-  };
-
-  isControlled(): boolean {
-    if (this.props.uncontrolled) return false;
-    return !!(this.props.onChange || this.context.controlled);
-  }
-
-  hasAutoRender(): boolean {
-    return !!(this.props.autoRender || this.context.autoRender);
-  }
-
-  hasSkipValidation(): boolean {
-    return !!(this.props.skipValidation || this.context.skipValidation);
-  }
-
-  hasTouchOnMount(): boolean {
-    return !!(this.props.touchOnMount || this.context.touchOnMount);
-  }
-
-  requestIndex(): any {
-    const index = this.props.index;
-    if (typeof index === "undefined") {
-      throw `Nested field group without index for ${this.data.toString()}.`;
-    }
-
-    return index;
+    if (schema) Object.defineProperty(newObject, 'schema', { value: schema });
+    return newObject;
   }
 
   /*
    * Dispatchers
    */
 
-  dispatchObservers(propertyChanged: string): void {
-    Object.keys(this.observer).forEach(name => {
-      const observer = this.observer[name];
-      const fields = observer.fields;
-
-      if (
-        name === propertyChanged ||
-        fields === true ||
-        fields === propertyChanged ||
-        (Array.isArray(fields) && fields.includes(propertyChanged))
-      ) {
-        observer.fn(propertyChanged);
-      }
-    });
+  dispatchChange(newObject: Object) {
+    this.context.name ? this.dispatchNestedChange(newObject) : this.dispatchFormChange(newObject);
   }
 
-  dispatchChange() {
-    if (this.props.onChange) this.props.onChange(this.data);
-    if (this.context.onChange) this.dispatchParentChange();
+  dispatchNestedChange(newObject: Object) {
+    this.context.onChange(this.context.name, newObject, this.props.index);
   }
 
-  dispatchParentChange() {
-    let data = this.context.getData()[this.context.name] || {};
-    if (this.isImmutable()) {
-      data = clone(data);
-      data[this.requestIndex()] = this.data;
-    }
-
-    this.context.onChange(this.context.name, data);
+  dispatchFormChange(newObject: Object) {
+    this.context.onChange(newObject);
   }
 
   /*
    * Handlers
    */
 
-  handleChange = (name: string, value: any) => {
-    if (this.isImmutable()) this.data = clone(this.data);
-
-    const mutator = () => (this.data[name] = value);
-    this.getMutationWrapper()(mutator, name, value);
-
-    this.dispatchChange();
-    this.dispatchObservers(name);
-  };
-
-  handleMountObserver = (name: string, observer: Observer): void => {
-    this.observer[name] = observer;
-  };
-
-  handleUnmountObserver = (name: string): void => {
-    delete this.observer[name];
+  handleChange = (name: string, value: any, index?: number) => {
+    const newObject = this.transitionSchema(() => this.buildNewObject(name, value, index));
+    this.dispatchChange(newObject);
   };
 
   /*
    * Lifecycle
    */
 
-  componentWillMount() {
-    this.data = this.props.for;
-  }
-
-  componentWillReceiveProps(nextProps: Props) {
-    if (this.isControlled()) {
-      this.data = nextProps.for;
-    }
+  render(): React.Node {
+    return this.props.children || null;
   }
 
   /*
-   * Render
+   * Errors
    */
 
-  render(): React.Node {
-    return this.props.children || null;
+  throwUndefinedSchema(): any {
+    const constructor = this.props.for.constructor.name;
+    throw new Error(`Undefined schema for "${constructor}" instance`);
   }
 }

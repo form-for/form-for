@@ -1,15 +1,15 @@
-import { field } from "../../index";
+import { field } from '../../index';
 
-describe("Field decorator", () => {
+describe('Field decorator', () => {
   let testInstance;
 
   class TestClass {
     @field name;
 
-    @field({ placeholder: "Doe" })
+    @field({ placeholder: 'Doe' })
     surname;
 
-    @field({ type: "number", min: 0 })
+    @field({ type: 'number', min: 0 })
     money;
   }
 
@@ -17,23 +17,23 @@ describe("Field decorator", () => {
     testInstance = new TestClass();
   });
 
-  it("sets only schema properties", () => {
-    expect(Object.keys(testInstance.schema)).toEqual(["name", "surname", "money"]);
+  it('sets only schema properties', () => {
+    expect(Object.keys(testInstance.schema)).toEqual(['name', 'surname', 'money']);
   });
 
-  it("sets schema property without parameters", () => {
+  it('sets schema property without parameters', () => {
     expect(testInstance.schema.name).toMatchObject({});
   });
 
-  it("does not set the type if not given", () => {
+  it('does not set the type if not given', () => {
     expect(testInstance.schema.surname).toMatchObject({
-      placeholder: "Doe"
+      placeholder: 'Doe'
     });
   });
 
-  it("sets type when give", () => {
+  it('sets type when give', () => {
     expect(testInstance.schema.money).toMatchObject({
-      type: "number",
+      type: 'number',
       min: 0
     });
   });

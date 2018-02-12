@@ -6,7 +6,7 @@ export default function uniqueId(Component: any): string {
 
   if (Component.__uniqueGeneratedId) return Component.__uniqueGeneratedId;
 
-  return (Component["__uniqueGeneratedId"] = `${Component.constructor.name}#${uniqueId.idCounter++}`);
+  return (Component['__uniqueGeneratedId'] = `${Component.constructor.name}#${uniqueId.idCounter++}`);
 }
 
 uniqueId.idCounter = 1;

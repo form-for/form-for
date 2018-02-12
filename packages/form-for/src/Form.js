@@ -1,89 +1,124 @@
 // @flow
 
-import * as React from "react";
-import type { Schema } from "./FieldGroup";
-import FieldGroup from "./FieldGroup";
+import * as React from 'react';
+import PropTypes from 'prop-types';
+import FieldGroup from './FieldGroup';
 
-export type Props = {
-  for: { [_: any]: any },
-  schema?: Schema,
-  immutable?: boolean,
-  mutationWrapper?: Function,
-  prefix?: string,
-  onChange?: Function,
-  uncontrolled?: boolean,
-  autoRender?: boolean,
-  onSubmit?: Function,
-  skipValidation?: boolean,
-  touchOnMount?: boolean,
-  children: React.Node
+export type SchemaProperty = {
+  type?: string,
+  [key: string]: any
 };
 
-export default class Form extends React.PureComponent<Props> {
+export type Schema = {
+  [key: string]: SchemaProperty
+};
+
+export type Props = {
+  for?: Object,
+  schema?: Schema,
+  children: React.Node,
+  onSubmit?: Function,
+  onChange?: Function,
+  stateless?: boolean,
+  touchOnMount?: boolean,
+  noValidate?: boolean
+};
+
+export default class Form extends React.Component<Props> {
   form: ?HTMLFormElement;
-  fieldGroup: ?FieldGroup;
+  data: Object;
 
-  isValid(): boolean {
-    // $FlowFixMe
-    const testingValid = this.props.__testing_valid__;
-    if (typeof testingValid !== "undefined") return testingValid;
-
-    return !!this.form && this.form.checkValidity();
+  constructor(props: Props) {
+    super(props);
+    this.data = props.for || {};
   }
 
-  handleChange = (values: any) => {
-    const onChange = this.props.onChange;
-    if (onChange) onChange(values, this.isValid());
+  static childContextTypes = {
+    onChange: PropTypes.func,
+    touchOnMount: PropTypes.bool,
+    noValidate: PropTypes.bool
   };
 
-  handleSubmit = () => {
-    if (this.props.onSubmit) {
-      return this.props.onSubmit((this.fieldGroup || {}).data);
+  getChildContext() {
+    return {
+      onChange: this.handleChange,
+      touchOnMount: !!this.props.touchOnMount,
+      noValidate: !!this.props.noValidate
+    };
+  }
+
+  getData(): Object {
+    return !this.props.stateless ? this.data : this.props.for || {};
+  }
+
+  getForm(): HTMLFormElement {
+    return this.form || this.throwUndefinedForm();
+  }
+
+  checkValidity() {
+    // $FlowFixMe
+    const testingValid = this.props.__testing_valid__;
+    if (typeof testingValid !== 'undefined') return testingValid;
+
+    return this.getForm().checkValidity();
+  }
+
+  getEventProps(): { data: Object, valid: boolean } {
+    return {
+      data: this.getData(),
+      valid: this.checkValidity()
+    };
+  }
+
+  handleChange = (value: Object) => {
+    if (!this.props.stateless) {
+      this.data = value;
+      this.forceUpdate();
+    }
+
+    const onChange = this.props.onChange;
+    if (onChange) {
+      const props = this.getEventProps();
+      if (!this.props.stateless) props.data = value;
+
+      onChange(props);
     }
   };
 
-  componentDidMount() {
-    if (!this.isValid()) this.handleChange(this.props.for);
-  }
+  handleSubmit = (event: Event) => {
+    const onSubmit = this.props.onSubmit;
+    if (!onSubmit) return;
+
+    onSubmit(event, this.getEventProps());
+  };
 
   render(): React.Node {
-    const {
-      ["for"]: object,
-      schema,
-      immutable,
-      mutationWrapper,
-      prefix,
-      onChange,
-      uncontrolled,
-      autoRender,
-      skipValidation,
-      touchOnMount,
-      validate,
-      children,
-      ...remainingProps
-    } = { ...this.props };
+    const { ['for']: object, schema, stateless, children, ...formProps } = { ...this.props };
+    delete formProps.onChange; // Prevent the browser onChange event to be called
+    delete formProps.touchOnMount;
+    delete formProps.__testing_valid__;
 
-    delete remainingProps.__testing_valid__;
-
-    return (
-      <form ref={el => (this.form = el)} {...remainingProps} onSubmit={this.handleSubmit}>
-        <FieldGroup
-          ref={el => (this.fieldGroup = el)}
-          for={object}
-          schema={schema}
-          immutable={immutable}
-          mutationWrapper={mutationWrapper}
-          prefix={prefix}
-          onChange={onChange ? this.handleChange : undefined}
-          autoRender={autoRender}
-          skipValidation={skipValidation}
-          touchOnMount={touchOnMount}
-          validate={typeof validate === "undefined" ? true : validate}
-          uncontrolled={uncontrolled}
-        >
+    let content;
+    if (!object) {
+      content = children;
+    } else {
+      const statedObject = !stateless ? this.data : object || {};
+      content = (
+        // $FlowFixMe
+        <FieldGroup for={statedObject} schema={schema}>
           {children}
         </FieldGroup>
+      );
+    }
+
+    return (
+      <form {...formProps} ref={el => (this.form = el)} onSubmit={this.handleSubmit}>
+        {content}
       </form>
     );
+  }
+
+  throwUndefinedForm(): any {
+    throw new Error('Undefined form HTML element');
   }
 }

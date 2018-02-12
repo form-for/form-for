@@ -1,119 +1,38 @@
-import React from "react";
-import { mount } from "enzyme";
-import { Field, Form } from "../../index";
-import Input from "../fixture/Input";
-import Counter from "../fixture/Counter";
+import React from 'react';
+import { mount } from 'enzyme';
+import { field, Field, Form } from '../../index';
+import Input from '../fixture/Input';
 
-describe("Field observe", () => {
-  Field.connect("text", Input);
-  Field.connect("counter", Counter);
+describe('Password Confirmation', () => {
+  Field.connect('text', Input);
 
-  const object = {
-    schema: {
-      name: { type: "text" },
-      counter: { type: "counter" }
+  class User {
+    @field password;
+
+    @field({ error: 'check' })
+    password_confirmation: { type: 'text', error: 'check' };
+
+    check() {
+      return this.password !== this.password_confirmation && 'Passwords do not match';
     }
-  };
+  }
 
-  it("re-renders upon observed field changes", () => {
+  const user = new User();
+
+  it('updates confirmation error on password change', () => {
     const wrapper = mount(
-      <Form for={object} __testing_valid__>
-        <Field name="name" />
-        <Field name="counter" observe="name" />
+      <Form for={user} __testing_valid__>
+        <Field name="password" />
+        <Field name="password_confirmation" />
       </Form>
     );
 
     wrapper
-      .find("input")
+      .find('input[name="password"]')
       .first()
-      .simulate("change", { target: { value: "New value" } });
+      .simulate('change', { target: { value: 'New value' } });
 
-    expect(
-      wrapper
-        .find("input[name='counter']")
-        .first()
-        .props()["data-count"]
-    ).toBe(2);
-  });
-
-  it("observes all with `observe: true`", () => {
-    const wrapper = mount(
-      <Form for={object} __testing_valid__>
-        <Field name="name" />
-        <Field name="counter" observe={true} />
-      </Form>
-    );
-
-    wrapper
-      .find("input")
-      .first()
-      .simulate("change", { target: { value: "New value" } });
-
-    expect(
-      wrapper
-        .find("input[name='counter']")
-        .first()
-        .props()["data-count"]
-    ).toBe(2);
-  });
-
-  it("observes given an array", () => {
-    const wrapper = mount(
-      <Form for={object} __testing_valid__>
-        <Field name="name" />
-        <Field name="counter" observe={["name"]} />
-      </Form>
-    );
-
-    wrapper
-      .find("input")
-      .first()
-      .simulate("change", { target: { value: "New value" } });
-
-    expect(
-      wrapper
-        .find("input[name='counter']")
-        .first()
-        .props()["data-count"]
-    ).toBe(2);
-  });
-
-  it("does not update if a non-observed field changes", () => {
-    const wrapper = mount(
-      <Form for={object} __testing_valid__>
-        <Field name="name" />
-        <Field name="counter" observe="another" />
-      </Form>
-    );
-
-    wrapper
-      .find("input")
-      .first()
-      .simulate("change", { target: { value: "New value" } });
-
-    expect(
-      wrapper
-        .find("input[name='counter']")
-        .first()
-        .props()["data-count"]
-    ).toBe(1);
-  });
-
-  it("calls validator upon observed field changes", () => {
-    const validator = jest.fn();
-
-    const wrapper = mount(
-      <Form for={{ counter: 0 }} schema={object.schema} __testing_valid__>
-        <Field name="name" />
-        <Field name="counter" observe="name" validator={validator} />
-      </Form>
-    );
-
-    wrapper
-      .find("input")
-      .first()
-      .simulate("change", { target: { value: "New value" } });
-
-    expect(validator).toHaveBeenCalledWith(0, { counter: 0, name: "New value" });
+    const passwordConfirmation = wrapper.find('input[name="password_confirmation"]').first();
+    expect(passwordConfirmation.props()['data-error']).toEqual('Passwords do not match');
   });
 });
