@@ -23,7 +23,7 @@ export type Props = {
   noValidate?: boolean
 };
 
-export default class Form extends React.Component<Props> {
+export default class Form extends React.Component<Props, *> {
   form: ?HTMLFormElement;
 
   /*

@@ -3,12 +3,15 @@
 import * as React from 'react';
 import Form from './Form';
 
+/*
+ * setState(...) only keeps enumerable properties, which causes `schema` created using @field to disappear
+ * To work around that it's used setState with a counter
+ */
 export default class StatefulForm extends Form {
-  /*
-   * setState(...) only keeps enumerable properties, which causes `schema` created using @field to disappear
-   * To work around that it's used `data` as an Object along with `forceUpdate`
-   */
+  state = { counter: 0 };
+
   data: Object;
+  counter: number = 0;
 
   constructor(props: any) {
     super(props);
@@ -19,9 +22,13 @@ export default class StatefulForm extends Form {
     return this.data;
   }
 
+  stateHandler = (prevState: { counter: number }) => {
+    return { counter: prevState.counter + 1 };
+  };
+
   onChange(values: Object) {
     this.data = values;
-    this.forceUpdate();
+    this.setState(this.stateHandler);
     super.onChange(values);
   }
 }
