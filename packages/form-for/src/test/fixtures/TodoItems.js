@@ -16,14 +16,14 @@ export class TodoItem {
 
 export class TodoItems extends React.Component<ComponentProps> {
   render() {
-    const items: TodoItem[] = this.props.value;
+    const { value } = this.props;
 
     return (
       <fieldset className="form-group">
         <legend>Todo Items</legend>
 
-        {Object.keys(items).map(key => {
-          const item = items[key];
+        {Object.keys(value).map(key => {
+          const item = value[key];
 
           return (
             <FieldGroup key={item.uid} for={item} index={key}>

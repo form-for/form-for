@@ -9,7 +9,7 @@ import prefixer from './prefixer';
 export type Props = {
   for: Object,
   schema?: Schema,
-  prefix: string,
+  prefix?: string,
   index?: any,
   children: React.Node
 };

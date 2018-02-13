@@ -15,7 +15,10 @@ export type Props = {
 };
 
 export type ComponentProps = Props & {
-  value: any
+  value: any,
+  onMount: Function,
+  onFocus: Function,
+  onChange: Function
 };
 
 export default class Field extends React.Component<Props> {

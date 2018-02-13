@@ -13,4 +13,6 @@ export type { Props as FieldGroupProps } from './FieldGroup';
 
 import fieldDecorator from './fieldDecorator';
 
-export { BaseForm, Form, Field, FieldGroup, fieldDecorator as field };
+import cloneObject from './cloneObject';
+
+export { BaseForm, Form, Field, FieldGroup, fieldDecorator as field, cloneObject };
