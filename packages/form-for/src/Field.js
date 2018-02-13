@@ -4,6 +4,7 @@ import * as React from 'react';
 
 import PropTypes from 'prop-types';
 import type { SchemaProperty } from './BaseForm';
+import prefixer from './prefixer';
 
 export type Props = {
   name: string,
@@ -39,6 +40,7 @@ export default class Field extends React.Component<Props> {
   static contextTypes = {
     object: PropTypes.object.isRequired,
     schema: PropTypes.object.isRequired,
+    prefix: PropTypes.string,
     onChange: PropTypes.func.isRequired,
     touchOnMount: PropTypes.bool.isRequired,
     noValidate: PropTypes.bool.isRequired
@@ -71,6 +73,10 @@ export default class Field extends React.Component<Props> {
 
   getType(): string {
     return this.props.type || this.getSchemaProperty().type || 'text';
+  }
+
+  getPrefixedName() {
+    return prefixer(this.context.prefix, this.props.name);
   }
 
   getComponent(): React.ComponentType<*> {
@@ -192,6 +198,7 @@ export default class Field extends React.Component<Props> {
     return React.createElement(this.getComponent(), {
       ...this.getSchemaProperty(),
       ...this.props,
+      name: this.getPrefixedName(),
       value: this.getContextObjectValue() || '',
       error: this.getError(),
       touched: this.isTouched(),

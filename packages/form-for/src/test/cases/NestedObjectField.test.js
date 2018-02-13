@@ -20,8 +20,11 @@ describe('Nested fields', () => {
       </Form>
     );
 
-    const inputs = wrapper.find('input[name="text"]');
-    expect(inputs.length).toEqual(2);
+    const firstInput = wrapper.find('input[name="todos[first][text]"]');
+    expect(firstInput.length).toEqual(1);
+
+    const secondInput = wrapper.find('input[name="todos[second][text]"]');
+    expect(secondInput.length).toEqual(1);
   });
 
   it('updates value properly', () => {
@@ -36,7 +39,7 @@ describe('Nested fields', () => {
     );
 
     wrapper
-      .find('input[name="text"]')
+      .find('input[name="todos[first][text]"]')
       .first()
       .simulate('change', { target: { value: 'New text' } });
 

@@ -4,10 +4,12 @@ import * as React from 'react';
 import PropTypes from 'prop-types';
 import type { Schema } from './BaseForm';
 import cloneObject from './cloneObject';
+import prefixer from './prefixer';
 
 export type Props = {
   for: Object,
   schema?: Schema,
+  prefix: string,
   index?: any,
   children: React.Node
 };
@@ -21,6 +23,7 @@ export default class FieldGroup extends React.Component<Props> {
   static childContextTypes = {
     object: PropTypes.object,
     schema: PropTypes.object,
+    prefix: PropTypes.string,
     onChange: PropTypes.func
   };
 
@@ -32,8 +35,13 @@ export default class FieldGroup extends React.Component<Props> {
     return {
       object: this.props.for,
       schema: this.getSchema(),
+      prefix: this.getPrefix(),
       onChange: this.handleChange
     };
+  }
+
+  getPrefix(): string {
+    return prefixer(this.context.prefix, this.context.name, this.props.prefix, this.props.index);
   }
 
   getSchema(): Schema {
