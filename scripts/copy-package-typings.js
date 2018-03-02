@@ -1,9 +1,9 @@
-const cpy = require("cpy");
-const { packagePath } = require("./config");
+const cpy = require('cpy');
+const { packagePath } = require('./config');
 
-module.exports = function(pkg) {
-  console.info("[" + pkg + "] copy type files");
-  cpy(packagePath(pkg, "src/**.js"), packagePath(pkg, "dist"), {
-    rename: basename => `${basename}.flow`
+module.exports = function(pkg, format) {
+  console.info(`[${pkg}] add ${format} flow copy`);
+  cpy('./scripts/templates/flow.template.js', packagePath(pkg, 'dist'), {
+    rename: basename => `${pkg}.${format}.js.flow`
   });
 };

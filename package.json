@@ -10,7 +10,7 @@
     "test:coverage": "jest --coverage",
     "test:watch": "jest --watch",
     "flow": "flow",
-    "prettier": "prettier --write \"{demo,packages/*/src}/**/*.js\"",
+    "prettier": "prettier --write \"{scripts,packages/*/src}/**/*.js\"",
     "precommit": "lint-staged"
   },
   "devDependencies": {
@@ -54,9 +54,5 @@
   },
   "jest": {
     "setupTestFrameworkScriptFile": "<rootDir>/setupTests.js"
-  },
-  "prettier": {
-    "single-quote": true,
-    "print-width": 120
   }
 }
