@@ -1,7 +1,7 @@
 import React from 'react';
 import { observable } from 'mobx';
 import { mount } from 'enzyme';
-import { Field, Form } from '../../index';
+import { Field, Form } from '../../src';
 import Input from '../fixtures/Input';
 
 describe('Form', () => {
@@ -16,7 +16,7 @@ describe('Form', () => {
 
   beforeAll(() => {
     wrapper = mount(
-      <Form for={object} schema={schema} onChange={onChange} onSubmit={onSubmit} __testing_valid__>
+      <Form for={object} schema={schema} onChange={onChange} onSubmit={onSubmit}>
         <Field name="name" />
       </Form>
     );

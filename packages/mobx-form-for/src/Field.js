@@ -6,8 +6,6 @@ import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import { Field as BaseField } from 'form-for';
 
-class Field extends BaseField {
-  shouldComponentUpdate = () => true;
-}
+class Field extends BaseField {}
 
 export default observer(Field);
