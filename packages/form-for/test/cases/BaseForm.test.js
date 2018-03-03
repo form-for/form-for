@@ -1,6 +1,6 @@
 import React from 'react';
 import { mount } from 'enzyme';
-import { Field, BaseForm } from '../../index';
+import { Field, BaseForm } from '../../src';
 import Input from '../fixtures/Input';
 
 describe('BaseForm', () => {

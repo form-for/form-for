@@ -1,7 +1,7 @@
 // @flow
 
 import * as React from 'react';
-import { field, Field, FieldGroup, type ComponentProps } from '../../index';
+import { field, Field, FieldGroup, type ComponentProps } from '../../src';
 
 export class TodoItem {
   @field uid: any;

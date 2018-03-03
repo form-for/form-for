@@ -1,4 +1,4 @@
-import { field } from '../../index';
+import { field } from '../../src';
 
 describe('Field decorator', () => {
   let testInstance;

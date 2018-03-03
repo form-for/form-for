@@ -1,4 +1,4 @@
-import prefixer from '../prefixer';
+import prefixer from '../src/prefixer';
 
 describe('prefixer', () => {
   it('returns sole object', () => {

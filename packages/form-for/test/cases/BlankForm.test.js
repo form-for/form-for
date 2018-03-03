@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from 'enzyme';
-import { Form } from '../../index';
+import { Form } from '../../src';
 
 describe('Blank form', () => {
   it('does not throw', () => {

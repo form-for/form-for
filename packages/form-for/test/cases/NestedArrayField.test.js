@@ -1,16 +1,16 @@
 import React from 'react';
 import { mount } from 'enzyme';
-import { Field, Form } from '../../index';
+import { Field, Form } from '../../src';
 import { TodoItem, TodoItems } from '../fixtures/TodoItems';
 import Input from '../fixtures/Input';
 
 describe('Nested fields', () => {
-  Field.connect('TodoItem{}', TodoItems);
+  Field.connect('TodoItem[]', TodoItems);
   Field.connect('text', Input);
 
   const object = {
-    todos: { first: new TodoItem(1, 'Text 1'), second: new TodoItem(2, 'Text 2') },
-    schema: { todos: { type: 'TodoItem{}' } }
+    todos: [new TodoItem(1, 'Text 1'), new TodoItem(2, 'Text 2')],
+    schema: { todos: { type: 'TodoItem[]' } }
   };
 
   it('displays nested field', () => {
@@ -20,16 +20,16 @@ describe('Nested fields', () => {
       </Form>
     );
 
-    const firstInput = wrapper.find('input[name="todos[first][text]"]');
+    const firstInput = wrapper.find('input[name="todos[0][text]"]');
     expect(firstInput.length).toEqual(1);
 
-    const secondInput = wrapper.find('input[name="todos[second][text]"]');
+    const secondInput = wrapper.find('input[name="todos[1][text]"]');
     expect(secondInput.length).toEqual(1);
   });
 
   it('updates value properly', () => {
     const onChange = jest.fn(data => {
-      expect(data.todos.first.text).toEqual('New text');
+      expect(data.todos[0].text).toEqual('New text');
     });
 
     const wrapper = mount(
@@ -39,7 +39,7 @@ describe('Nested fields', () => {
     );
 
     wrapper
-      .find('input[name="todos[first][text]"]')
+      .find('input[name="todos[0][text]"]')
       .first()
       .simulate('change', { target: { value: 'New text' } });
 

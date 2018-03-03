@@ -1,4 +1,4 @@
-import { Field } from '../../index';
+import { Field } from '../../src';
 import Input from './Input';
 import Select from './Select';
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from 'enzyme';
-import { Field, Form } from '../../index';
+import { Field, Form } from '../../src';
 import Input from '../fixtures/Input';
 
 describe('Field type', () => {
