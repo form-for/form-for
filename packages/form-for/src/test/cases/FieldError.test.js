@@ -13,7 +13,7 @@ describe('Field error', () => {
 
   it('does not show error if not existent', () => {
     const wrapper = mount(
-      <Form for={object} touchOnMount __testing_valid__>
+      <Form for={object} touchOnMount>
         <Field name="name" />
       </Form>
     );
@@ -23,7 +23,7 @@ describe('Field error', () => {
 
   it('shows object error', () => {
     const wrapper = mount(
-      <Form for={{ ...object, invalidate: 'Invalid' }} touchOnMount __testing_valid__>
+      <Form for={{ ...object, invalidate: 'Invalid' }} touchOnMount>
         <Field name="name" />
       </Form>
     );
@@ -37,7 +37,7 @@ describe('Field error', () => {
     }
 
     const wrapper = mount(
-      <Form for={{ ...object, invalidate }} __testing_valid__>
+      <Form for={{ ...object, invalidate }}>
         <Field name="name" />
       </Form>
     );
@@ -48,7 +48,7 @@ describe('Field error', () => {
 
   it('shows errors (touches) on focus', () => {
     const wrapper = mount(
-      <Form for={object} __testing_valid__>
+      <Form for={object}>
         <Field name="name" error="Prop error" />
       </Form>
     );
@@ -64,7 +64,7 @@ describe('Field error', () => {
 
   it('shows error prop', () => {
     const wrapper = mount(
-      <Form for={object} __testing_valid__>
+      <Form for={object}>
         <Field name="name" error="Prop error" />
       </Form>
     );
@@ -79,7 +79,7 @@ describe('Field error', () => {
     }
 
     const wrapper = mount(
-      <Form for={{ ...object, invalidate }} __testing_valid__>
+      <Form for={{ ...object, invalidate }}>
         <Field name="name" />
       </Form>
     );

@@ -14,7 +14,7 @@ describe('Field connect', () => {
 
   it('binds components properly', () => {
     const wrapper = mount(
-      <Form for={object} __testing_valid__>
+      <Form for={object}>
         <Field name="name" />
         <Field name="role" />
       </Form>

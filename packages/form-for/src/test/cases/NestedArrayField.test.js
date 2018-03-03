@@ -33,7 +33,7 @@ describe('Nested fields', () => {
     });
 
     const wrapper = mount(
-      <Form for={object} onChange={onChange} __testing_valid__>
+      <Form for={object} onChange={onChange}>
         <Field name="todos" />
       </Form>
     );

@@ -25,7 +25,7 @@ describe('Password Confirmation', () => {
 
   it('updates confirmation error on password change', () => {
     const wrapper = mount(
-      <Form for={user} __testing_valid__>
+      <Form for={user}>
         <Field name="password" />
         <Field name="password_confirmation" />
       </Form>

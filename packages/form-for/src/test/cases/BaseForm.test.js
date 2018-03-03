@@ -13,7 +13,7 @@ describe('BaseForm', () => {
 
   it('does not update field value on its own', () => {
     const wrapper = mount(
-      <BaseForm for={object} __testing_valid__>
+      <BaseForm for={object}>
         <Field name="name" />
       </BaseForm>
     );
