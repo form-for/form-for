@@ -12,7 +12,7 @@
     "form-for-components",
     "helpers"
   ],
-  "version": "0.2.0",
+  "version": "1.0.0-alpha.1",
   "homepage": "https://github.com/form-for/form-for",
   "bugs": "https://github.com/form-for/form-for/issues",
   "license": "MIT",
@@ -25,8 +25,8 @@
     "src"
   ],
   "scripts": {
-    "preversion": "npm test",
-    "version": "npm run build && git add package.json",
+    "preversion": "cd ../../ && npm test packages/form-for-component-helpers",
+    "version": "cd ../../ npm run build:package form-for-component-helpers && cd ./packages/form-for-component-helpers && git add package.json",
     "postversion": "git push && git push --tags"
   }
 }
