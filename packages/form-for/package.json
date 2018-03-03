@@ -18,7 +18,8 @@
   "module": "dist/form-for.es.js",
   "browser": "dist/form-for.umd.min.js",
   "files": [
-    "dist"
+    "dist",
+    "src"
   ],
   "scripts": {
     "preversion": "npm test",

@@ -1,3 +1,5 @@
+// @flow
+
 import help from './help';
 import humanized from './humanized';
 import uniqueId from './uniqueId';

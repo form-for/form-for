@@ -21,9 +21,8 @@
   "module": "dist/form-for-component-helpers.es.js",
   "browser": "dist/form-for-component-helpers.umd.min.js",
   "files": [
-    "es",
-    "lib",
-    "umd"
+    "dist",
+    "src"
   ],
   "scripts": {
     "preversion": "npm test",

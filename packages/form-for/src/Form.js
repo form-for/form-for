@@ -9,7 +9,6 @@ import BaseForm from './BaseForm';
  */
 export default class Form extends BaseForm {
   data: Object;
-  counter: number = 0;
 
   constructor(props: any) {
     super(props);
@@ -20,9 +19,9 @@ export default class Form extends BaseForm {
     return this.data;
   }
 
-  onChange(values: Object) {
-    this.data = values;
+  onChange(data: Object) {
+    this.data = data;
     this.setState({});
-    super.onChange(values);
+    super.onChange(data);
   }
 }

@@ -1,8 +1,8 @@
 // @flow
 
 import * as React from 'react';
-
 import PropTypes from 'prop-types';
+
 import type { SchemaProperty } from './BaseForm';
 import prefixer from './prefixer';
 
@@ -14,7 +14,11 @@ export type Props = {
   onChange?: Function
 };
 
-export type ComponentProps = Props & {
+export type ComponentProps = {
+  name: string,
+  type?: string,
+  error?: string,
+  touched: boolean,
   value: any,
   onMount: Function,
   onFocus: Function,
@@ -25,6 +29,7 @@ export default class Field extends React.Component<Props> {
   target: Object;
   touched: ?boolean;
   incomingError: ?string;
+  memoizedError: ?string;
 
   /*
    * Component binding
@@ -63,8 +68,12 @@ export default class Field extends React.Component<Props> {
    * Getters
    */
 
+  getContextObject() {
+    return this.context.object;
+  }
+
   getContextObjectValue() {
-    return this.context.object[this.props.name];
+    return this.getContextObject()[this.props.name];
   }
 
   getSchemaProperty(): SchemaProperty {
@@ -91,14 +100,15 @@ export default class Field extends React.Component<Props> {
   }
 
   getTargetValue(): any {
-    return this.target.value || this.target.checked;
+    if (this.target.type === 'checkbox') return this.target.checked;
+    return this.target.value;
   }
 
   isTouched(): boolean {
     return this.touched || this.context.touchOnMount;
   }
 
-  getError(): ?any {
+  getError(value?: any): ?any {
     if (this.context.noValidate) return null;
     if (this.props.error) return this.props.error;
 
@@ -126,17 +136,17 @@ export default class Field extends React.Component<Props> {
     this.context.onChange(this.props.name, this.getValue(incomingValue));
   }
 
-  setBrowserCustomValidity(message: ?string): void {
+  setBrowserCustomValidity(message?: ?string): void {
     if (!this.target) return;
 
     const targets = Array.isArray(this.target) ? this.target : [this.target];
     targets.forEach(element => {
-      if (element.setCustomValidity) element.setCustomValidity(message);
+      if (element.setCustomValidity) element.setCustomValidity(message || '');
     });
   }
 
   clearBrowserCustomValidity() {
-    this.setBrowserCustomValidity('');
+    this.setBrowserCustomValidity();
   }
 
   /*
@@ -149,10 +159,6 @@ export default class Field extends React.Component<Props> {
 
   touchAndRender() {
     if (!this.isTouched()) {
-      /*
-       * Touched does not use setState(...) because it is also fired `onChange` and the state updated should come
-       * from one of Field's parents
-       */
       this.touch();
       this.forceUpdate();
     } else {
@@ -160,11 +166,14 @@ export default class Field extends React.Component<Props> {
     }
   }
 
-  validate(incomingError?: any) {
+  validate(incomingError?: any): ?string {
     this.clearBrowserCustomValidity();
 
     this.incomingError = incomingError;
-    this.setBrowserCustomValidity(this.getError());
+    const error = this.getError();
+
+    this.setBrowserCustomValidity(error);
+    return error;
   }
 
   /*
@@ -173,12 +182,11 @@ export default class Field extends React.Component<Props> {
 
   handleMount = (target: Object) => {
     this.target = target;
-    this.validate();
+    this.forceUpdate();
   };
 
   handleFocus = (event?: Event) => {
     this.target = (event || {}).target || this.target;
-    this.validate();
     this.touchAndRender();
 
     if (this.props.onFocus) this.props.onFocus(event);
@@ -187,7 +195,6 @@ export default class Field extends React.Component<Props> {
   handleChange = (event?: Event, value?: any, error?: any) => {
     this.target = (event || {}).target || this.target;
     this.setValue(value);
-    this.validate(error);
     this.touch();
 
     if (this.props.onChange) this.props.onChange(event);
@@ -198,12 +205,15 @@ export default class Field extends React.Component<Props> {
    */
 
   render() {
+    let error = this.validate();
+    if (!error || (typeof error === 'string' && !error.length)) error = null; // Avoid changes from false, undefined, 0 and ''
+
     return React.createElement(this.getComponent(), {
       ...this.getSchemaProperty(),
       ...this.props,
       name: this.getPrefixedName(),
       value: this.getContextObjectValue() || '',
-      error: this.getError(),
+      error: error,
       touched: this.isTouched(),
       onMount: this.handleMount,
       onFocus: this.handleFocus,

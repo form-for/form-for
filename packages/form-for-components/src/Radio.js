@@ -4,40 +4,38 @@ import * as React from 'react';
 import type { ComponentProps } from 'form-for';
 
 export type Props = {
-  options: { [key: any]: any },
+  options: { [key: string]: string },
   map?: Function
 } & ComponentProps;
 
 export default class Radio extends React.PureComponent<Props> {
   input: ?HTMLInputElement;
 
+  getInputProps(value: string) {
+    const { error, options, map, ...props } = this.props;
+    delete props.onMount;
+    delete props.touched;
+
+    const checked = value === props.value;
+    return { ...props, checked, 'aria-invalid': error, value, type: 'radio' };
+  }
+
   componentDidMount() {
     this.props.onMount(this.input);
   }
 
   render() {
-    const { options, ...props } = { ...this.props };
-    delete props.map;
-
-    return Object.keys(options).map(key => this.renderInput(props, key, options[key]));
+    const { options } = this.props;
+    return Object.keys(options).map(key => this.mapInput(key, options[key]));
   }
 
-  renderInput(props: { [key: any]: any }, key: string, value: any) {
-    const { error, ...remainingProps } = props;
-    delete props.touched;
+  mapInput(value: string, label: any) {
+    const inputProps = this.getInputProps(value);
+    if (this.props.map) return this.props.map(inputProps, label);
 
-    const checked = key === props.value;
-    const input = (
-      <input key={key} checked={checked} aria-invalid={error} {...remainingProps} value={key} type="radio" />
-    );
-    return this.mapInput(input, key, value);
-  }
-
-  mapInput(input: any, key: string, value: any) {
-    if (this.props.map) return this.props.map(input, key, value);
     return (
-      <span>
-        {input} {key}
+      <span key={value}>
+        <input {...inputProps} /> {label}
       </span>
     );
   }

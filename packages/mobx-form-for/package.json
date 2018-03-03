@@ -1,6 +1,6 @@
 {
-  "name": "form-for-bootstrap-components",
-  "description": "Simple and accessible Bootstrap 4 form-for components",
+  "name": "mobx-form-for",
+  "description": "Core HTML components for form-for",
   "keywords": [
     "react-component",
     "react",
@@ -9,17 +9,17 @@
     "forms",
     "simple-form",
     "form-for",
-    "form-for-components",
-    "bootstrap"
+    "mobx",
+    "reactive"
   ],
   "version": "0.2.0",
   "homepage": "https://github.com/form-for/form-for",
   "bugs": "https://github.com/form-for/form-for/issues",
   "license": "MIT",
   "repository": "form-for/form-for",
-  "main": "dist/form-for-bootstrap-components.cjs.js",
-  "module": "dist/form-for-bootstrap-components.es.js",
-  "browser": "dist/form-for-bootstrap-components.umd.min.js",
+  "main": "dist/mobx-form-for.cjs.js",
+  "module": "dist/mobx-form-for.es.js",
+  "browser": "dist/mobx-form-for.umd.min.js",
   "files": [
     "dist",
     "src"
@@ -29,12 +29,10 @@
     "version": "npm run build && git add package.json",
     "postversion": "git push && git push --tags"
   },
-  "dependencies": {
-  },
   "peerDependencies": {
     "react": "^0.13.0 || ^0.14.0 || ^15.0.0 || ^16.0.0",
     "form-for": "^0.4.0",
-    "form-for-component-helpers": "^0.2.0",
-    "form-for-components": "^0.2.0"
+    "mobx": "^2.6.3 || ^3.0.0",
+    "mobx-react": "^3.5.0 || ^4.0.0"
   }
 }

@@ -5,7 +5,9 @@ import { Field } from 'form-for';
 import Checkbox from './Checkbox';
 import Input from './Input';
 import Radio from './Radio';
+export type { Props as RadioProps } from './Radio';
 import Select from './Select';
+export type { Props as SelectProps } from './Select';
 
 const inputTypes = [
   'color',
@@ -27,11 +29,11 @@ const inputTypes = [
   'week'
 ];
 
-function connect() {
+function connectFields() {
   Field.connect('checkbox', Checkbox);
   Field.connect('radio', Radio);
   Field.connect('select', Select);
   inputTypes.forEach(type => Field.connect(type, Input));
 }
 
-export { connect, inputTypes, Checkbox, Input, Radio, Select };
+export { connectFields, inputTypes, Checkbox, Input, Radio, Select };

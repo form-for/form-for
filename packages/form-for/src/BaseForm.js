@@ -17,13 +17,15 @@ export type Props = {
   for?: Object,
   schema?: Schema,
   children: React.Node,
-  onSubmit?: Function,
-  onChange?: Function,
+  onSubmit?: (event: SyntheticEvent<HTMLFormElement>, data: Object, valid?: boolean) => any,
+  onChange?: (data: Object, valid?: boolean) => any,
   touchOnMount?: boolean,
   noValidate?: boolean
 };
 
-export default class StatelessForm extends React.Component<Props, *> {
+export default class BaseForm extends React.Component<Props, *> {
+  static fieldGroupComponent: React.ComponentType<*> = FieldGroup;
+
   form: ?HTMLFormElement;
 
   /*
@@ -51,28 +53,13 @@ export default class StatelessForm extends React.Component<Props, *> {
     return this.form || this.throwUndefinedForm();
   }
 
-  isValid() {
-    // $FlowFixMe
-    const testingValid = this.props.__testing_valid__;
-    if (typeof testingValid !== 'undefined') return testingValid;
-
-    return this.getForm().checkValidity();
-  }
-
-  getEventProps(): { data: Object, valid: boolean } {
-    return {
-      data: this.getData(),
-      valid: this.isValid()
-    };
-  }
-
   /*
    * Handlers
    */
 
-  onChange(values: Object) {
+  onChange(data: Object) {
     const onChange = this.props.onChange;
-    if (onChange) onChange(this.getEventProps());
+    if (onChange) onChange(this.getData());
   }
 
   /**
@@ -82,9 +69,9 @@ export default class StatelessForm extends React.Component<Props, *> {
     this.onChange(value);
   };
 
-  handleSubmit = (event: Event) => {
+  handleSubmit = (event: SyntheticEvent<HTMLFormElement>) => {
     const onSubmit = this.props.onSubmit;
-    if (onSubmit) onSubmit(event, this.getEventProps());
+    if (onSubmit) onSubmit(event, this.getData());
   };
 
   /*
@@ -92,20 +79,21 @@ export default class StatelessForm extends React.Component<Props, *> {
    */
 
   render(): React.Node {
-    const { ['for']: object, schema, children, ...formProps } = { ...this.props };
+    const { ['for']: object, schema, children, ...formProps } = {
+      ...this.props
+    };
     delete formProps.onChange; // Prevent the browser onChange event to be called
     delete formProps.touchOnMount;
-    delete formProps.__testing_valid__;
 
     let content;
     if (!object) {
       content = children;
     } else {
-      content = (
-        <FieldGroup for={this.getData()} schema={schema}>
-          {children}
-        </FieldGroup>
-      );
+      content = React.createElement(this.constructor.fieldGroupComponent, {
+        for: this.getData(),
+        schema,
+        children
+      });
     }
 
     return (

@@ -13,23 +13,21 @@ describe('Field error', () => {
 
   it('does not show error if not existent', () => {
     const wrapper = mount(
-      <Form for={object} __testing_valid__>
+      <Form for={object} touchOnMount __testing_valid__>
         <Field name="name" />
       </Form>
     );
 
-    wrapper.find('input').simulate('change');
-    expect(wrapper.find('input').props()['data-error']).toBeUndefined();
+    expect(wrapper.find('input').props()['data-error']).toBeNull();
   });
 
   it('shows object error', () => {
     const wrapper = mount(
-      <Form for={{ ...object, invalidate: 'Invalid' }} __testing_valid__>
+      <Form for={{ ...object, invalidate: 'Invalid' }} touchOnMount __testing_valid__>
         <Field name="name" />
       </Form>
     );
 
-    wrapper.find('input').simulate('change');
     expect(wrapper.find('input').props()['data-error']).toEqual('Invalid');
   });
 
@@ -44,8 +42,8 @@ describe('Field error', () => {
       </Form>
     );
 
-    wrapper.find('input').simulate('change');
-    expect(wrapper.find('input').props()['data-error']).toEqual('John is invalid');
+    wrapper.find('input').simulate('change', { target: { value: 'New value' } });
+    expect(wrapper.find('input').props()['data-error']).toEqual('New value is invalid');
   });
 
   it('shows errors (touches) on focus', () => {
@@ -97,4 +95,6 @@ describe('Field error', () => {
     input = wrapper.find('input[name="name"]').first();
     expect(input.props()['data-error']).toBeFalsy();
   });
+
+  // TODO - test setCustomValidity and validationMessage
 });

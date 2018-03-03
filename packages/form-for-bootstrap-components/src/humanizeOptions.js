@@ -1,4 +1,4 @@
-import { stringHelpers } from "form-for-component-helpers";
+import { stringHelpers } from 'form-for-component-helpers';
 
 type Hash = { [key: string]: string };
 

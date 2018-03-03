@@ -1,41 +1,44 @@
 // @flow
 
-import * as React from "react";
-import { Checkbox as CoreCheckbox } from "form-for-components";
-import type { CheckboxProps } from "form-for-components";
-import { help, humanized, uniqueId } from "form-for-component-helpers";
-import Help from "./Help";
+import * as React from 'react';
+import type { ComponentProps } from 'form-for';
+import { Checkbox as BaseCheckbox } from 'form-for-components';
+import { help, humanized, uniqueId } from 'form-for-component-helpers';
+import Help from './Help';
 
-export type Props = {
+export type Props = ComponentProps & {
   label?: any,
   help?: any
-} & CheckboxProps;
+};
 
-export default class Checkbox extends React.Component<Props> {
+export default class Checkbox extends React.PureComponent<Props> {
   render() {
+    const id = uniqueId(this);
     const humanizedName = humanized(this);
     const helpProps = help(this);
 
     const { className, label, ...props } = { ...this.props };
     delete props.help;
 
-    const inputClasses = ["custom-control-input"];
-    if (props.error) inputClasses.push("is-invalid");
+    const inputClasses = ['custom-control-input'];
+    if (props.touched && props.error) inputClasses.push('is-invalid');
 
     return (
-      <label className={className || "custom-control custom-checkbox"}>
-        <CoreCheckbox
-          id={uniqueId(this)}
-          className={inputClasses.join(" ")}
+      <div className={className || 'custom-control custom-checkbox'}>
+        <BaseCheckbox
+          id={id}
+          className={inputClasses.join(' ')}
           aria-label={label || humanizedName}
           aria-describedby={helpProps.id}
-          {...(props: CheckboxProps)}
+          {...props}
         />
-        <span className="custom-control-indicator" />
-        {label !== false && <span className="custom-control-description">{label || humanizedName}</span>}
+
+        <label className="custom-control-label" htmlFor={id}>
+          {label !== false && (label || humanizedName)}
+        </label>
 
         <Help id={helpProps.id} text={helpProps.text} />
-      </label>
+      </div>
     );
   }
 }

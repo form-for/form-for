@@ -28,7 +28,7 @@ describe('Nested fields', () => {
   });
 
   it('updates value properly', () => {
-    const onChange = jest.fn(({ data }) => {
+    const onChange = jest.fn(data => {
       expect(data.todos[0].text).toEqual('New text');
     });
 

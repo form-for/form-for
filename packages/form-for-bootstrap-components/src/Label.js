@@ -1,7 +1,7 @@
 // @flow
 
-import * as React from "react";
-import RequiredAbbreviation from "./RequiredAbbreviation";
+import * as React from 'react';
+import RequiredAbbreviation from './RequiredAbbreviation';
 
 type Props = {
   for?: string,

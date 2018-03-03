@@ -85,9 +85,13 @@ export default class FieldGroup extends React.Component<Props> {
    * Handlers
    */
 
-  handleChange = (name: string, value: any, index?: any) => {
+  onChange(name: string, value: any, index?: any) {
     const newObject = this.getNewObjectFor(name, value, index);
     this.dispatchChange(newObject);
+  }
+
+  handleChange = (name: string, value: any, index?: any) => {
+    this.onChange(name, value, index);
   };
 
   /*

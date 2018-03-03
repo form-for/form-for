@@ -20,9 +20,8 @@
   "module": "dist/form-for-components.es.js",
   "browser": "dist/form-for-components.umd.min.js",
   "files": [
-    "es",
-    "lib",
-    "umd"
+    "dist",
+    "src"
   ],
   "scripts": {
     "preversion": "npm test",

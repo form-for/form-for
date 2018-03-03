@@ -1,39 +1,40 @@
 // @flow
 
-import * as React from "react";
-import { Input as CoreInput } from "form-for-components";
-import type { InputProps } from "form-for-components";
-import { help, humanized, uniqueId } from "form-for-component-helpers";
-import Label from "./Label";
-import Help from "./Help";
-import Feedback from "./Feedback";
+import * as React from 'react';
+import type { ComponentProps } from 'form-for';
+import { Input as BaseInput } from 'form-for-components';
+import { help, humanized, uniqueId } from 'form-for-component-helpers';
+import Label from './Label';
+import Help from './Help';
+import Feedback from './Feedback';
 
-export type Props = {
+export type Props = ComponentProps & {
   label?: any,
   help?: any
-} & InputProps;
+};
 
-export default class Input extends React.Component<Props> {
+export default class Input extends React.PureComponent<Props> {
   render() {
     const id = uniqueId(this);
     const humanizedName = humanized(this);
     const helpProps = help(this);
 
-    const { label, className, ...props } = { ...this.props };
+    const { label, className, placeholder, ...props } = { ...this.props };
     delete props.help;
 
-    const inputClasses = ["form-control"];
-    if (props.error) inputClasses.push("is-invalid");
+    const inputClasses = ['form-control'];
+    if (props.touched && props.error) inputClasses.push('is-invalid');
 
     return (
-      <div className={className || "form-group"}>
+      <div className={className || 'form-group'}>
         <Label for={id} text={label} defaultText={humanizedName} required={props.required} />
 
-        <CoreInput
+        <BaseInput
           id={id}
-          className={inputClasses.join(" ")}
+          className={inputClasses.join(' ')}
           aria-describedby={helpProps.id}
-          {...(props: InputProps)}
+          placeholder={placeholder || humanizedName}
+          {...props}
         />
 
         <Help id={helpProps.id} text={helpProps.text} />

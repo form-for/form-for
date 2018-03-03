@@ -1,4 +1,5 @@
 import React from 'react';
+import { observable } from 'mobx';
 import { mount } from 'enzyme';
 import { Field, Form } from '../../index';
 import Input from '../fixtures/Input';
@@ -6,7 +7,7 @@ import Input from '../fixtures/Input';
 describe('Form', () => {
   Field.connect('text', Input);
 
-  const object = { name: 'John' };
+  const object = observable({ name: 'John' });
   const schema = { name: { type: 'text' } };
 
   let wrapper, input;
@@ -28,8 +29,8 @@ describe('Form', () => {
     input = wrapper.find('input').first();
   });
 
-  it('does not change original object value', () => {
-    expect(object.name).toEqual('John');
+  it('changes original object value', () => {
+    expect(object.name).toEqual('New value');
   });
 
   it('updates input value on change', () => {
@@ -38,11 +39,11 @@ describe('Form', () => {
 
   it('provides new data on change', () => {
     expect(onChange).toHaveBeenCalledTimes(1);
-    expect(onChange).toHaveBeenCalledWith({ name: 'New value' });
+    expect(onChange).toHaveBeenCalledWith(object);
   });
 
   it('provides new data on submit', () => {
     wrapper.simulate('submit');
-    expect(onSubmit).toHaveBeenCalledWith(expect.anything(), { name: 'New value' });
+    expect(onSubmit).toHaveBeenCalledWith(expect.anything(), object);
   });
 });
