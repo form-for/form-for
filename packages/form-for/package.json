@@ -9,7 +9,7 @@
     "forms",
     "simple-form"
   ],
-  "version": "1.0.0-alpha.1",
+  "version": "1.0.0-alpha.2",
   "homepage": "https://github.com/form-for/form-for",
   "bugs": "https://github.com/form-for/form-for/issues",
   "license": "MIT",
@@ -22,8 +22,8 @@
     "src"
   ],
   "scripts": {
-    "preversion": "cd ../../ && npm test packages/form-for",
-    "version": "cd ../../ npm run build:package form-for && cd ./packages/form-for && git add package.json",
+    "preversion": "cd ../../ && npm test packages/form-for && npm run build:package form-for",
+    "version": "git add package.json",
     "postversion": "git push && git push --tags"
   },
   "peerDependencies": {
