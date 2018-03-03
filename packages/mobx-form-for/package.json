@@ -12,7 +12,7 @@
     "mobx",
     "reactive"
   ],
-  "version": "1.0.0-alpha.1",
+  "version": "1.0.0-alpha.2",
   "homepage": "https://github.com/form-for/form-for",
   "bugs": "https://github.com/form-for/form-for/issues",
   "license": "MIT",
@@ -25,8 +25,8 @@
     "src"
   ],
   "scripts": {
-    "preversion": "cd ../../ && npm test packages/mobx-form-for",
-    "version": "cd ../../ npm run build:package mobx-form-for && cd ./packages/mobx-form-for && git add package.json",
+    "preversion": "cd ../../ && npm test packages/mobx-form-for && npm run build:package mobx-form-for",
+    "version": "git add package.json",
     "postversion": "git push && git push --tags"
   },
   "peerDependencies": {
