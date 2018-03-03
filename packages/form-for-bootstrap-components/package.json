@@ -12,7 +12,7 @@
     "form-for-components",
     "bootstrap"
   ],
-  "version": "1.0.0-alpha.1",
+  "version": "1.0.0-alpha.2",
   "homepage": "https://github.com/form-for/form-for",
   "bugs": "https://github.com/form-for/form-for/issues",
   "license": "MIT",
@@ -25,14 +25,14 @@
     "src"
   ],
   "scripts": {
-    "preversion": "cd ../../ && npm test packages/form-for-bootstrap-components",
-    "version": "cd ../../ npm run build:package form-for-bootstrap-components && cd ./packages/form-for-bootstrap-components && git add package.json",
+    "preversion": "cd ../../ && npm test packages/form-for-bootstrap-components && npm run build:package form-for-bootstrap-components",
+    "version": "git add package.json",
     "postversion": "git push && git push --tags"
   },
   "peerDependencies": {
     "react": "^0.13.0 || ^0.14.0 || ^15.0.0 || ^16.0.0",
-    "form-for": "^0.4.0",
-    "form-for-components": "^1.0.0-alpha.1",
+    "form-for": "^1.0.0-alpha.1",
+    "form-for-components": "^1.0.0-alpha.2",
     "form-for-component-helpers": "^1.0.0-alpha.1"
   }
 }
