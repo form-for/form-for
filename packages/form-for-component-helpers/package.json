@@ -25,8 +25,8 @@
     "src"
   ],
   "scripts": {
-    "preversion": "cd ../../ && npm test packages/form-for-component-helpers",
-    "version": "cd ../../ npm run build:package form-for-component-helpers && cd ./packages/form-for-component-helpers && git add package.json",
+    "preversion": "cd ../../ && npm test packages/form-for-component-helpers && npm run build:package form-for-component-helpers",
+    "version": "git add package.json",
     "postversion": "git push && git push --tags"
   }
 }
