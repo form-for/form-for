@@ -11,7 +11,7 @@
     "form-for",
     "form-for-components"
   ],
-  "version": "1.0.0-alpha.1",
+  "version": "1.0.0-alpha.2",
   "homepage": "https://github.com/form-for/form-for",
   "bugs": "https://github.com/form-for/form-for/issues",
   "license": "MIT",
@@ -24,8 +24,8 @@
     "src"
   ],
   "scripts": {
-    "preversion": "cd ../../ && npm test packages/form-for-components",
-    "version": "cd ../../ npm run build:package form-for-components && cd ./packages/form-for-components && git add package.json",
+    "preversion": "cd ../../ && npm test packages/form-for-components && npm run build:package form-for-components",
+    "version": "git add package.json",
     "postversion": "git push && git push --tags"
   },
   "peerDependencies": {
