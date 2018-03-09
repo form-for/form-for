@@ -1,13 +1,11 @@
 # form-for-component-helpers
 
-Helpers for creating clean and accessible form-for components.
+> Helpers for creating clean and accessible form-for components.
 
-## Installing
+## Install
 
-Install `form-for-compnent-helpers`
-
-```bash
-npm install form-for-component-helpers --save
+```sh
+npm install --save form-for-component-helpers
 ```
 
 ## Helpers
@@ -17,34 +15,33 @@ npm install form-for-component-helpers --save
 Returns `this.props.id` or a uniqueId for the component. This id remains the same after re-rendering.
 
 Signatures:
-- `uniqueId(Component: any)`
+
+* `uniqueId(Component: any)`
 
 ```javascript
-import React from "react";
-import { uniqueId } from "form-for-component-helpers";
+import React from 'react';
+import { uniqueId } from 'form-for-component-helpers';
 
 export default class UniqueId extends React.Component {
   render() {
     const id = uniqueId(this);
 
-    return (
-      <div>Unique Id: {id}</div>
-    );
+    return <div>Unique Id: {id}</div>;
   }
 }
-
 ```
 
 ### humanized
 
-Returns `this.prop.name` in a way that's pleasant to the eyes. 
+Returns `this.prop.name` in a way that's pleasant to the eyes.
 
 Signatures:
-- `humanized(Component)`
+
+* `humanized(Component)`
 
 ```javascript
-import React from "react";
-import { humanized } from "form-for-component-helpers";
+import React from 'react';
+import { humanized } from 'form-for-component-helpers';
 
 type Props = {
   name: string
@@ -54,28 +51,23 @@ export default class Humanized extends React.Component<Props> {
   render() {
     const label = humanized(this);
 
-    return (
-      <div>
-        <div>Humanized label: {label}</div>
-      </div>
-    );
+    return <div>Humanized label: {label}</div>;
   }
 }
-
 ```
 
 ### help
 
-Returns a helpId and helpText if a given help string is given. The helpId is very important for improving acessibility
-with `aria-describedby`.
+Returns a `id` and `text` for the `this.props.help` property or the `helpText` argument. This function shines facilitating the implementation of accesibility properties, such as `aria-describedby`.
 
 Signatures:
-- `help(Component)`
-- `help(Component, helpText)`
+
+* `help(Component)`
+* `help(Component, helpText)`
 
 ```javascript
-import React from "react";
-import help from "";
+import React from 'react';
+import help from '';
 
 type Props = {
   help?: string
@@ -97,17 +89,18 @@ export default class Helped extends React.Component<Props> {
 
 ### stringHelpers
 
-- `replaceSnakeUnderscore(str: string, glue: string = " "): string`
-- `replaceCamels(str: string, glue: string = " "): string`
-- `capitalize(str: string): string`
-- `simplifyFieldName(str: string): string`
-- `humanize(str: string): string`
+These are helper method used by the `humanized` helper.
+
+* `replaceSnakeUnderscore(str: string, glue: string = " "): string`
+* `replaceCamels(str: string, glue: string = " "): string`
+* `capitalize(str: string): string`
+* `simplifyFieldName(str: string): string`
+* `humanize(str: string): string`
 
 ```javascript
-import { stringHelpers } from "form-for-component-helpers";
+import { stringHelpers } from 'form-for-component-helpers';
 ```
 
-## Motivation
+## Resources
 
-[FormFor] can do great things, but on its own still requires a lot of work. These components empower the core HTML inputs
-  to be used with [FormFor](https://github.com/form-for/form-for).
+* Check out [form-for-bootstrap-components](https://github.com/form-for/packages/form-for-bootstrap-components) for more usage examples

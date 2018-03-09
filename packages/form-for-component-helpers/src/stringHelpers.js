@@ -1,3 +1,5 @@
+// @flow
+
 export function replaceSnakeUnderscore(str: string, glue: string = ' '): string {
   return str.split(/[_|-]/).join(glue);
 }

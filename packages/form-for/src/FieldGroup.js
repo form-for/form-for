@@ -16,7 +16,8 @@ export type Props = {
 
 export default class FieldGroup extends React.Component<Props> {
   static contextTypes = {
-    onChange: PropTypes.func.isRequired,
+    onFormChange: PropTypes.func.isRequired,
+    onChange: PropTypes.func,
     name: PropTypes.string
   };
 
@@ -24,6 +25,7 @@ export default class FieldGroup extends React.Component<Props> {
     object: PropTypes.object,
     schema: PropTypes.object,
     prefix: PropTypes.string,
+    onFormChange: PropTypes.func,
     onChange: PropTypes.func
   };
 
@@ -77,8 +79,8 @@ export default class FieldGroup extends React.Component<Props> {
     this.context.onChange(this.context.name, newObject, this.props.index);
   }
 
-  dispatchFormChange(newObject: Object) {
-    this.context.onChange(newObject);
+  dispatchFormChange(newObject?: Object) {
+    this.context.onFormChange(newObject);
   }
 
   /*

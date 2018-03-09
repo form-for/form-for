@@ -32,14 +32,14 @@ export default class BaseForm extends React.Component<Props, *> {
    * Getters
    */
   static childContextTypes = {
-    onChange: PropTypes.func,
+    onFormChange: PropTypes.func,
     touchOnMount: PropTypes.bool,
     noValidate: PropTypes.bool
   };
 
   getChildContext() {
     return {
-      onChange: this.handleChange,
+      onFormChange: this.handleChange,
       touchOnMount: !!this.props.touchOnMount,
       noValidate: !!this.props.noValidate
     };
@@ -57,16 +57,16 @@ export default class BaseForm extends React.Component<Props, *> {
    * Handlers
    */
 
-  onChange(data: Object) {
-    const onChange = this.props.onChange;
-    if (onChange) onChange(this.getData());
-  }
+  onChange(data: Object) {}
 
   /**
    * Since onChange is used by classes that extend BaseForm, handleChange exists to do .bind()
    */
   handleChange = (value: Object) => {
     this.onChange(value);
+
+    const { onChange } = this.props;
+    if (onChange) onChange(this.getData());
   };
 
   handleSubmit = (event: SyntheticEvent<HTMLFormElement>) => {

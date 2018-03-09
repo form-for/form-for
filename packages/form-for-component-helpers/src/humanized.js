@@ -1,8 +1,8 @@
 // @flow
 
-import { humanize as humanizeString } from './stringHelpers';
+import { humanize } from './stringHelpers';
 
 export default function humanized(Component: any): string {
   const props: any = Component.props || {};
-  return humanizeString(props.name);
+  return humanize(props.name);
 }

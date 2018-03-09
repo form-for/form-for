@@ -17,7 +17,7 @@ class FieldGroup extends BaseFieldGroup {
     };
 
     action(`Update form value ${this.getPrefix()}`, mutator)();
-    this.dispatchChange(object);
+    this.dispatchFormChange();
   }
 }
 
