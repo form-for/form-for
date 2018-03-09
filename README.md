@@ -181,7 +181,7 @@ export default class User {
 }
 ```
 
-### Skipin validation
+### Skip validation
 
 If you want to skip validation events set `noValidate={true}` to your `<Form>`.
 
@@ -282,12 +282,3 @@ All form-for packages provide browser support through unpkg, such as: `https://u
 
 * [Contributing Guide](./CONTRIBUTING.md)
 * [Code of Conduct](./CODE_OF_CONDUCT.md)
-* [Demo](https://form-for.pedrosm.com/)
-
-```
-
-```
-
-```
-
-```
