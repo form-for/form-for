@@ -17,6 +17,8 @@ connectFields();
 npm install --save form-for form-for-components
 ```
 
+or https://unpkg.com/form-for-components/umd
+
 ## List of components
 
 * Checkbox
@@ -46,3 +48,5 @@ npm install --save form-for form-for-components
 ```js
 import { inputTypes } from 'form-for-components';
 ```
+
+For more in depth documentation see: https://github.com/form-for/form-for

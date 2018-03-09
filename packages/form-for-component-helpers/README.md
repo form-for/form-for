@@ -8,6 +8,8 @@
 npm install --save form-for-component-helpers
 ```
 
+or https://unpkg.com/form-for-component-helpers/umd
+
 ## Helpers
 
 ### uniqueId
