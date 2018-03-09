@@ -1,0 +1,32 @@
+{
+  "name": "form-for",
+  "description": "ReactJS forms made easy.",
+  "version": "1.0.0-alpha.2",
+  "keywords": [
+    "react-component",
+    "react",
+    "reactjs",
+    "form",
+    "forms",
+    "simple-form",
+    "form-for",
+    "form-for-components",
+    "helpers"
+  ],
+  "main": "cjs/index.js",
+  "module": "es/index.js",
+  "umd:main": "umd/index.min.js",
+  "files": [
+    "cjs",
+    "es"
+  ],
+  "peerDependencies": {
+    "prop-types": "^15.6.0",
+    "react": "^0.13.0 || ^0.14.0 || ^15.0.0 || ^16.0.0"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/form-for/form-for",
+  "bugs": "https://github.com/form-for/form-for/issues",
+  "repository": "form-for/form-for",
+  "author": "Pedro Moreira <pedsmoreira@gmail.com>"
+}

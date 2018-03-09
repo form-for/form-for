@@ -1,4 +1,8 @@
-# ![Form For](./assets/logo.png)
+<img src="assets/logo.png" alt="logo" align="right" />
+
+# form-for
+
+> Type less, do more. React forms made easy.
 
 [![npm version](https://img.shields.io/npm/v/form-for.svg)](https://www.npmjs.org/package/form-for)
 [![Build Status](https://travis-ci.org/form-for/form-for.svg?branch=master)](https://travis-ci.org/form-for/form-for)
@@ -6,9 +10,7 @@
 [![Test Coverage](https://api.codeclimate.com/v1/badges/eea356eb9597322d9ef5/test_coverage)](https://codeclimate.com/github/form-for/form-for/test_coverage)
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
 
-ReactJS forms made easy.
-
-```javascript
+```js
 import { Form, Field } from "form-for";
 
 const user = new User();
@@ -24,90 +26,89 @@ const user = new User();
 </Form>
 ```
 
-Just wanna play with it? [Check out my sandboxes](https://codesandbox.io/u/pedsmoreira/sandboxes)
+Just wanna play with it? Check out the demo
 
-## Installation
+* [Live](https://form-for.pedrosm.com)
+* [Codesandbox Demo](https://codesandbox.io/s/github/form-for/demo)
+* [Repository](https://github.com/form-for/demo)
 
-Install the core package:
+## Plug 'n play components
 
-```bash
-npm install form-for --save
-```
+* [Core components](./packages/form-for-bootstrap-components)
+* [Bootstrap 4 components](./packages/form-for-bootstrap-components)
 
-Choose a components package:
+## Plug 'n play state management
 
-- [form-for-components](https://github.com/form-for/form-for-components): Core HTML components
-- [form-for-bootstrap-components](https://github.com/form-for/form-for-bootstrap-bootstrap): Pretty bootstrap components
+* React setState **(the default one)**
+* [MobX Binding](./packages/mobx-form-for) - [Demo](https://github.com/form-for/demo)
 
-**Note**: If you're using [MobX](https://github.com/mobxjs/mobx),
-check out [mobx-form-for](https://github.com/form-for/mobx-form-for)
+**Why there is no Redux binding?**
+
+[Form states in general should not be managed by Redux](https://github.com/reactjs/redux/issues/1287#issuecomment-175351978). You'll be fine with the default state management. Just get the data from `onChange` or `onSubmit`.
 
 ## Schema
 
-Forms are created based on a given schema. If your schema defines the type `date` for the field `last_seen`
-for instance, then `<Field name="date" />` will use the component bound to `last_seen`.
+Forms are created based on a given schema. There are three ways to provide the form schema:
 
-There are three ways to provide the schema to a form.
-
-### Annotation
+### Annotations
 
 The `@field` annotation may or may not have parameters.
 
-```javsacript
-import { field } from "form-for";
+```js
+import { field } from 'form-for';
 
 export default class User {
-    @field name; // type defaults to 'text'
+  @field name; // type defaults to 'text'
 
-    @field({ type: 'email', required: true })
-    email;
+  @field({ type: 'email', required: true })
+  email;
 
-    @field({ type: 'todoItem[]' })
-    todoItems;
+  @field({ type: 'todoItem[]' })
+  todoItems;
 }
 ```
 
-```javascript
+```js
 const user = new User();
 
 <Form for={user}>
-    <Field name="..."/>
+  <Field name="..."/>
 </Form/>
 ```
 
-### Schema attribute
+### Schema property
 
-```javsacript
+```js
 export default class User {
-    schema = {
-        name: {}, // type defaults to 'text'
-        email: { type: 'email', required: true }
-        todoItems: { type: 'todoItem[]' }
-    };
+  schema = {
+    name: {}, // type defaults to 'text'
+    email: { type: 'email', required: true }
+    todoItems: { type: 'todoItem[]' }
+  };
 }
 ```
 
-```javascript
+```js
 const user = new User();
 
 <Form for={user}>
-    <Field name="..."/>
+  <Field name="..."/>
 </Form/>
 ```
 
 ### Passing directly to the form
 
-```javascript
+```js
 const schema = {
-    name: {}, // type defaults to 'text'
-    email: { type: 'email', required: true }
-    todoItems: { type: 'todoItem[]' }
+  name: {}, // type defaults to 'text'
+  email: { type: 'email', required: true }
+  todoItems: { type: 'todoItem[]' }
 }
 
 const user = {};
 
 <Form for={user} schema={schema}>
-    <Field name="..."/>
+  <Field name="..."/>
 </Form/>
 ```
 
@@ -115,15 +116,15 @@ const user = {};
 
 You can also set special properties directly to the `<Field>` tag.
 
-```javascript
+```js
 <Form for={user} ...>
-    <Field name="..." type="special_type_for_this_form_only" placeholder="Special" />
-</Form/>
+  <Field name="..." type="special_type_for_this_form_only" placeholder="Special" />
+</Form>
 ```
 
-## Binding components
+## Connect components
 
-```javascript
+```js
 import { Field } from "form-for";
 import React from "react";
 
@@ -131,85 +132,58 @@ class Component extends React.Component {
   ...
 }
 
-Field.bindComponent('type', Component);
+Field.connect('type', Component);
 ```
-
-## Uncontrolled form
-
-If you do not provide a `onChange` prop to your form, this means it's uncontrolled. This implies `defaultValue`
-will be provided to the field components.
-
-```javascript
-<Form for={...} />
-  ...
-</Form/>
-```
-
-For more about uncontrolled components, check out [React's documentation](https://reactjs.org/docs/uncontrolled-components.html)
-
-## Controlled form
-
-Proving `onChange` the the form makes it controlled. Therefore you must use some kind of state management to update the
-content passed through `for`.
-
-The `onChange` method receives three parameters:
-
-- Mutator: a function that mutates the field updated by a change
-- Name: the name of the field updated. Keep in mind that this may be a nested field, such as `user[todoItem][title]`
-- Value: the value updated.
-
-```javascript
-handleFormChange = (mutator, name, value) => {
-  this.setState({ user: mutator() })
-};
-
-<Form for={this.state.user} onChange={this.handleFormChange} />
-  ...
-</Form/>
-```
-
-**Note**: If you're using [MobX](https://github.com/mobxjs/mobx),
-[mobx-form-for](https://github.com/form-for/mobx-form-for) handles `onChange` for you, even on `strict` mode.
 
 ## Validation
 
-There are four validation trigger states: `mount, focus, change, blur`
+Validation takes into consideration both custom validations and HTML 5 validations respectively.
 
-The default validation is `validate="focus,change,blur"`. To disable validation use `validate={false}`.
+### Error string
 
-Validation takes into consideration both custom validators and HTML 5 validations, in this order.
-
-### Function custom validator
-
-Provide a function to validate a given value. If the new value is invalid, return an error message.
-
-```javascript
-function validateName(name) {
-  if(name === 'Invalid') return 'This is not an acceptable name.';
-}
-
-<Form ...>
-  <Field name="name" validator={validateName}>
-</Form>
+```js
+// this.state.nameError == 'invalid name'
+<Field name="name" error={this.state.nameError}>
 ```
 
-### Named custom validator
+### Error function
 
-Provide the name of the method responsible for validating.
+The function will be bound to the object, so `this.name` will have the actual value. The object and the propety change are also provided, in case you do not want to use `this.*`.
 
-```javascript
-import { field } from "form-for";
+### Provide function directly to the field
+
+```js
+function validateAge(object, name) {
+  if (this.age === 999) return 'Are you this old???';
+  if (object[name] === 999) return 'Are you this old???';
+}
+```
+
+```js
+<Field name="age" error={validateAge}>
+```
+
+### Named function
+
+You can provide a function name to an `error` definition on the `schema` or `@field` and it will be resolved to the object function
+
+```js
+import { field } from 'form-for';
 
 export default class User {
-  @field({ validator: 'validateName' })
+  @field({ error: 'validateName' })
   name;
 
   validateName(name) {
     // you can use this.something to check other things before returning an error
-    if(name === 'Nobody') return 'Nobody is not a name';
+    if (name === 'Nobody') return 'Nobody is not a name';
   }
 }
 ```
+
+### Skip validation
+
+If you want to skip validation events set `noValidate={true}` to your `<Form>`.
 
 ## Creating components
 
@@ -218,38 +192,37 @@ PR's for Typescripts typings are welcome.
 
 These are the fields passed to a component: **(the ? means it may or may not be passed)**
 
-```javascript
-{
-  type: string,
+```js
+type ComponentProps = {
   name: string,
-  error: ?string,
-  onMount?: Function,
-  onFocus?: Function,
-  onChange?: Function,
-  onBlur?: Function,
-  value?: any,
-  defaultValue?: any
-}
+  type?: string,
+  error?: string,
+  touched: boolean,
+  value: any,
+  onMount: Function,
+  onFocus: Function,
+  onChange: Function
+};
 ```
 
 Any other attributes provided through the `<Field>` tag will also be available through the `props`.
 
 Here's a simple example:
 
-```javascript
+```js
 // @flow
 
-import React from "react";
-import { render } from "react-dom";
-import type { ComponentProps } from "form-for";
+import React from 'react';
+import { render } from 'react-dom';
+import type { ComponentProps } from 'form-for';
 
 export default class Input extends React.Component<ComponentProps> {
   render() {
-    const { error, onMount, ...props } = this.props;
+    const { error, touched, onMount, ...props } = this.props;
 
     if (error) {
       // $FlowFixMe
-      props["aria-invalid"] = true;
+      props['aria-invalid'] = true;
     }
 
     return <input {...props} />;
@@ -257,152 +230,55 @@ export default class Input extends React.Component<ComponentProps> {
 }
 ```
 
-**Note:** Check out [form-for-components](https://github.com/form-for/form-for-components): Core HTML components. It'll probably help you.
-**Note:** And for ready-to-go component examples, check out [form-for-components-bootstrap](https://github.com/form-for/form-for-components).
-
-### Value & Default value
-
-Controlled forms provide `value`, while uncontrolled forms `defaultValue`. It's recommended that your code support
-both entries.
+* Note: Check out [form-for-components](form-for-components): Core HTML components. It'll probably help you getting setup.
+* Note: And for ready-to-go component examples, check out [form-for-bootstrap-components](./packages/form-for-bootstrap-components).
 
 ### Validation Events
 
-For all the events, if value and error are not provided they are guessed from the `targed` or `event.target`
+These events must be psased down to the field, so form-for can properly handle the validations.
 
-- `onMount(target: ?HTMLElement, { value?, error? })`
+For all the events, if value and error are not provided they are guessed from the `event.target`
+
+* `onMount(target: ?HTMLElement)`
 
 This event is used to `setCustomValidity`, prevent the form from being submitted with pending custom validations and
 allowing to focus on the field with error.
 
-This event is always called, unless `validation={false}`
+* `onFocus(event: Event)`
 
-- `onFocus(event: Event, { value?, error? })`
+* `onChange(event: Event, value?: any, error?: any)`
 
-Triggers validation if `validation` contains `focus`.
+If you're building a fancy component, such as a image cropper, you may need to provide the actual `value` and `error`,
+unless these can be guessed from `event.target`.
 
-- `onChange`
-
-Triggers validation if `validation` contains `change`. It also calls `onChange` assigned to `<Form>` and `<Field>`, if any.
-
-- `onBlur`
-
-Triggers validation if `validation` contains `blur`.
-
-**Note:** For an implementation example of all these methods, checkout the
-[core checkbox component](https://github.com/form-for/form-for-components/blob/master/src/Checkbox.js)
+Here's an example: https://github.com/form-for/demo/blob/master/src/fields/Image/ImageField.js
 
 ### Helpers
 
 It's recommend to look at the [form-for-component-helpers](https://github.com/form-for/form-for-component-helpers)
-package. It provides functions to facilitate creating components.
+package. It provides functions to facilitate creating components, specially when it comes to guessing labels.
 
 ### Nested components
 
-Nothing stops you from nesting components. You may have a `User` class that has `todoItem`, as list of `TodoItem` instances.
+form-for makes it a breeze to nest components. You may have a `User` class that has `todoItems`, as list of `TodoItem` instances.
 
-You can do something like this:
+Here's an example: https://github.com/form-for/demo/blob/master/src/fields/TodoItems/TodoItemsField.js
 
-On the user class
+## Flow support
 
-```javascript
-import { field } from "form-for";
+All form-for packages are built with flow and provides support from the get go. Flow will automatically include typings when you import form-for modules. Although you do not need to import the types explicitly, you can still do it like this: import type { ... } from 'form-for'.
 
-export default class User {
-    @field({ type: 'todoItems[]' })
-    todoItems;
-}
-```
+To use the flow typings shipped with form-for packages:
 
-On the component use `<FieldGroup>`, so the `<Field>` inside it knows what object it's related to. Just like `<Form>`,
-`<FieldGroup>` can receive `schema`.
+* In `.flowconfig`, you cannot ignore `node_modules`.
+* In `.flowconfig`, you cannot import it explicitly in the `[libs]` section.
+* You **do not** need to install library definition using flow-typed.
 
-`<FieldGroup>` has an optional `index` prop, that makes the property names enumarated, such as:
+## Browser support
 
-- `user[todoItem][0][name]`
-- `user[todoItem][1][name]`
-
-```javascript
-import React from "react";
-import { Field, FieldGroup } from "form-for";
-
-import TodoItem from "../TodoItem";
-
-export default class TodoItems extends React.Component {
-  state = {
-    items: this.props.value || this.props.defaultValue || []
-  };
-
-  addTodoItem = () => {
-    const items = this.state.items.concat(new TodoItem("New todo item"));
-    this.setState({ items });
-
-    if (this.props.onChange) {
-      this.props.onChange(null, { value: items });
-    }
-  };
-
-  removeTodoItem(item: TodoItem) {
-    const items = this.state.items.filter(i => item !== i);
-    this.setState({ items });
-
-    if (this.props.onChange) {
-      this.props.onChange(null, { value: items });
-    }
-  }
-
-  render() {
-    return (
-      <fieldset className="form-group">
-        <legend>Todo Items</legend>
-
-        {this.state.items.map((item, index) => this.renderTodoItem(item, index))}
-
-        <button type="button" className="btn btn-default" onClick={this.addTodoItem}>
-          + Add todo
-        </button>
-      </fieldset>
-    );
-  }
-
-  renderTodoItem(item: TodoItem, index: number) {
-    return (
-      <div key={item.uid} className="form-inline form-group clearfix">
-        <FieldGroup for={item} index={index}>
-          <Field name="checked" label={false} />
-          <Field name="title" label={false} style={{ width: "400px" }} />
-        </FieldGroup>
-
-        <button type="button" className="btn btn-danger btn-sm ml-2" onClick={() => this.removeTodoItem(item)}>
-          X
-        </button>
-      </div>
-    );
-  }
-}
-```
-
-On the form
-
-```javascript
-import TodoItems from "PATH/TO/todoItems";
-
-Field.bindComponent('todoItems[]', TodoItems);
-
-<Form for={user}/>
-  <Field for="todoItems"/>
-</Form/>
-```
+All form-for packages provide browser support through unpkg, such as: `https://unpkg.com/form-for/umd/index.js`
 
 ## Resources
 
-- [Contributing Guide](./CONTRIBUTING.md)
-- [Code of Conduct](./CODE_OF_CONDUCT.md)
-
-- The logo was created by Xicons.co and can be found [here](https://www.iconfinder.com/icons/2024631/document_documents_file_files_text_texts_icon).
-
-Blog post: https://medium.com/@pedsmoreira/introducing-form-for-reactjs-forms-made-easy-d82d9f5026be
-
-## Motivation
-
-FormFor is inspired by [Simple Form](https://github.com/plataformatec/simple_form),
-a gem that greatly facilitates creating forms in Rails.
+* [Contributing Guide](./CONTRIBUTING.md)
+* [Code of Conduct](./CODE_OF_CONDUCT.md)

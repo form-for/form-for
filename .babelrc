@@ -1,0 +1,24 @@
+{
+  "env": {
+    "production": {
+      "presets": [
+        [
+          "env",
+          {
+            "targets": {
+              "browsers": ["last 2 versions", "safari >= 7"]
+            },
+            "modules": false
+          }
+        ],
+        "react",
+        "stage-2"
+      ],
+      "plugins": ["external-helpers"]
+    },
+    "test": {
+      "presets": ["es2015", "react", "stage-2"],
+      "plugins": ["transform-decorators-legacy"]
+    }
+  }
+}

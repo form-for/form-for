@@ -1,6 +1,6 @@
 [ignore]
 <PROJECT_ROOT>/node_modules/fbjs/.*
-<PROJECT_ROOT>/node_modules/nwb/templates
+<PROJECT_ROOT>/scripts/.*
 
 [include]
 
@@ -10,6 +10,3 @@
 
 [options]
 esproposal.decorators=ignore
-
-module.system.node.resolve_dirname=node_modules
-module.system.node.resolve_dirname=src

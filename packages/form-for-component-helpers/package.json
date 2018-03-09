@@ -1,0 +1,28 @@
+{
+  "name": "form-for-component-helpers",
+  "description": "Component helpers for form-for ",
+  "version": "1.0.0-alpha.1",
+  "keywords": [
+    "react-component",
+    "react",
+    "reactjs",
+    "form",
+    "forms",
+    "simple-form",
+    "form-for",
+    "form-for-components",
+    "helpers"
+  ],
+  "main": "cjs/index.js",
+  "module": "es/index.js",
+  "umd:main": "umd/index.min.js",
+  "files": [
+    "cjs",
+    "es"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/form-for/form-for",
+  "bugs": "https://github.com/form-for/form-for/issues",
+  "repository": "form-for/form-for",
+  "author": "Pedro Moreira <pedsmoreira@gmail.com>"
+}
