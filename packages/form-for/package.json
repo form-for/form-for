@@ -1,31 +1,13 @@
 {
   "name": "form-for",
   "description": "ReactJS forms made easy.",
-  "keywords": [
-    "react-component",
-    "react",
-    "reactjs",
-    "form",
-    "forms",
-    "simple-form"
-  ],
   "version": "1.0.0-alpha.2",
-  "homepage": "https://github.com/form-for/form-for",
-  "bugs": "https://github.com/form-for/form-for/issues",
-  "license": "MIT",
-  "repository": "form-for/form-for",
-  "main": "dist/form-for.cjs.js",
-  "module": "dist/form-for.es.js",
-  "browser": "dist/form-for.umd.min.js",
+  "main": "cjs/index.js",
+  "module": "es/index.js",
   "files": [
-    "dist",
-    "src"
+    "cjs",
+    "es"
   ],
-  "scripts": {
-    "preversion": "cd ../../ && npm test packages/form-for && npm run build:package form-for",
-    "version": "git add package.json",
-    "postversion": "git push && git push --tags"
-  },
   "peerDependencies": {
     "prop-types": "^15.6.0",
     "react": "^0.13.0 || ^0.14.0 || ^15.0.0 || ^16.0.0"

@@ -2,31 +2,13 @@
   "name": "form-for-component-helpers",
   "description": "Component helpers for form-for ",
   "keywords": [
-    "react-component",
-    "react",
-    "reactjs",
-    "form",
-    "forms",
-    "simple-form",
-    "form-for",
-    "form-for-components",
     "helpers"
   ],
   "version": "1.0.0-alpha.1",
-  "homepage": "https://github.com/form-for/form-for",
-  "bugs": "https://github.com/form-for/form-for/issues",
-  "license": "MIT",
-  "repository": "form-for/form-for",
-  "main": "dist/form-for-component-helpers.cjs.js",
-  "module": "dist/form-for-component-helpers.es.js",
-  "browser": "dist/form-for-component-helpers.umd.min.js",
+  "main": "cjs/index.js",
+  "module": "es/index.js",
   "files": [
-    "dist",
-    "src"
-  ],
-  "scripts": {
-    "preversion": "cd ../../ && npm test packages/form-for-component-helpers && npm run build:package form-for-component-helpers",
-    "version": "git add package.json",
-    "postversion": "git push && git push --tags"
-  }
+    "cjs",
+    "es"
+  ]
 }

@@ -3,7 +3,9 @@ const { packagePath } = require('./config');
 
 module.exports = function(pkg, format) {
   console.info(`[${pkg}] add ${format} flow copy`);
-  cpy('./scripts/templates/flow.template.js', packagePath(pkg, 'dist'), {
-    rename: basename => `${pkg}.${format}.js.flow`
+
+  const pkgSrc = packagePath(pkg, 'src');
+  cpy([`${pkgSrc}/*.js`, `!${pkgSrc}/*.test.js`], packagePath(pkg, format), {
+    rename: basename => `${basename}.flow`
   });
 };
