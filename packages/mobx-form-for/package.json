@@ -12,7 +12,7 @@
     "mobx",
     "reactive"
   ],
-  "version": "1.0.0-alpha.2",
+  "version": "1.0.0",
   "main": "cjs/index.js",
   "module": "es/index.js",
   "umd:main": "umd/index.min.js",
