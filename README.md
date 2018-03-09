@@ -32,15 +32,23 @@ Just wanna play with it? Check out the demo
 * [Codesandbox Demo](https://codesandbox.io/s/github/form-for/demo)
 * [Repository](https://github.com/form-for/demo)
 
-## Plug 'n play components
+## Install
 
-* [Core components](./packages/form-for-bootstrap-components)
-* [Bootstrap 4 components](./packages/form-for-bootstrap-components)
+```sh
+npm install --save form-for
+```
 
-## Plug 'n play state management
+or https://unpkg.com/form-for/umd
+
+### Plug 'n play components
+
+* [Core components](https://github.com/form-for/form-for/tree/master/packages/form-for-bootstrap-components)
+* [Bootstrap 4 components](https://github.com/form-for/form-for/tree/master/packages/form-for-bootstrap-components)
+
+### Plug 'n play state management
 
 * React setState **(the default one)**
-* [MobX Binding](./packages/mobx-form-for) - [Demo](https://github.com/form-for/demo)
+* [MobX Binding](https://github.com/form-for/form-for/tree/master/packages/mobx-form-for) - [Demo](https://github.com/form-for/demo)
 
 **Why there is no Redux binding?**
 
@@ -231,7 +239,7 @@ export default class Input extends React.Component<ComponentProps> {
 ```
 
 * Note: Check out [form-for-components](form-for-components): Core HTML components. It'll probably help you getting setup.
-* Note: And for ready-to-go component examples, check out [form-for-bootstrap-components](./packages/form-for-bootstrap-components).
+* Note: And for ready-to-go component examples, check out [form-for-bootstrap-components](https://github.com/form-for/form-for/tree/master/packages/form-for-bootstrap-components).
 
 ### Validation Events
 

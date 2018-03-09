@@ -30,6 +30,7 @@ it will get formatted automatically once you commit.
 
 This package uses `oao` to help publishing the packages.
 
-```bash
-$ yarn oao publish
+```sh
+yarn build
+yarn oao publish
 ```

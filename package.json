@@ -1,4 +1,5 @@
 {
+  "name": "form-for",
   "private": true,
   "workspaces": [
     "packages/*"
