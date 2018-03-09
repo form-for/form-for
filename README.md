@@ -26,7 +26,11 @@ const user = new User();
 </Form>
 ```
 
-Just wanna play with it? [Check out my sandboxes](https://codesandbox.io/u/pedsmoreira/sandboxes)
+Just wanna play with it? Check out the demo
+
+* [Live](https://form-for.pedrosm.com)
+* [Codesandbox Demo](https://codesandbox.io/s/github/form-for/demo)
+* [Repository](https://github.com/form-for/demo)
 
 ## Plug 'n play components
 
