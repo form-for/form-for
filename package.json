@@ -4,7 +4,7 @@
   "workspaces": [
     "packages/*"
   ],
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "Pedro Moreira <pedsmoreira@gmail.com>",
   "homepage": "https://github.com/form-for/form-for",
   "bugs": "https://github.com/form-for/form-for/issues",
