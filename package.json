@@ -3,17 +3,8 @@
   "workspaces": [
     "packages/*"
   ],
-  "keywords": [
-    "react-component",
-    "react",
-    "reactjs",
-    "form",
-    "forms",
-    "simple-form",
-    "form-for",
-    "form-for-components",
-    "helpers"
-  ],
+  "version": "1.0.0-alpha.3",
+  "author": "Pedro Moreira <pedsmoreira@gmail.com>",
   "homepage": "https://github.com/form-for/form-for",
   "bugs": "https://github.com/form-for/form-for/issues",
   "license": "MIT",
