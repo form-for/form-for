@@ -3,25 +3,51 @@ const { rollup } = require('rollup');
 const resolve = require('rollup-plugin-node-resolve');
 const commonjs = require('rollup-plugin-commonjs');
 const babel = require('rollup-plugin-babel');
+const uglify = require('rollup-plugin-uglify');
 
-module.exports = async function(name, format) {
-  console.info(`[${name}] rollup ${format}`);
+module.exports = async function(pkg, format) {
+  console.info(`[${pkg}] rollup ${format}`);
 
-  const packageJson = JSON.parse(fs.readFileSync(`packages/${name}/package.json`));
+  const sourcemap = format === 'umd';
+  const minify = format === 'umd';
+
+  const packageJson = JSON.parse(fs.readFileSync(`packages/${pkg}/package.json`));
   const dependencies = Object.assign({}, packageJson.dependencies || {}, packageJson.peerDependencies || {});
 
   const globals = [];
-  Object.keys(dependencies).forEach(key => (globals[key] = key.split('-').join('_')));
+  Object.keys(dependencies).forEach(key => {
+    globals[key] = key.split('-').join('_');
+  });
+
+  const plugins = [
+    babel({
+      exclude: ['node_modules/**']
+    })
+  ];
+
+  if (format === 'umd') {
+    plugins.push(resolve());
+    plugins.push(commonjs());
+  }
+
+  if (minify) {
+    plugins.push(uglify());
+  }
 
   try {
-    const result = await rollup({
-      input: `packages/${name}/src/index.js`,
+    const bundle = await rollup({
+      input: `packages/${pkg}/src/index.js`,
       external: Object.keys(globals),
-      plugins: [babel({ exclude: ['node_modules/**'] })]
+      plugins
     });
 
-    const file = `packages/${name}/${format}/index.js`;
-    await result.write({ name, file, format, globals });
+    await bundle.write({
+      name: pkg,
+      file: `packages/${pkg}/${format}/index${minify ? '.min' : ''}.js`,
+      format,
+      globals,
+      sourcemap
+    });
   } catch (error) {
     console.error(error);
   }

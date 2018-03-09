@@ -13,6 +13,7 @@
     "build": "cross-env NODE_ENV=production node ./scripts/build.js",
     "build:package": "cross-env NODE_ENV=production node ./scripts/build-package.js",
     "test": "jest",
+    "test:ci": "npm run build && npm test",
     "test:coverage": "jest --coverage",
     "test:watch": "jest --watch",
     "flow": "flow",
@@ -51,7 +52,8 @@
     "rollup": "^0.53.3",
     "rollup-plugin-babel": "^3.0.3",
     "rollup-plugin-commonjs": "^8.2.6",
-    "rollup-plugin-node-resolve": "^3.0.0"
+    "rollup-plugin-node-resolve": "^3.0.0",
+    "rollup-plugin-uglify": "^3.0.0"
   },
   "lint-staged": {
     "*.js": [

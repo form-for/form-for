@@ -15,6 +15,7 @@
   "version": "1.0.0-alpha.2",
   "main": "cjs/index.js",
   "module": "es/index.js",
+  "umd:main": "umd/index.min.js",
   "files": [
     "cjs",
     "es"
