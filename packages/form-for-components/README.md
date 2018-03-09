@@ -2,6 +2,8 @@
 
 > Core components for form-for
 
+[![npm version](https://img.shields.io/npm/v/form-for-components.svg)](https://www.npmjs.org/package/form-for-components)
+
 ```javascript
 import { Field, Form } from 'form-for';
 import { connectFields } from 'form-for-components';

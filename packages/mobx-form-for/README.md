@@ -2,6 +2,8 @@
 
 > `MobX` binding for `form-for`
 
+[![npm version](https://img.shields.io/npm/v/mobx-form-for.svg)](https://www.npmjs.org/package/mobx-form-for)
+
 This package leverages the power of MobX to update only the fields changed.
 
 ## Install

@@ -2,6 +2,8 @@
 
 > Helpers for creating clean and accessible form-for components.
 
+[![npm version](https://img.shields.io/npm/v/form-for-component-helpers.svg)](https://www.npmjs.org/package/form-for-component-helpers)
+
 ## Install
 
 ```sh

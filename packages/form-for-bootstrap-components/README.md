@@ -2,6 +2,8 @@
 
 > Accessible Bootstap 4 components for form-for
 
+[![npm version](https://img.shields.io/npm/v/form-for-bootstrap-components.svg)](https://www.npmjs.org/package/form-for-bootstrap-components)
+
 ```javascript
 import { Field, Form } from 'form-for';
 import { connectFields } from 'form-for-bootstrap-components';
