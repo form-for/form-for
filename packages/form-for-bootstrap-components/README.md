@@ -19,3 +19,5 @@ or https://unpkg.com/form-for-bootstrap-components/umd
 
 You'll also need to include Bootstrap 4 through a CDN or import it in your code. If you're looking for
 an alternative look and feel, we recommend [https://bootswatch.com/](Bootswatch).
+
+For more in depth documentation see: https://github.com/form-for/form-for

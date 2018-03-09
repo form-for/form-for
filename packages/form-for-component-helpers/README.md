@@ -106,3 +106,5 @@ import { stringHelpers } from 'form-for-component-helpers';
 ## Resources
 
 * Check out [form-for-bootstrap-components](https://github.com/form-for/packages/form-for-bootstrap-components) for more usage examples
+
+For more in depth documentation see: https://github.com/form-for/form-for

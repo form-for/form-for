@@ -190,7 +190,7 @@ If you want to skip validation events set `noValidate={true}` to your `<Form>`.
 If you're using `flow` for typing, you can import the component props: `import type { ComponentProps } from "form-for";`.
 PR's for Typescripts typings are welcome.
 
-These are the fields passed to a component: **(the ? means it may or may not be passed)**
+These are the fields provided to a component: **(the ? means it may or may not be provided)**
 
 ```js
 type ComponentProps = {
