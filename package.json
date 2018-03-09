@@ -14,7 +14,7 @@
     "build": "cross-env NODE_ENV=production node ./scripts/build.js",
     "build:package": "cross-env NODE_ENV=production node ./scripts/build-package.js",
     "test": "jest",
-    "test:ci": "npm run build && npm test",
+    "test:ci": "npm run build && npm run test:coverage",
     "test:coverage": "jest --coverage",
     "test:watch": "jest --watch",
     "flow": "flow",
