@@ -183,19 +183,22 @@ Validation takes into consideration both custom validations and HTML 5 validatio
 
 ### HTML 5 Validation
 
-````js
-const schema = {age: {type: 'number', max: 10, min: 2, required: true}};
+Field components can make use of the HTML 5 validation messages. This means that you don't have to manually type and translate HTML 5 validations, such as `required`, `min`, `max`, `minLength`, in order to get a good UX and provide accessibility.
+
+```js
+const schema = { age: { type: 'number', max: 10, min: 2, required: true } };
 
 <Form for={object} schema={schema}>
-  <Field name="age" />
-</Form>
+  <Field name="age" required={true} />
+</Form>;
+```
 
 ### Error string
 
 ```js
 // this.state.nameError == 'invalid name'
 <Field name="name" error={this.state.nameError}>
-````
+```
 
 ### Error function
 
