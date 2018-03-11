@@ -183,7 +183,7 @@ Validation takes into consideration both custom validations and HTML 5 validatio
 
 ### HTML 5 Validation
 
-Field components can make use of the HTML 5 validation messages. This means that you don't have to manually type and translate HTML 5 validations, such as `required`, `min`, `max`, `minLength`, in order to get a good UX and provide accessibility.
+You can make use of the HTML 5 validation attributes, such as `required, min, max and minLength`. The HTML 5 validation messages are provided to the Field Component, so the field can display the error in a nice way.
 
 ```js
 const schema = { age: { type: 'number', max: 10, min: 2, required: true } };
@@ -241,6 +241,18 @@ If for some reason you need to skip validations, just use the `noValidate` prop.
 
 ```js
 <Form noValidate>...</Form>
+```
+
+## Touch
+
+The `touch` property provided to a field component means that a field has been focused at least once. This is used to display error messages only after the user has gotten to an input.
+
+### Touch on Mount
+
+There may be cases when you want to display the errors from the beginning, even before the user touches a field. For that, you can use `touchOnMount` on `<Form>`;
+
+```js
+<Form touchOnMount>...</Form>
 ```
 
 ## Creating components
