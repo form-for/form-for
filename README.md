@@ -344,6 +344,19 @@ To use the flow typings shipped with form-for packages:
 * In `.flowconfig`, you cannot import it explicitly in the `[libs]` section.
 * You **do not** need to install library definition using flow-typed.
 
+## Roadmap
+
+* Typescript typings
+* [mobx-state-tree](https://github.com/mobxjs/mobx-state-tree) binding
+
+* In depth blog post about form-for
+* More examples
+  * Pure react
+  * Redux
+  * Async validation
+  * Calculation
+* Egghead.io course
+
 ## Resources
 
 * [Contributing Guide](./CONTRIBUTING.md)
