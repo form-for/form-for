@@ -337,3 +337,5 @@ To use the flow typings shipped with form-for packages:
 
 * [Contributing Guide](./CONTRIBUTING.md)
 * [Code of Conduct](./CODE_OF_CONDUCT.md)
+
+* The logo was created by Xicons.co and can be found [here](https://www.iconfinder.com/icons/2024631/document_documents_file_files_text_texts_icon).
