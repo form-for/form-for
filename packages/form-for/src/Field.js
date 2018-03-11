@@ -29,7 +29,6 @@ export default class Field extends React.Component<Props> {
   target: Object;
   touched: ?boolean;
   incomingError: ?string;
-  memoizedError: ?string;
 
   /*
    * Component binding
