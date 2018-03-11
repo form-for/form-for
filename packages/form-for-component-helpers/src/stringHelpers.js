@@ -1,6 +1,6 @@
 // @flow
 
-export function replaceSnakeUnderscore(str: string, glue: string = ' '): string {
+export function replaceDashUnderscore(str: string, glue: string = ' '): string {
   return str.split(/[_|-]/).join(glue);
 }
 
@@ -20,5 +20,5 @@ export function simplifyFieldName(str: string): string {
 }
 
 export function humanize(str: string): string {
-  return capitalize(replaceSnakeUnderscore(replaceCamels(simplifyFieldName(str))));
+  return capitalize(replaceDashUnderscore(replaceCamels(simplifyFieldName(str))));
 }

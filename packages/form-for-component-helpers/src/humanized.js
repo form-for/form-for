@@ -3,6 +3,5 @@
 import { humanize } from './stringHelpers';
 
 export default function humanized(Component: any): string {
-  const props: any = Component.props || {};
-  return humanize(props.name);
+  return humanize(Component.props.name);
 }

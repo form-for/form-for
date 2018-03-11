@@ -7,16 +7,13 @@ type HelpResults = {
   text?: string
 };
 
-export default function help(Component: any, helpText?: string): HelpResults {
-  if (typeof helpText === 'undefined' && Component.props) {
-    helpText = Component.props.help;
+export default function help(Component: any, text?: string): HelpResults {
+  if (typeof text === 'undefined' && Component.props) {
+    text = Component.props.help;
   }
 
-  if (!helpText) return {};
+  if (!text) return {};
 
   const id = uniqueId(Component) + '-help';
-  return {
-    id: id,
-    text: helpText
-  };
+  return { id, text };
 }
