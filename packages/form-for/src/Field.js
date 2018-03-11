@@ -104,28 +104,33 @@ export default class Field extends React.Component<Props> {
     return this.target.value;
   }
 
+  getTargetValidationMessage(): ?string {
+    return (this.target || {}).validationMessage;
+  }
+
   isTouched(): boolean {
     return this.touched || this.context.touchOnMount;
+  }
+
+  getSchemaError() {
+    let error = this.getSchemaProperty().error;
+    if (!error) return;
+
+    if (typeof error === 'string') {
+      error = this.context.object[error];
+    }
+
+    if (typeof error === 'function') {
+      return error.bind(this.context.object)(this.context.object, this.props.name);
+    }
+
+    return error;
   }
 
   getError(value?: any): ?any {
     if (this.context.noValidate) return null;
     if (this.props.error) return this.props.error;
-
-    let error = this.getSchemaProperty()['error'];
-    if (error) {
-      if (typeof error === 'string') {
-        error = this.context.object[error];
-      }
-
-      if (typeof error === 'function') {
-        return error.bind(this.context.object)(this.context.object, this.props.name);
-      }
-
-      return error;
-    }
-
-    return this.incomingError || (this.target || {}).validationMessage;
+    return this.getSchemaError() || this.incomingError || this.getTargetValidationMessage();
   }
 
   /*
