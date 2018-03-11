@@ -243,11 +243,11 @@ If for some reason you need to skip validations, just use the `noValidate` prop.
 <Form noValidate>...</Form>
 ```
 
-## Touch
+## Touched
 
-The `touch` property provided to a field component means that a field has been focused at least once. This is used to display error messages only after the user has gotten to an input.
+The `touched` property provided to a field component means that a field has been focused at least once. This is used to display error messages only after the user has gotten to an input.
 
-### Touch on Mount
+### Touched on Mount
 
 There may be cases when you want to display the errors from the beginning, even before the user touches a field. For that, you can use `touchOnMount` on `<Form>`;
 
