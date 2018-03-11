@@ -37,7 +37,7 @@ Just wanna play with it? Check out the demo
 * Convention over configuration - it _just works_ for most cases
 * Seemless integration between custom and HTML 5 Validation
   * Custom validations are set using `setCustomValidity` for better browser integration
-  * HTML 5 validation errors are provided to the component to be displayed and have better `accessibility` and UX
+  * HTML 5 validation errors are provided to the component to be displayed and have better **accessibility** and UX
 * Built-in support for nested fields
   * Often used for array fields
 * Validation among fields
