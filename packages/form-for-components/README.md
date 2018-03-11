@@ -21,6 +21,25 @@ npm install --save form-for form-for-components
 
 or https://unpkg.com/form-for-components/umd
 
+## Usage
+
+### Bind all fields
+
+```js
+import { connectFields } from 'form-for-components';
+
+connectFields();
+```
+
+### Bind specific fields
+
+```js
+import { Field } from 'form-for';
+import { Input } from 'form-for-components';
+
+Field.connect('text', Input);
+```
+
 ## List of components
 
 * Checkbox

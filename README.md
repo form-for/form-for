@@ -32,7 +32,21 @@ Just wanna play with it? Check out the demo
 * [Codesandbox Demo](https://codesandbox.io/s/github/form-for/demo)
 * [Repository](https://github.com/form-for/demo)
 
+## Key Features
+
+* Convention over configuration - it _just works_ for most cases
+* Seemless integration between custom and HTML 5 Validation
+  * Custom validations are set using `setCustomValidity` for better browser integration
+  * HTML 5 validation errors are provided to the component to be displayed and have better `accessibility` and UX
+* Built-in support for nested fields
+  * Often used for array fields
+* Validation among fields
+  * Often used for validations like `password confirmation`
+* Optimized rerenders with [MobX](https://github.com/mobxjs/mobx)
+
 ## Install
+
+📦 [2.7k gzipped](https://bundlephobia.com/result?p=form-for)
 
 ```sh
 npm install --save form-for
@@ -40,19 +54,19 @@ npm install --save form-for
 
 or https://unpkg.com/form-for/umd
 
-### Plug 'n play components
-
-* [Core components](https://github.com/form-for/form-for/tree/master/packages/form-for-bootstrap-components)
-* [Bootstrap 4 components](https://github.com/form-for/form-for/tree/master/packages/form-for-bootstrap-components)
-
 ### Plug 'n play state management
 
 * React setState **(the default one)**
 * [MobX Binding](https://github.com/form-for/form-for/tree/master/packages/mobx-form-for) - [Demo](https://github.com/form-for/demo)
 
+### Plug 'n play components
+
+* [Base components](https://github.com/form-for/form-for/tree/master/packages/form-for-bootstrap-components)
+* [Bootstrap 4 components](https://github.com/form-for/form-for/tree/master/packages/form-for-bootstrap-components)
+
 **Why there is no Redux binding?**
 
-[Form states in general should not be managed by Redux](https://github.com/reactjs/redux/issues/1287#issuecomment-175351978). You'll be fine with the default state management. Just get the data from `onChange` or `onSubmit`.
+[Form states in general should not be managed by Redux](https://github.com/reactjs/redux/issues/1287#issuecomment-175351978). You'll most likely be just fine with the default state management. You can get the form data through `onChange(data)` and `onSubmit(event, data)`.
 
 ## Schema
 
@@ -84,7 +98,7 @@ const user = new User();
 </Form/>
 ```
 
-### Schema property
+### Property in the object
 
 ```js
 export default class User {
@@ -104,7 +118,7 @@ const user = new User();
 </Form/>
 ```
 
-### Passing directly to the form
+### Schema on the `<Form>`
 
 ```js
 const schema = {
@@ -120,15 +134,17 @@ const user = {};
 </Form/>
 ```
 
-### Extra (avoid doing this, stay DRY)
+### Properties on the `<Field>`
 
-You can also set special properties directly to the `<Field>` tag.
+Properties directly to the `<Field>` tag override the schema properties.
 
 ```js
 <Form for={user} ...>
   <Field name="..." type="special_type_for_this_form_only" placeholder="Special" />
 </Form>
 ```
+
+_Note: Try avoiding this one, as it makes your forms longer and may lead to code duplication._
 
 ## Connect components
 
@@ -143,16 +159,43 @@ class Component extends React.Component {
 Field.connect('type', Component);
 ```
 
+## Data management
+
+You can get the form data through `onChange(data)` and `onSubmit(event, data)`
+
+```js
+handleChange = data => {
+  // console.log(data);
+};
+
+handleSubmit = (event, data) => {
+  // console.log(data);
+};
+
+<Form onChange={handleChange} onSubmit={handleSubmit}>
+  ...
+</Form>;
+```
+
 ## Validation
 
 Validation takes into consideration both custom validations and HTML 5 validations respectively.
+
+### HTML 5 Validation
+
+````js
+const schema = {age: {type: 'number', max: 10, min: 2, required: true}};
+
+<Form for={object} schema={schema}>
+  <Field name="age" />
+</Form>
 
 ### Error string
 
 ```js
 // this.state.nameError == 'invalid name'
 <Field name="name" error={this.state.nameError}>
-```
+````
 
 ### Error function
 
@@ -191,14 +234,18 @@ export default class User {
 
 ### Skip validation
 
-If you want to skip validation events set `noValidate={true}` to your `<Form>`.
+If for some reason you need to skip validations, just use the `noValidate` prop.
+
+```js
+<Form noValidate>...</Form>
+```
 
 ## Creating components
 
 If you're using `flow` for typing, you can import the component props: `import type { ComponentProps } from "form-for";`.
-PR's for Typescripts typings are welcome.
+PR's for Typescript typings are welcome.
 
-These are the fields passed to a component: **(the ? means it may or may not be passed)**
+These are the fields provided to a component: **(the ? means it may or may not be provided)**
 
 ```js
 type ComponentProps = {
@@ -213,33 +260,37 @@ type ComponentProps = {
 };
 ```
 
-Any other attributes provided through the `<Field>` tag will also be available through the `props`.
+Any other attributes provided through the `<Field>` tag, `@field` or the `schema` will also be available through the `props`.
 
-Here's a simple example:
+Here's an example:
 
 ```js
 // @flow
 
-import React from 'react';
-import { render } from 'react-dom';
+import * as React from 'react';
 import type { ComponentProps } from 'form-for';
 
-export default class Input extends React.Component<ComponentProps> {
+export default class Input extends React.PureComponent<ComponentProps> {
+  input: ?HTMLInputElement;
+
+  componentDidMount() {
+    this.props.onMount(this.input);
+  }
+
   render() {
-    const { error, touched, onMount, ...props } = this.props;
+    const { error, ...props } = { ...this.props };
 
-    if (error) {
-      // $FlowFixMe
-      props['aria-invalid'] = true;
-    }
+    // onMount and touched are not used in this case, but they need to be deleted so they don't get passed down to the DOM
+    delete props.onMount;
+    delete props.touched;
 
-    return <input {...props} />;
+    return <input ref={el => (this.input = el)} aria-invalid={!!error} {...props} />;
   }
 }
 ```
 
-* Note: Check out [form-for-components](form-for-components): Core HTML components. It'll probably help you getting setup.
-* Note: And for ready-to-go component examples, check out [form-for-bootstrap-components](https://github.com/form-for/form-for/tree/master/packages/form-for-bootstrap-components).
+* Check out [form-for-components](form-for-components) for handy base components.
+* Check out [form-for-bootstrap-components](https://github.com/form-for/form-for/tree/master/packages/form-for-bootstrap-components) for ready to go Bootstrap 4 components.
 
 ### Validation Events
 
@@ -263,7 +314,7 @@ Here's an example: https://github.com/form-for/demo/blob/master/src/fields/Image
 
 ### Helpers
 
-It's recommend to look at the [form-for-component-helpers](https://github.com/form-for/form-for-component-helpers)
+It's recommend to look at the [form-for-component-helpers](https://github.com/form-for/form-for/tree/master/packages/form-for-component-helpers)
 package. It provides functions to facilitate creating components, specially when it comes to guessing labels.
 
 ### Nested components
@@ -274,17 +325,13 @@ Here's an example: https://github.com/form-for/demo/blob/master/src/fields/TodoI
 
 ## Flow support
 
-All form-for packages are built with flow and provides support from the get go. Flow will automatically include typings when you import form-for modules. Although you do not need to import the types explicitly, you can still do it like this: import type { ... } from 'form-for'.
+All form-for packages are built with flow and provides support from the get go. Flow will automatically include typings when you import form-for modules. Although you do not need to import the types explicitly, you can still do it like this: `import type { ... } from 'form-for'`.
 
 To use the flow typings shipped with form-for packages:
 
 * In `.flowconfig`, you cannot ignore `node_modules`.
 * In `.flowconfig`, you cannot import it explicitly in the `[libs]` section.
 * You **do not** need to install library definition using flow-typed.
-
-## Browser support
-
-All form-for packages provide browser support through unpkg, such as: `https://unpkg.com/form-for/umd/index.js`
 
 ## Resources
 
