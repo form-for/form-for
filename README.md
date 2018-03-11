@@ -59,14 +59,14 @@ or https://unpkg.com/form-for/umd
 * React setState **(the default one)**
 * [MobX Binding](https://github.com/form-for/form-for/tree/master/packages/mobx-form-for) - [Demo](https://github.com/form-for/demo)
 
+**Why there is no Redux binding?**
+
+[Form states in general should not be managed by Redux](https://github.com/reactjs/redux/issues/1287#issuecomment-175351978). You'll most likely be just fine with the default state management. You can get the form data through `onChange(data)` and `onSubmit(event, data)`.
+
 ### Plug 'n play components
 
 * [Base components](https://github.com/form-for/form-for/tree/master/packages/form-for-bootstrap-components)
 * [Bootstrap 4 components](https://github.com/form-for/form-for/tree/master/packages/form-for-bootstrap-components)
-
-**Why there is no Redux binding?**
-
-[Form states in general should not be managed by Redux](https://github.com/reactjs/redux/issues/1287#issuecomment-175351978). You'll most likely be just fine with the default state management. You can get the form data through `onChange(data)` and `onSubmit(event, data)`.
 
 ## Schema
 
@@ -183,7 +183,7 @@ Validation takes into consideration both custom validations and HTML 5 validatio
 
 ### HTML 5 Validation
 
-You can make use of the HTML 5 validation attributes, such as `required, min, max and minLength`. The HTML 5 validation messages are provided to the Field Component, so the field can display the error in a nice way.
+You can make use of the HTML 5 validation attributes, such as `required, min, max and minLength`. The HTML 5 validation messages are provided to the connected component, [so it can display the error in a nice way](https://github.com/form-for/form-for/blob/master/packages/form-for-bootstrap-components/src/Input.js#L41).
 
 ```js
 const schema = { age: { type: 'number', max: 10, min: 2, required: true } };
@@ -193,33 +193,7 @@ const schema = { age: { type: 'number', max: 10, min: 2, required: true } };
 </Form>;
 ```
 
-### Error string
-
-```js
-// this.state.nameError == 'invalid name'
-<Field name="name" error={this.state.nameError}>
-```
-
-### Error function
-
-The function will be bound to the object, so `this.name` will have the actual value. The object and the propety change are also provided, in case you do not want to use `this.*`.
-
-### Provide function directly to the field
-
-```js
-function validateAge(object, name) {
-  if (this.age === 999) return 'Are you this old???';
-  if (object[name] === 999) return 'Are you this old???';
-}
-```
-
-```js
-<Field name="age" error={validateAge}>
-```
-
-### Named function
-
-You can provide a function name to an `error` definition on the `schema` or `@field` and it will be resolved to the object function
+### Named validation function
 
 ```js
 import { field } from 'form-for';
@@ -228,11 +202,33 @@ export default class User {
   @field({ error: 'validateName' })
   name;
 
-  validateName(name) {
-    // you can use this.something to check other things before returning an error
-    if (name === 'Nobody') return 'Nobody is not a name';
+  validateName(object, name) {
+    if (this.name === 'Nobody') return 'Nobody is not a name'; // 💎 Recommended
+    if (object[name] === 'Nobody') return 'Nobody is not a name'; // Same thing, but using the argument
+
+    // Returning undefined, false or null means there's no custom error, so form-for will check for HTML 5 errors
   }
 }
+```
+
+### Standalone validation function
+
+```js
+function validateAge(object, name) {
+  if (this.age === 999) return 'Are you this old???'; // 💎 Recommended
+  if (object[name] === 999) return 'Are you this old???'; // Same thing, but using the arguments
+
+  // Returning undefined, false or null means there's no custom error, so form-for will check for HTML 5 errors
+}
+
+<Field name="age" error={validateAge}>
+```
+
+### Error string
+
+```js
+this.state = { nameError: 'invalid name' };
+<Field name="name" error={this.state.nameError}>
 ```
 
 ### Skip validation
