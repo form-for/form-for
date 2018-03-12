@@ -1,6 +1,6 @@
 {
   "name": "mobx-form-for",
-  "description": "Core HTML components for form-for",
+  "description": "form-for state management with MobX ",
   "keywords": [
     "react-component",
     "react",
@@ -21,7 +21,7 @@
     "es"
   ],
   "peerDependencies": {
-    "form-for": "^1.0.0-alpha.1",
+    "form-for": "^1.0.0",
     "mobx": "^2.6.3 || ^3.0.0",
     "mobx-react": "^3.5.0 || ^4.0.0",
     "react": "^0.13.0 || ^0.14.0 || ^15.0.0 || ^16.0.0"
