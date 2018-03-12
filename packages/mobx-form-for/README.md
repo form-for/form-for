@@ -51,4 +51,60 @@ export default class App extends React.Component {
 }
 ```
 
+## Nested fields
+
+When dealing with arrays and objects there are three alternatives.
+
+Aside from the first option, which depends on `onChange` to update the object state, it's recommended to call `onChange` so the function assigned to `<Form onChange={fn}/>` gets called. Don't worry, mobx-form-for is smart enough not to call `action()` again.
+
+_If you're handling arrays or maps, you'll need to decorate the React Component with `observer` for it to update properly_
+
+### Create a new object and provide it to onChange
+
+```js
+handleAddItem = () => {
+  this.props.onChange(null, this.props.value.concat('new value'));
+};
+```
+
+### Create actions inside the field
+
+```js
+import { action } from 'mobx';
+
+handleAddItem = () => {
+  action(() => this.props.value[name].push('new value')); // If strict mode enabled you need to wrap the change by `action`
+  this.props.value[name].push('new value'); // Example without strict mode
+  this.props.onChange(null, this.props.value);
+};
+```
+
+### Call the context object
+
+Sometimes you may want to call an `action` in your store. This is how you do it:
+
+```js
+@observer
+export default class TodoItemsField extends React.Component<ComponentProps> {
+  static contextTypes = {
+    object: PropTypes.object.isRequired
+  };
+
+  handleAddItem = () => {
+    this.context.object.addTodoItem();
+  };
+
+  handleRemoveItem = item => {
+    // You may provide the function names for the actions as a prop to make the component reusable
+    // @field({ type: 'TodoItem[]', onRemove: 'removeTodoItem' })
+    this.context.object[this.props.onRemove]();
+    this.props.onChange(null, this.props.value);
+  };
+
+  render() {
+    // ...
+  }
+}
+```
+
 For more in depth documentation see: https://github.com/form-for/form-for

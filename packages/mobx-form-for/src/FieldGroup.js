@@ -6,9 +6,13 @@ import { FieldGroup as BaseFieldGroup } from 'form-for';
 
 class FieldGroup extends BaseFieldGroup {
   onChange(name: string, value: any) {
-    const mutator = () => (this.props.for[name] = value);
+    const object = this.props.for;
 
-    action(`Update form value ${this.getPrefix()}`, mutator)();
+    if (object[name] !== value) {
+      const mutator = () => (object[name] = value);
+      action(`Update form value ${this.getPrefix()}[${name}]`, mutator)();
+    }
+
     this.dispatchFormChange();
   }
 }

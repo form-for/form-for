@@ -72,9 +72,9 @@ or https://unpkg.com/form-for/umd
 
 Forms are created based on a given schema. There are three ways to provide the form schema:
 
-### Annotations
+### Decorator
 
-The `@field` annotation may or may not have parameters.
+The `@field` decorator may or may not have parameters.
 
 ```js
 import { field } from 'form-for';
