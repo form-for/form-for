@@ -328,11 +328,13 @@ Here's an example: https://github.com/form-for/demo/blob/master/src/fields/Image
 It's recommend to look at the [form-for-component-helpers](https://github.com/form-for/form-for/tree/master/packages/form-for-component-helpers)
 package. It provides functions to facilitate creating components, specially when it comes to guessing labels.
 
-### Nested components
+### Nested fields
 
-form-for makes it a breeze to nest components. You may have a `User` class that has `todoItems`, as list of `TodoItem` instances.
+form-for makes it a breeze to nest fields. You may have a `User` class that has `todoItems`, as list of `TodoItem` instances.
 
 Here's an example: https://github.com/form-for/demo/blob/master/src/fields/TodoItems/TodoItemsField.js
+
+If you're using the MobX binding, please check https://github.com/form-for/form-for/tree/master/packages/mobx-form-for#nested-fields
 
 ## Flow support
 
