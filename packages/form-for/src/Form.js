@@ -15,18 +15,22 @@ export default class Form extends BaseForm {
   getChildContext() {
     return {
       ...super.getChildContext(),
-      errorReporters: PropTypes.arrayOf(PropTypes.func)
+      errorReporters: this.errorReporters
     };
   }
 
   constructor(props: any) {
     super(props);
     this.data = props.for || {};
-    this.state = { submitting: false };
+    this.state = { showErrors: false, submitting: false };
   }
 
   isSubmitting() {
     return this.state.submitting;
+  }
+
+  getShowErrorsState() {
+    return this.state.showErrors;
   }
 
   getData() {
@@ -42,6 +46,10 @@ export default class Form extends BaseForm {
   onValidate(name: string, error: ?string) {
     super.onValidate(name, error);
     this.errorReporters.forEach(reporter => reporter(name, error));
+  }
+
+  showErrors() {
+    this.setState({ showErrors: true });
   }
 
   onStartSubmit() {

@@ -30,7 +30,7 @@ class Form extends BaseForm {
   }
 
   onSubmit() {
-    action('Form submitted', () => this.submitted.set(true))();
+    if (Object.keys(this.errors).length) action('Form submitted', () => this.submitted.set(true))();
   }
 
   onStartSubmit() {

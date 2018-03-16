@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 
 import type { SchemaProperty } from './BaseForm';
 import prefixer from './prefixer';
+import isPromise from './isPromise';
 
 export type Props = {
   name: string,
@@ -29,7 +30,10 @@ export default class Field extends React.Component<Props> {
   target: Object;
   touched: ?boolean;
   incomingError: ?string;
-  lastError: ?string;
+
+  asyncError: ?string;
+  validatingPromise: ?Promise<?string>;
+  static validatingErrorMessage = 'Validating';
 
   /*
    * Component binding
@@ -46,8 +50,8 @@ export default class Field extends React.Component<Props> {
    */
 
   static contextTypes = {
-    showErrors: PropTypes.bool.isRequired,
-    submitted: PropTypes.any.isRequired,
+    showErrorsProp: PropTypes.bool.isRequired,
+    showErrorsState: PropTypes.any.isRequired,
     onFormValidate: PropTypes.func.isRequired,
     object: PropTypes.object.isRequired,
     schema: PropTypes.object.isRequired,
@@ -109,25 +113,44 @@ export default class Field extends React.Component<Props> {
     return (this.target || {}).validationMessage;
   }
 
-  hasContextSubmitted(): boolean {
-    return this.context.submitted.get();
+  getShowErrorsState(): boolean {
+    return this.context.showErrorsState;
   }
 
   isTouched(): boolean {
-    return this.touched || this.context.showError || this.hasContextSubmitted();
+    return this.touched || this.context.showErrorsProp || this.getShowErrorsState();
+  }
+
+  getErrorFunctionResult(callback: Function) {
+    const response = callback.bind(this.context.object)(this);
+
+    if (!isPromise(response)) return response;
+    this.validatingPromise = response;
+
+    response
+      .then(() => {
+        if (this.validatingPromise === response) {
+          this.validatingPromise = null;
+          this.forceUpdate();
+        }
+      })
+      .catch(error => {
+        if (this.validatingPromise === response) {
+          this.validatingPromise = null;
+          this.asyncError = error;
+          this.forceUpdate();
+        }
+      });
+
+    return Field.validatingErrorMessage;
   }
 
   getSchemaError() {
     let error = this.getSchemaProperty().error;
     if (!error) return;
 
-    if (typeof error === 'string') {
-      error = this.context.object[error];
-    }
-
-    if (typeof error === 'function') {
-      return error.bind(this.context.object)(this.context.object, this.props.name);
-    }
+    if (typeof error === 'string') error = this.context.object[error];
+    if (typeof error === 'function') error = this.getErrorFunctionResult(error);
 
     return error;
   }
@@ -178,11 +201,21 @@ export default class Field extends React.Component<Props> {
       this.touch();
       this.forceUpdate();
     } else {
+      // `isTouched()` may return true if `showErrors` is true
+      // and we want to make sure that touched will be true
       this.touch();
     }
   }
 
   validate(incomingError?: any): ?string {
+    this.validatingPromise = null;
+
+    if (this.asyncError) {
+      const error = this.asyncError;
+      this.asyncError = null;
+      return error;
+    }
+
     this.clearBrowserCustomValidity();
 
     this.incomingError = incomingError;

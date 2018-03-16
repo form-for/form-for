@@ -9,10 +9,10 @@ export type Props = {
 
 export default class Submit extends React.Component<Props> {
   static contextTypes = {
-    submitting: PropTypes.bool.isRequired
+    showErrorsState: PropTypes.bool.isRequired
   };
 
   render(): React.Node {
-    return this.props.render(this.context.submitting.get());
+    return this.props.render(this.context.showErrorsState.get());
   }
 }

@@ -33,20 +33,20 @@ export default class BaseForm extends React.Component<Props, *> {
    */
   static childContextTypes = {
     errors: PropTypes.object,
-    showErrors: PropTypes.bool,
+    showErrorsProp: PropTypes.bool,
+    showErrorsState: PropTypes.any,
     onFormChange: PropTypes.func,
     onFormValidate: PropTypes.func,
-    submitted: PropTypes.any,
     submitting: PropTypes.any
   };
 
   getChildContext() {
     return {
       errors: this.errors,
-      showErrors: !!this.props.showErrors,
+      showErrorsProp: !!this.props.showErrors,
+      showErrorsState: this.getShowErrorsState(),
       onFormChange: this.handleChange,
       onFormValidate: this.handleValidate,
-      submitted: this.hasSubmitted(),
       submitting: this.isSubmitting()
     };
   }
@@ -55,12 +55,12 @@ export default class BaseForm extends React.Component<Props, *> {
     return Object.keys(this.errors).length;
   }
 
-  isSubmitting() {
-    return this.throwNotImplementedMethod('isSubmitting');
+  isSubmitting(): any {
+    return false;
   }
 
-  hasSubmitted() {
-    return this.throwNotImplementedMethod('isSubmitting');
+  getShowErrorsState(): any {
+    return false;
   }
 
   getData(): Object {
@@ -77,22 +77,18 @@ export default class BaseForm extends React.Component<Props, *> {
 
   onChange(data: Object) {}
 
-  onStartSubmit() {
-    return this.throwNotImplementedMethod('onStartSubmit');
-  }
-
-  onSubmit(event: SyntheticEvent<HTMLFormElement>) {
-    return this.throwNotImplementedMethod('onSubmit');
-  }
-
-  onFinishSubmit() {
-    return this.throwNotImplementedMethod('onFinishSubmit');
-  }
-
   onValidate(name: string, error: ?string): void {
     if (error) this.errors[name] = error;
     else delete this.errors[name];
   }
+
+  /*
+   * Dispatchers
+   */
+
+  dispatchShowErrors() {}
+  dispatchSubmittingStart() {}
+  dispatchSubmittingFinish() {}
 
   /*
    * Bound handlers
@@ -110,10 +106,9 @@ export default class BaseForm extends React.Component<Props, *> {
   };
 
   handleSubmit = (event: SyntheticEvent<HTMLFormElement>) => {
-    this.onSubmit(event);
-
     if (this.isInvalid()) {
       event.preventDefault();
+      this.dispatchShowErrors();
       event.currentTarget.reportValidity();
       return;
     }
@@ -122,8 +117,9 @@ export default class BaseForm extends React.Component<Props, *> {
     if (onSubmit) {
       const response = onSubmit(event, this.getData());
       if (isPromise(response)) {
-        this.onStartSubmit();
-        response.then(() => this.onFinishSubmit());
+        this.dispatchSubmittingStart();
+        const dispatchFinish = () => this.dispatchSubmittingFinish();
+        response.then(dispatchFinish).catch(dispatchFinish);
       }
     }
   };
@@ -163,9 +159,5 @@ export default class BaseForm extends React.Component<Props, *> {
 
   throwUndefinedForm(): any {
     throw new Error('Undefined form HTML element');
-  }
-
-  throwNotImplementedMethod(method: string): any {
-    throw new Error(`Method "${method}" not implemented on Form`);
   }
 }
