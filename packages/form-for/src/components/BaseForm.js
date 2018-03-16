@@ -3,7 +3,7 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import FieldGroup from './FieldGroup';
-import isPromise from './isPromise';
+import isPromise from '../helpers/isPromise';
 
 export type SchemaProperty = { type?: string, [key: string]: any };
 export type Schema = { [key: string]: SchemaProperty };

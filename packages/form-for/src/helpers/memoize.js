@@ -1,6 +1,6 @@
 // @flow
 
-import Field from './Field';
+import Field from '../components/Field';
 import isPromise from './isPromise';
 
 type Result = ?string | Promise<?string>;

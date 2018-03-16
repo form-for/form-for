@@ -3,9 +3,9 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import type { Schema } from './BaseForm';
-import cloneObject from './cloneObject';
-import prefixer from './prefixer';
-import mutateObject from './mutateObject';
+import cloneObject from '../helpers/cloneObject';
+import prefixer from '../helpers/prefixer';
+import mutateObject from '../helpers/mutateObject';
 
 export type Props = {
   for: Object,

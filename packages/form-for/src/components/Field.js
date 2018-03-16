@@ -4,10 +4,10 @@ import * as React from 'react';
 import PropTypes from 'prop-types';
 
 import type { SchemaProperty } from './BaseForm';
-import prefixer from './prefixer';
-import isPromise from './isPromise';
-import debounce from './debounce';
-import memoize, { clearMemoize } from './memoize';
+import prefixer from '../helpers/prefixer';
+import isPromise from '../helpers/isPromise';
+import debounce from '../helpers/debounce';
+import memoize, { clearMemoize } from '../helpers/memoize';
 
 export type Props = {
   name: string,
