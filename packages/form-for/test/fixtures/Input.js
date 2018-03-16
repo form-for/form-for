@@ -11,9 +11,17 @@ export default class Input extends React.Component<ComponentProps> {
   }
 
   render() {
-    const { error, touched, ...props } = { ...this.props };
+    const { error, touched, validating, ...props } = { ...this.props };
     delete props.onMount;
 
-    return <input ref={el => (this.input = el)} data-error={error} data-touched={touched} {...props} />;
+    return (
+      <input
+        ref={el => (this.input = el)}
+        data-error={error}
+        data-touched={touched}
+        data-validating={validating}
+        {...props}
+      />
+    );
   }
 }

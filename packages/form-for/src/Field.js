@@ -26,6 +26,8 @@ export type ComponentProps = {
   onChange: Function
 };
 
+const SUCCESS_ASYNC_VALIDATION = '__success_async__';
+
 export default class Field extends React.Component<Props> {
   target: Object;
   touched: ?boolean;
@@ -131,6 +133,7 @@ export default class Field extends React.Component<Props> {
       .then(() => {
         if (this.validatingPromise === response) {
           this.validatingPromise = null;
+          this.asyncError = SUCCESS_ASYNC_VALIDATION;
           this.forceUpdate();
         }
       })
@@ -156,6 +159,12 @@ export default class Field extends React.Component<Props> {
   }
 
   getError(value?: any): ?any {
+    if (this.asyncError) {
+      const error = this.asyncError;
+      this.asyncError = null;
+      return error === SUCCESS_ASYNC_VALIDATION ? null : error;
+    }
+
     if (this.props.error) return this.props.error;
     return this.getSchemaError() || this.incomingError || this.getTargetValidationMessage();
   }
@@ -209,13 +218,6 @@ export default class Field extends React.Component<Props> {
 
   validate(incomingError?: any): ?string {
     this.validatingPromise = null;
-
-    if (this.asyncError) {
-      const error = this.asyncError;
-      this.asyncError = null;
-      return error;
-    }
-
     this.clearBrowserCustomValidity();
 
     this.incomingError = incomingError;
@@ -269,6 +271,7 @@ export default class Field extends React.Component<Props> {
       name: this.getPrefixedName(),
       value: this.getContextObjectValue() || '',
       error: error,
+      validating: !!this.validatingPromise,
       touched: this.isTouched(),
       onMount: this.handleMount,
       onFocus: this.handleFocus,

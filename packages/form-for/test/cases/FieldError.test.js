@@ -18,7 +18,7 @@ describe('Field error', () => {
       </Form>
     );
 
-    expect(wrapper.find('input').props()['data-error']).toBeNull();
+    expect(wrapper.find('input').prop('data-error')).toBeNull();
   });
 
   it('shows object error', () => {
@@ -28,10 +28,10 @@ describe('Field error', () => {
       </Form>
     );
 
-    expect(wrapper.find('input').props()['data-error']).toEqual('Invalid');
+    expect(wrapper.find('input').prop('data-error')).toEqual('Invalid');
   });
 
-  it('shows object prop result when function', () => {
+  it('shows error when function', () => {
     function invalidate() {
       return `${this.name} is invalid`;
     }
@@ -43,7 +43,47 @@ describe('Field error', () => {
     );
 
     wrapper.find('input').simulate('change', { target: { value: 'New value' } });
-    expect(wrapper.find('input').props()['data-error']).toEqual('New value is invalid');
+    expect(wrapper.find('input').prop('data-error')).toEqual('New value is invalid');
+  });
+
+  it('shows loading and clears error when resolved async function', async () => {
+    const promise = Promise.resolve();
+    const invalidate = () => promise;
+
+    const wrapper = mount(
+      <Form for={{ ...object, invalidate }}>
+        <Field name="name" />
+      </Form>
+    );
+
+    expect.assertions(3);
+    expect(wrapper.find('input').prop('data-validating')).toBeTruthy();
+
+    return promise.then(() => {
+      wrapper.update();
+      expect(wrapper.find('input').prop('data-validating')).toBeFalsy();
+      expect(wrapper.find('input').prop('data-error')).toBeFalsy();
+    });
+  });
+
+  it('shows loading and error when rejected async function', async () => {
+    const promise = Promise.reject('async invalid');
+    const invalidate = () => promise;
+
+    const wrapper = mount(
+      <Form for={{ ...object, invalidate }}>
+        <Field name="name" />
+      </Form>
+    );
+
+    expect.assertions(3);
+    expect(wrapper.find('input').prop('data-validating')).toBeTruthy();
+
+    return promise.then().catch(() => {
+      wrapper.update();
+      expect(wrapper.find('input').prop('data-validating')).toBeFalsy();
+      expect(wrapper.find('input').prop('data-error')).toEqual('async invalid');
+    });
   });
 
   it('shows errors (touches) on focus', () => {
@@ -59,7 +99,7 @@ describe('Field error', () => {
       .simulate('focus');
 
     const input = wrapper.find('input[name="name"]').first();
-    expect(input.props()['data-error']).toEqual('Prop error');
+    expect(input.prop('data-error')).toEqual('Prop error');
   });
 
   it('shows error prop', () => {
@@ -70,7 +110,7 @@ describe('Field error', () => {
     );
 
     const input = wrapper.find('input[name="name"]').first();
-    expect(input.props()['data-error']).toEqual('Prop error');
+    expect(input.prop('data-error')).toEqual('Prop error');
   });
 
   it('clears error once its gone', () => {
@@ -85,7 +125,7 @@ describe('Field error', () => {
     );
 
     let input = wrapper.find('input[name="name"]').first();
-    expect(input.props()['data-error']).toEqual('invalid');
+    expect(input.prop('data-error')).toEqual('invalid');
 
     wrapper
       .find('input[name="name"]')
@@ -93,7 +133,7 @@ describe('Field error', () => {
       .simulate('change', { target: { value: 'New value' } });
 
     input = wrapper.find('input[name="name"]').first();
-    expect(input.props()['data-error']).toBeFalsy();
+    expect(input.prop('data-error')).toBeFalsy();
   });
 
   // TODO - test setCustomValidity and validationMessage
