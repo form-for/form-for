@@ -21,6 +21,7 @@ export type ComponentProps = {
   name: string,
   type?: string,
   error?: string,
+  validating?: string,
   touched: boolean,
   value: any,
   onMount: Function,
@@ -165,7 +166,7 @@ export default class Field extends React.Component<Props> {
     return Field.validatingErrorMessage;
   }
 
-  getSchemaError() {
+  getSchemaError(): ?string | Promise<?string> {
     let error = this.getSchemaProperty().error;
     if (!error) return;
 
@@ -183,7 +184,7 @@ export default class Field extends React.Component<Props> {
     }
 
     if (this.props.error) return this.props.error;
-    return this.getSchemaError() || this.incomingError || this.getTargetValidationMessage();
+    return this.incomingError || this.getTargetValidationMessage() || this.getSchemaError();
   }
 
   /*
@@ -291,7 +292,7 @@ export default class Field extends React.Component<Props> {
       name: this.getPrefixedName(),
       value: this.getContextObjectValue() || '',
       error: error,
-      validating: !!this.validatingPromise,
+      validating: this.validatingPromise ? this.validatingPromise : undefined,
       touched: this.isTouched(),
       onMount: this.handleMount,
       onFocus: this.handleFocus,

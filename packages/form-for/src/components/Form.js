@@ -48,7 +48,7 @@ export default class Form extends BaseForm {
     this.errorReporters.forEach(reporter => reporter(name, error));
   }
 
-  showErrors() {
+  dispatchShowErrors() {
     this.setState({ showErrors: true });
   }
 

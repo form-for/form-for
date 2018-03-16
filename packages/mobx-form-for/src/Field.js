@@ -1,9 +1,12 @@
 // @flow
 
 import { observer } from 'mobx-react';
-import { Field } from 'form-for';
+import { Field as BaseField } from 'form-for';
 
-// getShowErrorsState(): boolean {
-// return this.context.submitted.get();
+class Field extends BaseField {
+  getShowErrorsState(): boolean {
+    return this.context.showErrorsState.get();
+  }
+}
 
 export default observer(Field);

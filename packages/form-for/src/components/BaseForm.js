@@ -51,8 +51,8 @@ export default class BaseForm extends React.Component<Props, *> {
     };
   }
 
-  isInvalid() {
-    return Object.keys(this.errors).length;
+  isInvalid(): boolean {
+    return !!Object.keys(this.errors).length;
   }
 
   isSubmitting(): any {
@@ -65,10 +65,6 @@ export default class BaseForm extends React.Component<Props, *> {
 
   getData(): Object {
     return this.props.for || {};
-  }
-
-  getForm(): HTMLFormElement {
-    return this.form || this.throwUndefinedForm();
   }
 
   /*
@@ -107,15 +103,17 @@ export default class BaseForm extends React.Component<Props, *> {
 
   handleSubmit = (event: SyntheticEvent<HTMLFormElement>) => {
     if (this.isInvalid()) {
+      console.log(this.errors);
       event.preventDefault();
-      this.dispatchShowErrors();
       event.currentTarget.reportValidity();
+      this.dispatchShowErrors();
       return;
     }
 
     const { onSubmit } = this.props;
     if (onSubmit) {
       const response = onSubmit(event, this.getData());
+
       if (isPromise(response)) {
         this.dispatchSubmittingStart();
         const dispatchFinish = () => this.dispatchSubmittingFinish();
@@ -151,13 +149,5 @@ export default class BaseForm extends React.Component<Props, *> {
         {content}
       </form>
     );
-  }
-
-  /*
-   * Errors
-   */
-
-  throwUndefinedForm(): any {
-    throw new Error('Undefined form HTML element');
   }
 }

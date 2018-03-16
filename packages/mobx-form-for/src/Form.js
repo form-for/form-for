@@ -10,16 +10,21 @@ import FieldGroup from './FieldGroup';
 class Form extends BaseForm {
   static fieldGroupComponent = FieldGroup;
 
+  // $FlowFixMe
   errors = observable.shallowMap({});
-  submitted: IObservableValue<boolean> = observable(false);
+  showErrors: IObservableValue<boolean> = observable(false);
   submitting: IObservableValue<boolean> = observable(false);
+
+  isInvalid() {
+    return !!this.errors.size;
+  }
 
   isSubmitting() {
     return this.submitting;
   }
 
-  hasSubmitted() {
-    return this.submitted;
+  getShowErrorsState() {
+    return this.showErrors;
   }
 
   onValidate(name: string, error: ?string): void {
@@ -29,8 +34,8 @@ class Form extends BaseForm {
     })();
   }
 
-  onSubmit() {
-    if (Object.keys(this.errors).length) action('Form submitted', () => this.submitted.set(true))();
+  dispatchShowErrors() {
+    if (Object.keys(this.errors).length) action('Show form errors', () => this.showErrors.set(true))();
   }
 
   onStartSubmit() {

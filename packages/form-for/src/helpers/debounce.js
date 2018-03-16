@@ -12,6 +12,7 @@ export default function debounce(field: Field, promise: Promise<*>, timeout?: nu
   const timedPromise = new Promise(function(resolve, reject) {
     timeoutIds[field] = setTimeout(function() {
       promise.then(resolve, reject);
+      delete timeoutIds[field];
     }, timeout);
   });
 
