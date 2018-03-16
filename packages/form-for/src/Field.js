@@ -281,7 +281,9 @@ export default class Field extends React.Component<Props> {
 
   render() {
     let error = this.validate();
-    if (!error || (typeof error === 'string' && error === '')) error = null; // Avoid changes from false, undefined, 0 and ''
+
+    // Avoid React.PureComponent rerender when changing among null, false, undefined, 0 and ''
+    if (!error || (typeof error === 'string' && error === '')) error = null;
 
     return React.createElement(this.getComponent(), {
       ...this.getSchemaProperty(),
