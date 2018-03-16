@@ -6,6 +6,8 @@ import PropTypes from 'prop-types';
 import type { SchemaProperty } from './BaseForm';
 import prefixer from './prefixer';
 import isPromise from './isPromise';
+import debounce from './debounce';
+import memoize, { clearMemoize } from './memoize';
 
 export type Props = {
   name: string,
@@ -123,12 +125,27 @@ export default class Field extends React.Component<Props> {
     return this.touched || this.context.showErrorsProp || this.getShowErrorsState();
   }
 
-  getErrorFunctionResult(callback: Function) {
-    const response = callback.bind(this.context.object)(this);
+  getErrorFunctionObjectResult(response: Object): Promise<?string> | ?string {
+    if (!response.promise) throw new Error('Undefined `promise` in validation function object response');
 
-    if (!isPromise(response)) return response;
+    if (response.debounce) return debounce(this, response.promise, response.debounce);
+    if (response.memoize) return memoize(this, response.promise);
+
+    throw new Error('Invalid validation object response - please set `debounce: timeoutMillis` or `memoize: true`');
+  }
+
+  getErrorFunctionResult(callback: Function) {
+    let response = callback.bind(this.context.object)(this);
+
+    if (!isPromise(response)) {
+      if (typeof response !== 'object') return response;
+      response = this.getErrorFunctionObjectResult(response);
+    }
+
+    // $FlowFixMe
     this.validatingPromise = response;
 
+    // $FlowFixMe
     response
       .then(() => {
         if (this.validatingPromise === response) {
@@ -259,6 +276,7 @@ export default class Field extends React.Component<Props> {
 
   componentWillUnmount() {
     this.dispatchValidation();
+    clearMemoize(this);
   }
 
   render() {
