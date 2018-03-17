@@ -127,16 +127,16 @@ export default class Field extends React.Component<Props> {
   }
 
   getErrorFunctionObjectResult(response: Object): Promise<?string> | ?string {
-    if (!response.promise) throw new Error('Undefined `promise` in validation function object response');
+    if (!response.callback) throw new Error('Undefined `callback` in validation function object response');
 
-    if (response.debounce) return debounce(this, response.promise, response.debounce);
-    if (response.memoize) return memoize(this, response.promise);
+    if (response.debounce) return debounce(this, response.callback, response.debounce);
+    if (response.memoize) return memoize(this, response.callback);
 
     throw new Error('Invalid validation object response - please set `debounce: timeoutMillis` or `memoize: true`');
   }
 
   getErrorFunctionResult(callback: Function) {
-    let response = callback.bind(this.context.object)(this);
+    let response = callback.bind(this.context.object)(this.context.object, this.props.name);
 
     if (!isPromise(response)) {
       if (typeof response !== 'object') return response;

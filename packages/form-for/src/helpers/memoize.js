@@ -24,9 +24,10 @@ export function clearMemoize(field: Field) {
   delete storedResults[field];
 }
 
-export default function memoize(field: Field, promise: Promise<?string>): Result {
+export default function memoize(field: Field, callback: () => Promise<?string>): Result {
   if (!memoizeCompare(field)) return storedResults[field];
 
+  const promise = callback();
   storedResults[field] = promise;
 
   const setValue = value => (storedResults[field] = value);
