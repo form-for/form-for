@@ -11,10 +11,9 @@ export default function debounce(field: Field, callback: () => Promise<*>, timeo
     timeout = !debounce || timeout === true ? 500 : timeout;
 
     return new Promise(function(resolve, reject) {
-      timeoutIds[field] = setTimeout(function() {
-        callback().then(resolve, reject);
-
+      timeoutIds[field] = setTimeout(async function() {
         delete timeoutIds[field];
+        return await callback();
       }, timeout);
     });
   });

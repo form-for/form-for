@@ -126,7 +126,30 @@ export default class Field extends React.Component<Props> {
     return this.touched || this.context.showErrorsProp || this.getShowErrorsState();
   }
 
-  getErrorFunctionObjectResult(response: Object): Promise<?string> | ?string {
+  getErrorObjectResult(response: any) {
+    if (!isPromise(response)) response = this.getErrorHelperResult(response);
+    if (typeof response === 'string') return response;
+
+    // $FlowFixMe
+    this.validatingPromise = response;
+
+    const handlePromiseResolve = error => {
+      if (this.validatingPromise === response) {
+        this.validatingPromise = null;
+        this.asyncError = error;
+        this.forceUpdate();
+      }
+    };
+
+    // $FlowFixMe
+    response
+      .then(error => handlePromiseResolve(error || SUCCESS_ASYNC_VALIDATION))
+      .catch(error => handlePromiseResolve(error.message));
+
+    return Field.validatingErrorMessage;
+  }
+
+  getErrorHelperResult(response: Object): Promise<?string> | ?string {
     if (!response.callback) throw new Error('Undefined `callback` in validation function object response');
 
     if (response.debounce) return debounce(this, response.callback, response.debounce);
@@ -136,34 +159,7 @@ export default class Field extends React.Component<Props> {
   }
 
   getErrorFunctionResult(callback: Function) {
-    let response = callback.bind(this.context.object)(this.context.object, this.props.name);
-
-    if (!isPromise(response)) {
-      if (typeof response !== 'object') return response;
-      response = this.getErrorFunctionObjectResult(response);
-    }
-
-    // $FlowFixMe
-    this.validatingPromise = response;
-
-    // $FlowFixMe
-    response
-      .then(() => {
-        if (this.validatingPromise === response) {
-          this.validatingPromise = null;
-          this.asyncError = SUCCESS_ASYNC_VALIDATION;
-          this.forceUpdate();
-        }
-      })
-      .catch(error => {
-        if (this.validatingPromise === response) {
-          this.validatingPromise = null;
-          this.asyncError = error;
-          this.forceUpdate();
-        }
-      });
-
-    return Field.validatingErrorMessage;
+    return callback.bind(this.context.object)(this.context.object, this.props.name);
   }
 
   getSchemaError(): ?string | Promise<?string> {
@@ -172,6 +168,7 @@ export default class Field extends React.Component<Props> {
 
     if (typeof error === 'string') error = this.context.object[error];
     if (typeof error === 'function') error = this.getErrorFunctionResult(error);
+    if (typeof error === 'object') error = this.getErrorObjectResult(error);
 
     return error;
   }
