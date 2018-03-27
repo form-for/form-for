@@ -22,7 +22,7 @@
   ],
   "peerDependencies": {
     "prop-types": "^15.6.0",
-    "react": "^0.13.0 || ^0.14.0 || ^15.0.0 || ^16.0.0"
+    "react": "^16.0.0"
   },
   "license": "MIT",
   "homepage": "https://github.com/form-for/form-for",

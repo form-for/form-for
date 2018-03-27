@@ -20,7 +20,7 @@
     "es"
   ],
   "peerDependencies": {
-    "react": "^0.13.0 || ^0.14.0 || ^15.0.0 || ^16.0.0",
+    "react": "^16.0.0",
     "form-for": "^1.0.0"
   },
   "license": "MIT",
