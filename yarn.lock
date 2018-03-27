@@ -2980,15 +2980,15 @@ minimist@~0.0.1:
   dependencies:
     minimist "0.0.8"
 
-mobx-react@^4.4.3:
-  version "4.4.3"
-  resolved "https://registry.yarnpkg.com/mobx-react/-/mobx-react-4.4.3.tgz#baa9ec41165ee35ae7b9df19bca10190f36f117e"
+mobx-react@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/mobx-react/-/mobx-react-5.0.0.tgz#8d5a33be376fa22b184a6f555d40a6a3a8459a16"
   dependencies:
     hoist-non-react-statics "^2.3.1"
 
-mobx@^3.6.1:
-  version "3.6.1"
-  resolved "https://registry.yarnpkg.com/mobx/-/mobx-3.6.1.tgz#ae63a8f00e1485a740d0f91ae2f6a5f68e303bea"
+mobx@^4.1.0:
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/mobx/-/mobx-4.1.0.tgz#e4a9679cdafbe215b20e32ef93a7031845b3f1af"
 
 ms@2.0.0:
   version "2.0.0"

@@ -73,9 +73,18 @@ handleAddItem = () => {
 import { action } from 'mobx';
 
 handleAddItem = () => {
-  action(() => this.props.value[name].push('new value')); // If strict mode enabled you need to wrap the change by `action`
-  this.props.value[name].push('new value'); // Example without strict mode
+  // If strict mode enabled (enforceActions on MobX 4) you need to wrap the change by `action`
+  action(() => this.props.value[name].push('new value'));
+
+  // Example without strict mode
+  this.props.value[name].push('new value');
+
+  // Send the new value to form-for
   this.props.onChange(null, this.props.value);
+
+  // If you don't want to mutate the array you can do:
+  // const newValue = this.props.value.concat(new TodoItem());
+  // this.props.onChange(null, newValue);
 };
 ```
 
