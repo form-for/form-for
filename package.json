@@ -5,10 +5,6 @@
   ],
   "version": "1.0.5",
   "author": "Pedro Moreira <pedsmoreira@gmail.com>",
-  "homepage": "https://github.com/form-for/form-for",
-  "bugs": "https://github.com/form-for/form-for/issues",
-  "license": "MIT",
-  "repository": "form-for/form-for",
   "scripts": {
     "build": "cross-env NODE_ENV=production node ./scripts/build.js",
     "build:package": "cross-env NODE_ENV=production node ./scripts/build-package.js",
