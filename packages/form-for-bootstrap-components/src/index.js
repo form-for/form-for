@@ -32,4 +32,16 @@ function connectFields() {
   inputTypes.forEach(type => Field.connect(type, Input));
 }
 
-export { connectFields, Checkbox, Input, Radio, Select, Feedback, Help, Label, RequiredAbbreviation, humanizeOptions };
+export {
+  connectFields,
+  Checkbox,
+  Input,
+  Radio,
+  Select,
+  TextArea,
+  Feedback,
+  Help,
+  Label,
+  RequiredAbbreviation,
+  humanizeOptions
+};

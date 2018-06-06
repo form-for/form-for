@@ -21,7 +21,7 @@
     "es"
   ],
   "dependencies": {
-    "form-for-components": "^1.0.0",
+    "form-for-components": "^1.0.3",
     "form-for-component-helpers": "^1.0.0"
   },
   "peerDependencies": {
