@@ -9,6 +9,8 @@ import Help from './Help';
 import Feedback from './Feedback';
 
 export type Props = {
+  className?: string,
+  required?: boolean,
   label?: any,
   help?: any
 } & RadioProps;

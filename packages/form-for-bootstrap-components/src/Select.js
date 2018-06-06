@@ -10,6 +10,7 @@ import Help from './Help';
 import Feedback from './Feedback';
 
 export type Props = {
+  className?: string,
   label?: any,
   help?: any
 } & SelectProps;

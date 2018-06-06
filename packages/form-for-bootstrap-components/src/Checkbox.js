@@ -7,6 +7,7 @@ import { help, humanized, uniqueId } from 'form-for-component-helpers';
 import Help from './Help';
 
 export type Props = ComponentProps & {
+  className?: string,
   label?: any,
   help?: any
 };

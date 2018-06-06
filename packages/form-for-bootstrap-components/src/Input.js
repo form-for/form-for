@@ -9,8 +9,12 @@ import Help from './Help';
 import Feedback from './Feedback';
 
 export type Props = ComponentProps & {
+  className?: string,
+  placeholder?: string,
+  required?: boolean,
   label?: any,
-  help?: any
+  help?: any,
+  component?: React.ComponentType<*>
 };
 
 export default class Input extends React.PureComponent<Props> {
@@ -19,17 +23,19 @@ export default class Input extends React.PureComponent<Props> {
     const humanizedName = humanized(this);
     const helpProps = help(this);
 
-    const { label, className, placeholder, ...props } = { ...this.props };
+    const { label, className, placeholder, component, ...props } = { ...this.props };
     delete props.help;
 
     const inputClasses = ['form-control'];
     if (props.touched && props.error) inputClasses.push('is-invalid');
 
+    const InputComponent = component || BaseInput;
+
     return (
       <div className={className || 'form-group'}>
         <Label for={id} text={label} defaultText={humanizedName} required={props.required} />
 
-        <BaseInput
+        <InputComponent
           id={id}
           className={inputClasses.join(' ')}
           aria-describedby={helpProps.id}

@@ -15,6 +15,9 @@ export type { Props as RadioProps } from './Radio';
 import Select from './Select';
 export type { Props as SelectProps } from './Select';
 
+import TextArea from './TextArea';
+export type { Props as TextAreaProps } from './TextArea';
+
 import Feedback from './Feedback';
 import Help from './Feedback';
 import Label from './Label';
@@ -25,6 +28,7 @@ function connectFields() {
   Field.connect('checkbox', Checkbox);
   Field.connect('radio', Radio);
   Field.connect('select', Select);
+  Field.connect('textarea', TextArea);
   inputTypes.forEach(type => Field.connect(type, Input));
 }
 
