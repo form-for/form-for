@@ -20,6 +20,9 @@
     "cjs",
     "es"
   ],
+  "peerDependencies": {
+    "casex": "^0.0.3"
+  },
   "license": "MIT",
   "homepage": "https://github.com/form-for/form-for",
   "bugs": "https://github.com/form-for/form-for/issues",

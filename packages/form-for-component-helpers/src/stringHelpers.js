@@ -1,18 +1,12 @@
 // @flow
 
-export function replaceDashUnderscore(str: string, glue: string = ' '): string {
-  return str.split(/[_|-]/).join(glue);
+import casex from 'casex';
+
+export function simplifyIdName(str: string): string {
+  return str.split('_id')[0];
 }
 
-export function replaceCamels(str: string, glue: string = ' '): string {
-  return str.replace(/([A-Z])/g, value => glue + value.toLowerCase());
-}
-
-export function capitalize(str: string): string {
-  return str.charAt(0).toUpperCase() + str.slice(1);
-}
-
-export function simplifyFieldName(str: string): string {
+export function simplifyNestedName(str: string): string {
   const lastIndexOfBracket = str.lastIndexOf('[');
   if (lastIndexOfBracket === -1) return str;
 
@@ -20,5 +14,5 @@ export function simplifyFieldName(str: string): string {
 }
 
 export function humanize(str: string): string {
-  return capitalize(replaceDashUnderscore(replaceCamels(simplifyFieldName(str))));
+  return casex(simplifyIdName(simplifyNestedName(str)), 'Na me');
 }

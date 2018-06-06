@@ -63,5 +63,8 @@
   },
   "jest": {
     "setupTestFrameworkScriptFile": "<rootDir>/setupTests.js"
+  },
+  "dependencies": {
+    "casex": "^0.0.3"
   }
 }
