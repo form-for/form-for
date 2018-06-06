@@ -95,10 +95,8 @@ export default class Helped extends React.Component<Props> {
 
 These are helper method used by the `humanized` helper.
 
-* `replaceSnakeUnderscore(str: string, glue: string = " "): string`
-* `replaceCamels(str: string, glue: string = " "): string`
-* `capitalize(str: string): string`
-* `simplifyFieldName(str: string): string`
+* `simplifyIdName(str: string): string`
+* `simplifyNestedName(str: string): string`
 * `humanize(str: string): string`
 
 ```javascript

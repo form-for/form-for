@@ -53,6 +53,7 @@ Field.connect('text', Input);
 ## List of components
 
 * Checkbox
+* TextArea
 * Radio **(provide `options` to the field schema)**
   * Guessed option labels: `{type: 'radio', options: ['guest', 'user', 'admin']}`
   * Provided option labels: `{type: 'radio', options: {guest: 'Guest Label', user: 'User Label', admin: 'Admin Label'}}`

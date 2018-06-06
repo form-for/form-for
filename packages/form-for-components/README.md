@@ -43,6 +43,7 @@ Field.connect('text', Input);
 ## List of components
 
 * Checkbox
+* TextArea
 * Radio **(provide `options: { male: 'M', female: 'F' }` to the field schema)**
 * Select **(provide `options: { los_angeles: 'Los Angeles', taubate: 'Taubaté' }` to the field schema)**
 * Input types
