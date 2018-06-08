@@ -19,7 +19,7 @@ import TextArea from './TextArea';
 export type { Props as TextAreaProps } from './TextArea';
 
 import Feedback from './Feedback';
-import Help from './Feedback';
+import Help from './Help';
 import Label from './Label';
 import RequiredAbbreviation from './RequiredAbbreviation';
 import humanizeOptions from './humanizeOptions';
