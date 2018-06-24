@@ -29,6 +29,7 @@ export default class Field extends React.Component<Props> {
   target: Object;
   touched: ?boolean;
   incomingError: ?string;
+  lastError: ?string;
 
   /*
    * Component binding
@@ -45,12 +46,13 @@ export default class Field extends React.Component<Props> {
    */
 
   static contextTypes = {
+    showErrors: PropTypes.bool.isRequired,
+    submitted: PropTypes.any.isRequired,
+    onFormValidate: PropTypes.func.isRequired,
     object: PropTypes.object.isRequired,
     schema: PropTypes.object.isRequired,
     prefix: PropTypes.string,
-    onChange: PropTypes.func.isRequired,
-    touchOnMount: PropTypes.bool.isRequired,
-    noValidate: PropTypes.bool.isRequired
+    onChange: PropTypes.func.isRequired
   };
 
   static childContextTypes = {
@@ -107,8 +109,12 @@ export default class Field extends React.Component<Props> {
     return (this.target || {}).validationMessage;
   }
 
+  hasContextSubmitted(): boolean {
+    return this.context.submitted.get();
+  }
+
   isTouched(): boolean {
-    return this.touched || this.context.touchOnMount;
+    return this.touched || this.context.showError || this.hasContextSubmitted();
   }
 
   getSchemaError() {
@@ -127,7 +133,6 @@ export default class Field extends React.Component<Props> {
   }
 
   getError(value?: any): ?any {
-    if (this.context.noValidate) return null;
     if (this.props.error) return this.props.error;
     return this.getSchemaError() || this.incomingError || this.getTargetValidationMessage();
   }
@@ -154,6 +159,13 @@ export default class Field extends React.Component<Props> {
   }
 
   /*
+   * Dispatchers
+   */
+  dispatchValidation(error: ?string) {
+    this.context.onFormValidate(this.getPrefixedName(), error);
+  }
+
+  /*
    * Actions
    */
 
@@ -177,6 +189,8 @@ export default class Field extends React.Component<Props> {
     const error = this.getError();
 
     this.setBrowserCustomValidity(error);
+    this.dispatchValidation(error);
+
     return error;
   }
 
@@ -208,9 +222,13 @@ export default class Field extends React.Component<Props> {
    * Lifecycle
    */
 
+  componentWillUnmount() {
+    this.dispatchValidation();
+  }
+
   render() {
     let error = this.validate();
-    if (!error || (typeof error === 'string' && !error.length)) error = null; // Avoid changes from false, undefined, 0 and ''
+    if (!error || (typeof error === 'string' && error === '')) error = null; // Avoid changes from false, undefined, 0 and ''
 
     return React.createElement(this.getComponent(), {
       ...this.getSchemaProperty(),

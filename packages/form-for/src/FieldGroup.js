@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import type { Schema } from './BaseForm';
 import cloneObject from './cloneObject';
 import prefixer from './prefixer';
+import mutateObject from './mutateObject';
 
 export type Props = {
   for: Object,
@@ -15,6 +16,8 @@ export type Props = {
 };
 
 export default class FieldGroup extends React.Component<Props> {
+  errors: Object = {};
+
   static contextTypes = {
     onFormChange: PropTypes.func.isRequired,
     onChange: PropTypes.func,
@@ -25,7 +28,6 @@ export default class FieldGroup extends React.Component<Props> {
     object: PropTypes.object,
     schema: PropTypes.object,
     prefix: PropTypes.string,
-    onFormChange: PropTypes.func,
     onChange: PropTypes.func
   };
 
@@ -50,21 +52,24 @@ export default class FieldGroup extends React.Component<Props> {
     return this.props.schema || this.props.for.schema || this.throwUndefinedSchema();
   }
 
-  getNewObjectFor(name: string, value: any, index: ?any) {
-    if (typeof index === 'undefined') return cloneObject(this.props.for, { [name]: value });
+  getMutatedObject(name: string, value: any, index: ?any): Object {
+    return mutateObject(this.props.for, name, value, index);
+  }
 
-    const previousValue = this.props.for[name];
-    let newValue;
+  /*
+   * Actions
+   */
 
-    if (Array.isArray(previousValue)) {
-      newValue = [...previousValue];
-      newValue[index] = value;
+  mutateError(name: string, value: any, index: ?any): void {
+    if (this.errors[name] === value) return;
+
+    if (value) {
+      if (!index) this.errors[name] = value;
+      else this.errors[name][index] = value;
     } else {
-      // $FlowFixMe
-      newValue = cloneObject(previousValue, { [index]: value });
+      if (!index) delete this.errors[name];
+      else delete this.errors[name][index];
     }
-
-    return cloneObject(this.props.for, { [name]: newValue });
   }
 
   /*
@@ -88,7 +93,7 @@ export default class FieldGroup extends React.Component<Props> {
    */
 
   onChange(name: string, value: any, index?: any) {
-    const newObject = this.getNewObjectFor(name, value, index);
+    const newObject = this.getMutatedObject(name, value, index);
     this.dispatchChange(newObject);
   }
 

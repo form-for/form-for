@@ -13,7 +13,7 @@ describe('Field error', () => {
 
   it('does not show error if not existent', () => {
     const wrapper = mount(
-      <Form for={object} touchOnMount>
+      <Form for={object} showErrors>
         <Field name="name" />
       </Form>
     );
@@ -23,7 +23,7 @@ describe('Field error', () => {
 
   it('shows object error', () => {
     const wrapper = mount(
-      <Form for={{ ...object, invalidate: 'Invalid' }} touchOnMount>
+      <Form for={{ ...object, invalidate: 'Invalid' }} showErrors>
         <Field name="name" />
       </Form>
     );

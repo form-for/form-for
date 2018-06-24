@@ -3,15 +3,10 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import FieldGroup from './FieldGroup';
+import isPromise from './isPromise';
 
-export type SchemaProperty = {
-  type?: string,
-  [key: string]: any
-};
-
-export type Schema = {
-  [key: string]: SchemaProperty
-};
+export type SchemaProperty = { type?: string, [key: string]: any };
+export type Schema = { [key: string]: SchemaProperty };
 
 export type Props = {
   for?: Object,
@@ -19,30 +14,53 @@ export type Props = {
   children: React.Node,
   onSubmit?: (event: SyntheticEvent<HTMLFormElement>, data: Object, valid?: boolean) => any,
   onChange?: (data: Object, valid?: boolean) => any,
-  touchOnMount?: boolean,
-  noValidate?: boolean
+  showErrors?: boolean
 };
 
 export default class BaseForm extends React.Component<Props, *> {
   static fieldGroupComponent: React.ComponentType<*> = FieldGroup;
 
   form: ?HTMLFormElement;
+  errors: Object = {};
+
+  constructor(props: Props) {
+    super(props);
+    this.state = {};
+  }
 
   /*
    * Getters
    */
   static childContextTypes = {
+    errors: PropTypes.object,
+    showErrors: PropTypes.bool,
     onFormChange: PropTypes.func,
-    touchOnMount: PropTypes.bool,
-    noValidate: PropTypes.bool
+    onFormValidate: PropTypes.func,
+    submitted: PropTypes.any,
+    submitting: PropTypes.any
   };
 
   getChildContext() {
     return {
+      errors: this.errors,
+      showErrors: !!this.props.showErrors,
       onFormChange: this.handleChange,
-      touchOnMount: !!this.props.touchOnMount,
-      noValidate: !!this.props.noValidate
+      onFormValidate: this.handleValidate,
+      submitted: this.hasSubmitted(),
+      submitting: this.isSubmitting()
     };
+  }
+
+  isInvalid() {
+    return Object.keys(this.errors).length;
+  }
+
+  isSubmitting() {
+    return this.throwNotImplementedMethod('isSubmitting');
+  }
+
+  hasSubmitted() {
+    return this.throwNotImplementedMethod('isSubmitting');
   }
 
   getData(): Object {
@@ -59,9 +77,27 @@ export default class BaseForm extends React.Component<Props, *> {
 
   onChange(data: Object) {}
 
-  /**
-   * Since onChange is used by classes that extend BaseForm, handleChange exists to do .bind()
+  onStartSubmit() {
+    return this.throwNotImplementedMethod('onStartSubmit');
+  }
+
+  onSubmit(event: SyntheticEvent<HTMLFormElement>) {
+    return this.throwNotImplementedMethod('onSubmit');
+  }
+
+  onFinishSubmit() {
+    return this.throwNotImplementedMethod('onFinishSubmit');
+  }
+
+  onValidate(name: string, error: ?string): void {
+    if (error) this.errors[name] = error;
+    else delete this.errors[name];
+  }
+
+  /*
+   * Bound handlers
    */
+
   handleChange = (value: Object) => {
     this.onChange(value);
 
@@ -69,9 +105,27 @@ export default class BaseForm extends React.Component<Props, *> {
     if (onChange) onChange(this.getData());
   };
 
+  handleValidate = (name: string, error: ?string) => {
+    this.onValidate(name, error);
+  };
+
   handleSubmit = (event: SyntheticEvent<HTMLFormElement>) => {
-    const onSubmit = this.props.onSubmit;
-    if (onSubmit) onSubmit(event, this.getData());
+    this.onSubmit(event);
+
+    if (this.isInvalid()) {
+      event.preventDefault();
+      event.currentTarget.reportValidity();
+      return;
+    }
+
+    const { onSubmit } = this.props;
+    if (onSubmit) {
+      const response = onSubmit(event, this.getData());
+      if (isPromise(response)) {
+        this.onStartSubmit();
+        response.then(() => this.onFinishSubmit());
+      }
+    }
   };
 
   /*
@@ -82,8 +136,8 @@ export default class BaseForm extends React.Component<Props, *> {
     const { ['for']: object, schema, children, ...formProps } = {
       ...this.props
     };
-    delete formProps.onChange; // Prevent the browser onChange event to be called
-    delete formProps.touchOnMount;
+    delete formProps.onChange; // Prevent the browser onChange event from being called
+    delete formProps.showErrors;
 
     let content;
     if (!object) {
@@ -97,7 +151,7 @@ export default class BaseForm extends React.Component<Props, *> {
     }
 
     return (
-      <form {...formProps} ref={el => (this.form = el)} onSubmit={this.handleSubmit}>
+      <form {...formProps} ref={el => (this.form = el)} onSubmit={this.handleSubmit} noValidate>
         {content}
       </form>
     );
@@ -109,5 +163,9 @@ export default class BaseForm extends React.Component<Props, *> {
 
   throwUndefinedForm(): any {
     throw new Error('Undefined form HTML element');
+  }
+
+  throwNotImplementedMethod(method: string): any {
+    throw new Error(`Method "${method}" not implemented on Form`);
   }
 }

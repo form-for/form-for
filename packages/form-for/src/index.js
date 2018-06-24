@@ -13,6 +13,24 @@ export type { Props as FieldGroupProps } from './FieldGroup';
 
 import fieldDecorator from './fieldDecorator';
 
-import cloneObject from './cloneObject';
+import Errors from './Errors';
+export type { Props as ErrorsProps } from './Errors';
 
-export { BaseForm, Form, Field, FieldGroup, fieldDecorator as field, cloneObject };
+import Submit from './Submit';
+
+import cloneObject from './cloneObject';
+import mutateObject from './mutateObject';
+import prefixer from './prefixer';
+
+export {
+  BaseForm,
+  Form,
+  Field,
+  FieldGroup,
+  fieldDecorator as field,
+  Errors,
+  Submit,
+  cloneObject,
+  mutateObject,
+  prefixer
+};

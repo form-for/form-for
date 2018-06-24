@@ -231,24 +231,16 @@ this.state = { nameError: 'invalid name' };
 <Field name="name" error={this.state.nameError}>
 ```
 
-### Skip validation
-
-If for some reason you need to skip validations, just use the `noValidate` prop.
-
-```js
-<Form noValidate>...</Form>
-```
-
 ## Touched
 
 The `touched` property provided to a field component means that a field has been focused at least once. This is used to display error messages only after the user has gotten to an input.
 
-### Touched on Mount
+### Show errors
 
-There may be cases when you want to display the errors from the beginning, even before the user touches a field. For that, you can use `touchOnMount` on `<Form>`;
+There may be cases when you want to display the errors from the beginning, even before the user touches a field. For that, you can use `showErrors` on `<Form>`;
 
 ```js
-<Form touchOnMount>...</Form>
+<Form showErrors>...</Form>
 ```
 
 ## Creating components

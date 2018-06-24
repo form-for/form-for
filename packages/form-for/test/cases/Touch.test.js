@@ -14,7 +14,7 @@ describe('Touch', () => {
 
   it('doest not request render after touching a second time', () => {
     const wrapper = mount(
-      <Form for={object} touchOnMount>
+      <Form for={object} showErrors>
         <Field name="counter" />
       </Form>
     );
@@ -34,9 +34,9 @@ describe('Touch', () => {
     expect(input.props()['data-touched']).toBeFalsy();
   });
 
-  it('provides touch property when form has touchOnMount', () => {
+  it('provides touch property when form has showErrors', () => {
     const wrapper = mount(
-      <Form for={object} touchOnMount>
+      <Form for={object} showErrors>
         <Field name="name" />
       </Form>
     );
