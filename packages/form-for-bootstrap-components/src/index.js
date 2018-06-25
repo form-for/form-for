@@ -25,11 +25,28 @@ import RequiredAbbreviation from './RequiredAbbreviation';
 import humanizeOptions from './humanizeOptions';
 
 function connectFields() {
-  Field.connect('checkbox', Checkbox);
-  Field.connect('radio', Radio);
-  Field.connect('select', Select);
-  Field.connect('textarea', TextArea);
-  inputTypes.forEach(type => Field.connect(type, Input));
+  Field.connect(
+    'checkbox',
+    Checkbox
+  );
+  Field.connect(
+    'radio',
+    Radio
+  );
+  Field.connect(
+    'select',
+    Select
+  );
+  Field.connect(
+    'textarea',
+    TextArea
+  );
+  inputTypes.forEach(type =>
+    Field.connect(
+      type,
+      Input
+    )
+  );
 }
 
 export {

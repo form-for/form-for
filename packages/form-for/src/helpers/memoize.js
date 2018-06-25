@@ -1,6 +1,6 @@
 // @flow
 
-import Field from '../components/Field';
+import { Field } from '../components/Field';
 import isPromise from './isPromise';
 
 type Result = ?string | Promise<?string>;
@@ -12,7 +12,7 @@ export function memoizeCompare(field: Field, fn?: Function): boolean {
   const stored = storedValues[field];
   if (fn) return fn();
 
-  const value = field.getContextObjectValue();
+  const value = field.getValue();
   if (stored === value) return false;
 
   storedValues[field] = value;

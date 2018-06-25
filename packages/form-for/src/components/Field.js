@@ -1,13 +1,16 @@
 // @flow
 
-import * as React from 'react';
-import PropTypes from 'prop-types';
+import React, { Component, type ComponentType, type ElementRef } from 'react';
 
-import type { SchemaProperty } from './BaseForm';
+// $FlowFixMe
+import { forwardRef } from 'react';
+
+import type { SchemaProperty } from '../types';
 import prefixer from '../helpers/prefixer';
 import isPromise from '../helpers/isPromise';
 import debounce from '../helpers/debounce';
 import memoize, { clearMemoize } from '../helpers/memoize';
+import { SubmittedContext, FormContext, FieldGroupContext, FieldContext } from '../contexts';
 
 export type Props = {
   name: string,
@@ -17,21 +20,18 @@ export type Props = {
   onChange?: Function
 };
 
-export type ComponentProps = {
-  name: string,
-  type?: string,
-  error?: string,
-  validating?: string,
-  touched: boolean,
-  value: any,
-  onMount: Function,
-  onFocus: Function,
-  onChange: Function
+type CombinedProps = Props & {
+  object: Object,
+  schema: Object,
+  prefix: string,
+  onFieldGroupChange: Function,
+  onFormValidate: Function,
+  submitted: boolean
 };
 
 const SUCCESS_ASYNC_VALIDATION = '__success_async__';
 
-export default class Field extends React.Component<Props> {
+export class Field extends Component<CombinedProps> {
   target: Object;
   touched: ?boolean;
   incomingError: ?string;
@@ -44,51 +44,26 @@ export default class Field extends React.Component<Props> {
    * Component binding
    */
 
-  static connectedComponents: { [_: string]: React.ComponentType<*> } = {};
+  static connectedComponents: { [_: string]: ComponentType<*> } = {};
 
-  static connect(type: string, component: React.ComponentType<*>): void {
+  static connect(type: string, component: ComponentType<*>): void {
     Field.connectedComponents[type] = component;
-  }
-
-  /*
-   * Context
-   */
-
-  static contextTypes = {
-    showErrorsProp: PropTypes.bool.isRequired,
-    showErrorsState: PropTypes.any.isRequired,
-    onFormValidate: PropTypes.func.isRequired,
-    object: PropTypes.object.isRequired,
-    schema: PropTypes.object.isRequired,
-    prefix: PropTypes.string,
-    onChange: PropTypes.func.isRequired
-  };
-
-  static childContextTypes = {
-    name: PropTypes.string
-  };
-
-  getChildContext() {
-    return {
-      name: this.props.name
-    };
   }
 
   /*
    * Getters
    */
 
-  getContextObject() {
-    return this.context.object;
-  }
-
-  getContextObjectValue() {
-    return this.getContextObject()[this.props.name];
+  getValue() {
+    const { name, object } = this.props;
+    return object[name];
   }
 
   getSchemaProperty(): SchemaProperty {
-    const property = this.context.schema[this.props.name];
-    if (!property) this.warnMissingSchemaProperty();
+    const { name, schema, type } = this.props;
+
+    const property = schema[name];
+    if (!property && !type) this.warnMissingSchemaProperty();
 
     return property || {};
   }
@@ -98,10 +73,11 @@ export default class Field extends React.Component<Props> {
   }
 
   getPrefixedName() {
-    return prefixer(this.context.prefix, this.props.name);
+    const { prefix, name } = this.props;
+    return prefixer(prefix, name);
   }
 
-  getComponent(): React.ComponentType<*> {
+  getComponent(): ComponentType<*> {
     return Field.connectedComponents[this.getType()] || this.throwMissingTypeConnection();
   }
 
@@ -116,14 +92,6 @@ export default class Field extends React.Component<Props> {
 
   getTargetValidationMessage(): ?string {
     return (this.target || {}).validationMessage;
-  }
-
-  getShowErrorsState(): boolean {
-    return this.context.showErrorsState;
-  }
-
-  isTouched(): boolean {
-    return this.touched || this.context.showErrorsProp || this.getShowErrorsState();
   }
 
   getErrorObjectResult(response: any) {
@@ -159,14 +127,15 @@ export default class Field extends React.Component<Props> {
   }
 
   getErrorFunctionResult(callback: Function) {
-    return callback.bind(this.context.object)(this.context.object, this.props.name);
+    const { name, object } = this.props;
+    return callback.bind(object)(object, name);
   }
 
   getSchemaError(): ?string | Promise<?string> {
     let error = this.getSchemaProperty().error;
     if (!error) return;
 
-    if (typeof error === 'string') error = this.context.object[error];
+    if (typeof error === 'string') error = this.props.object[error];
     if (typeof error === 'function') error = this.getErrorFunctionResult(error);
     if (typeof error === 'object') error = this.getErrorObjectResult(error);
 
@@ -189,7 +158,8 @@ export default class Field extends React.Component<Props> {
    */
 
   setValue(incomingValue: ?any) {
-    this.context.onChange(this.props.name, this.getValue(incomingValue));
+    const { name, onFieldGroupChange } = this.props;
+    onFieldGroupChange(name, this.getValue(incomingValue));
   }
 
   setBrowserCustomValidity(message?: ?string): void {
@@ -209,7 +179,7 @@ export default class Field extends React.Component<Props> {
    * Dispatchers
    */
   dispatchValidation(error: ?string) {
-    this.context.onFormValidate(this.getPrefixedName(), error);
+    this.props.onFormValidate(this.getPrefixedName(), error);
   }
 
   /*
@@ -221,14 +191,10 @@ export default class Field extends React.Component<Props> {
   }
 
   touchAndRender() {
-    if (!this.isTouched()) {
-      this.touch();
-      this.forceUpdate();
-    } else {
-      // `isTouched()` may return true if `showErrors` is true
-      // and we want to make sure that touched will be true
-      this.touch();
-    }
+    const wasTouched = this.touched;
+    this.touch();
+
+    if (!wasTouched) this.forceUpdate();
   }
 
   validate(incomingError?: any): ?string {
@@ -280,21 +246,25 @@ export default class Field extends React.Component<Props> {
   render() {
     let error = this.validate();
 
-    // Avoid React.PureComponent rerender when changing among null, false, undefined, 0 and ''
+    // Avoid rerenderd when changing among null, false, undefined, 0 and ''
     if (!error || (typeof error === 'string' && error === '')) error = null;
 
-    return React.createElement(this.getComponent(), {
-      ...this.getSchemaProperty(),
-      ...this.props,
-      name: this.getPrefixedName(),
-      value: this.getContextObjectValue() || '',
-      error: error,
-      validating: this.validatingPromise ? this.validatingPromise : undefined,
-      touched: this.isTouched(),
-      onMount: this.handleMount,
-      onFocus: this.handleFocus,
-      onChange: this.handleChange
-    });
+    return (
+      <FieldContext.Provider value={{ name: this.props.name }}>
+        {React.createElement(this.getComponent(), {
+          ...this.getSchemaProperty(),
+          ...this.props,
+          name: this.getPrefixedName(),
+          value: this.getValue() || '',
+          error,
+          validating: this.validatingPromise ? this.validatingPromise : undefined,
+          touched: this.touched || this.props.submitted,
+          onMount: this.handleMount,
+          onFocus: this.handleFocus,
+          onChange: this.handleChange
+        })}
+      </FieldContext.Provider>
+    );
   }
 
   /*
@@ -314,3 +284,17 @@ export default class Field extends React.Component<Props> {
     throw new Error(`Missing "${type}" connection requested for property "${name}" in "${constructor}" instance`);
   }
 }
+
+export default forwardRef((props: Props, ref: ElementRef<*>) => (
+  <FormContext.Consumer>
+    {formProps => (
+      <FieldGroupContext.Consumer>
+        {fieldGroupProps => (
+          <SubmittedContext.Consumer>
+            {submitted => <Field ref={ref} {...formProps} {...fieldGroupProps} {...props} submitted={submitted} />}
+          </SubmittedContext.Consumer>
+        )}
+      </FieldGroupContext.Consumer>
+    )}
+  </FormContext.Consumer>
+));

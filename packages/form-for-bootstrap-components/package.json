@@ -21,12 +21,12 @@
     "es"
   ],
   "dependencies": {
-    "form-for-components": "^1.0.3",
-    "form-for-component-helpers": "^1.0.0"
+    "form-for-components": "^1.1.0",
+    "form-for-component-helpers": "^1.1.0"
   },
   "peerDependencies": {
-    "react": "^16.0.0",
-    "form-for": "^1.0.0"
+    "react": "^16.3.0",
+    "form-for": "^1.1.0"
   },
   "license": "MIT",
   "homepage": "https://github.com/form-for/form-for",

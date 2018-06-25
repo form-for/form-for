@@ -1,70 +1,77 @@
 // @flow
 
-import * as React from 'react';
-import PropTypes from 'prop-types';
+import React, { Component, createElement } from 'react';
+import type { Node, ComponentType, ElementRef } from 'react';
+
 import FieldGroup from './FieldGroup';
 import isPromise from '../helpers/isPromise';
 
-export type SchemaProperty = { type?: string, [key: string]: any };
-export type Schema = { [key: string]: SchemaProperty };
+import { ErrorsContext, ValidContext, SubmittedContext, SubmittingContext, FormContext } from '../contexts';
+import type { Schema } from '../types';
 
 export type Props = {
   for?: Object,
   schema?: Schema,
-  children: React.Node,
-  onSubmit?: (event: SyntheticEvent<HTMLFormElement>, data: Object, valid?: boolean) => any,
-  onChange?: (data: Object, valid?: boolean) => any,
-  showErrors?: boolean
+  children: Node,
+  onInvalidSubmit?: (errors: Object) => any,
+  onSubmit?: (event: SyntheticEvent<HTMLFormElement>, data: Object) => any,
+  onChange?: (data: Object) => any
 };
 
-export default class BaseForm extends React.Component<Props, *> {
-  static fieldGroupComponent: React.ComponentType<*> = FieldGroup;
+type State = {
+  submitted: boolean,
+  submitting: boolean
+};
 
-  form: ?HTMLFormElement;
+export default class BaseForm extends Component<Props, State> {
+  static formComponent: ComponentType<*> | string = 'form';
+  static formComponentProps = { noValidate: true };
+  static fieldGroupComponent: ComponentType<*> = FieldGroup;
+
+  static Errors = ErrorsContext.Consumer;
+  static Valid = ValidContext.Consumer;
+  static Submit = SubmittedContext.Consumer;
+  static Submitting = SubmittingContext.Consumer;
+
+  formRef: ElementRef<*> = React.createRef();
   errors: Object = {};
 
-  constructor(props: Props) {
-    super(props);
-    this.state = {};
-  }
-
-  /*
-   * Getters
-   */
-  static childContextTypes = {
-    errors: PropTypes.object,
-    showErrorsProp: PropTypes.bool,
-    showErrorsState: PropTypes.any,
-    onFormChange: PropTypes.func,
-    onFormValidate: PropTypes.func,
-    submitting: PropTypes.any
+  state = {
+    submitted: false,
+    submitting: false
   };
-
-  getChildContext() {
-    return {
-      errors: this.errors,
-      showErrorsProp: !!this.props.showErrors,
-      showErrorsState: this.getShowErrorsState(),
-      onFormChange: this.handleChange,
-      onFormValidate: this.handleValidate,
-      submitting: this.isSubmitting()
-    };
-  }
 
   isInvalid(): boolean {
     return !!Object.keys(this.errors).length;
   }
 
-  isSubmitting(): any {
-    return false;
-  }
-
-  getShowErrorsState(): any {
-    return false;
-  }
-
   getData(): Object {
     return this.props.for || {};
+  }
+
+  getChildren(): Node {
+    const { for: object, schema, children } = this.props;
+
+    if (!object) return children;
+
+    return createElement(this.constructor.fieldGroupComponent, {
+      for: this.getData(),
+      schema,
+      children
+    });
+  }
+
+  getFormProps() {
+    const { ...formProps } = this.props;
+
+    // Remove props that should not be passed down
+    delete formProps.for;
+    delete formProps.schema;
+    delete formProps.children;
+    delete formProps.onInvalidSubmit;
+    delete formProps.onChange;
+
+    return formProps;
   }
 
   /*
@@ -73,18 +80,32 @@ export default class BaseForm extends React.Component<Props, *> {
 
   onChange(data: Object) {}
 
-  onValidate(name: string, error: ?string): void {
-    if (error) this.errors[name] = error;
-    else delete this.errors[name];
+  onSubmit(event: any): any {
+    const { onSubmit } = this.props;
+    if (onSubmit) return onSubmit(event, this.getData());
   }
 
-  /*
-   * Dispatchers
-   */
+  onSyncSubmit() {
+    this.setState({ submitted: true });
+  }
 
-  dispatchShowErrors() {}
-  dispatchSubmittingStart() {}
-  dispatchSubmittingFinish() {}
+  onAsyncSubmitStart() {
+    this.setState({ submitted: true, submitting: true });
+  }
+
+  onAsyncSubmitFinish() {
+    this.setState({ submitting: false });
+  }
+
+  onInvalidSubmit(event: ?any) {
+    const isDOMEvent = event && event.currentTarget;
+    if (event && isDOMEvent) this.onDOMInvalidSubmit(event);
+  }
+
+  onDOMInvalidSubmit(event: SyntheticEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (event.currentTarget.reportValidity) event.currentTarget.reportValidity();
+  }
 
   /*
    * Bound handlers
@@ -98,27 +119,23 @@ export default class BaseForm extends React.Component<Props, *> {
   };
 
   handleValidate = (name: string, error: ?string) => {
-    this.onValidate(name, error);
+    if (error) this.errors[name] = error;
+    else delete this.errors[name];
   };
 
-  handleSubmit = (event: SyntheticEvent<HTMLFormElement>) => {
+  handleSubmit = (event: any) => {
     if (this.isInvalid()) {
-      console.log(this.errors);
-      event.preventDefault();
-      event.currentTarget.reportValidity();
-      this.dispatchShowErrors();
+      this.onInvalidSubmit();
       return;
     }
 
-    const { onSubmit } = this.props;
-    if (onSubmit) {
-      const response = onSubmit(event, this.getData());
+    const response = this.onSubmit();
 
-      if (isPromise(response)) {
-        this.dispatchSubmittingStart();
-        const dispatchFinish = () => this.dispatchSubmittingFinish();
-        response.then(dispatchFinish).catch(dispatchFinish);
-      }
+    if (isPromise(response)) {
+      this.onAsyncSubmitStart();
+      response.then(this.onAsyncSubmitFinish).catch(this.onAsyncSubmitFinish);
+    } else {
+      this.onSyncSubmit();
     }
   };
 
@@ -126,28 +143,24 @@ export default class BaseForm extends React.Component<Props, *> {
    * Lifecycle
    */
 
-  render(): React.Node {
-    const { ['for']: object, schema, children, ...formProps } = {
-      ...this.props
-    };
-    delete formProps.onChange; // Prevent the browser onChange event from being called
-    delete formProps.showErrors;
+  render(): Node {
+    const { submitted, submitting } = this.state;
 
-    let content;
-    if (!object) {
-      content = children;
-    } else {
-      content = React.createElement(this.constructor.fieldGroupComponent, {
-        for: this.getData(),
-        schema,
-        children
-      });
-    }
+    const C = this.constructor.formComponent;
+    const CProps = this.constructor.formComponentProps;
 
     return (
-      <form {...formProps} ref={el => (this.form = el)} onSubmit={this.handleSubmit} noValidate>
-        {content}
-      </form>
+      <C {...CProps} {...this.getFormProps()} ref={this.formRef} onSubmit={this.handleSubmit}>
+        <FormContext.Provider value={{ onChange: this.handleChange }}>
+          <SubmittedContext.Provider value={submitted}>
+            <SubmittingContext.Provider value={submitting}>
+              <ValidContext.Provider value={!this.isInvalid()}>
+                <ErrorsContext.Provider value={this.errors}>{this.getChildren()}</ErrorsContext.Provider>
+              </ValidContext.Provider>
+            </SubmittingContext.Provider>
+          </SubmittedContext.Provider>
+        </FormContext.Provider>
+      </C>
     );
   }
 }

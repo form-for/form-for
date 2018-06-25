@@ -1,20 +1,27 @@
 // @flow
 
 import BaseForm from './components/BaseForm';
-export type { Props as FormProps, SchemaProperty, Schema } from './components/BaseForm';
+export type { Props as FormProps } from './components/BaseForm';
 
 import Form from './components/Form';
 
 import Field from './components/Field';
-export type { ComponentProps, Props as FieldProps } from './components/Field';
+export type { Props as FieldProps } from './components/Field';
 
 import FieldGroup from './components/FieldGroup';
 export type { Props as FieldGroupProps } from './components/FieldGroup';
 
-import Errors from './components/Errors';
-export type { Props as ErrorsProps } from './components/Errors';
+import {
+  ErrorsContext,
+  ValidContext,
+  SubmittedContext,
+  SubmittingContext,
+  FormContext,
+  FieldGroupContext,
+  FieldContext
+} from './contexts';
 
-import Submit from './components/Submit';
+export type { SchemaProperty, Schema, ComponentProps } from './types';
 
 import fieldDecorator from './decorators/fieldDecorator';
 
@@ -30,8 +37,13 @@ export {
   Form,
   Field,
   FieldGroup,
-  Errors,
-  Submit,
+  ErrorsContext,
+  ValidContext,
+  SubmittedContext,
+  SubmittingContext,
+  FormContext,
+  FieldGroupContext,
+  FieldContext,
   fieldDecorator as field,
   cloneObject,
   debounce,

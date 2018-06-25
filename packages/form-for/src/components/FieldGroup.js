@@ -1,48 +1,34 @@
 // @flow
 
-import * as React from 'react';
-import PropTypes from 'prop-types';
-import type { Schema } from './BaseForm';
+import React, { Component, type Node } from 'react';
+import type { Schema } from '../types';
 import cloneObject from '../helpers/cloneObject';
 import prefixer from '../helpers/prefixer';
 import mutateObject from '../helpers/mutateObject';
+import { FieldGroupContext } from '../contexts';
+import { FieldContext } from '../contexts';
+import { FormContext } from '../contexts';
 
 export type Props = {
   for: Object,
   schema?: Schema,
   prefix?: string,
   index?: any,
-  children: React.Node
+  children: Node
 };
 
-export default class FieldGroup extends React.Component<Props> {
+type CombinedProps = Props & {
+  onFormChange: Function,
+  onChange?: Function,
+  name?: string
+};
+
+export class FieldGroup extends Component<CombinedProps> {
   errors: Object = {};
-
-  static contextTypes = {
-    onFormChange: PropTypes.func.isRequired,
-    onChange: PropTypes.func,
-    name: PropTypes.string
-  };
-
-  static childContextTypes = {
-    object: PropTypes.object,
-    schema: PropTypes.object,
-    prefix: PropTypes.string,
-    onChange: PropTypes.func
-  };
 
   /*
    * Getters
    */
-
-  getChildContext() {
-    return {
-      object: this.props.for,
-      schema: this.getSchema(),
-      prefix: this.getPrefix(),
-      onChange: this.handleChange
-    };
-  }
 
   getPrefix(): string {
     return prefixer(this.context.prefix, this.context.name, this.props.prefix, this.props.index);
@@ -105,8 +91,21 @@ export default class FieldGroup extends React.Component<Props> {
    * Lifecycle
    */
 
-  render(): React.Node {
-    return this.props.children || null;
+  render() {
+    const { for: object, children } = this.props;
+
+    return (
+      <FieldGroupContext.Provider
+        value={{
+          object,
+          schema: this.getSchema(),
+          prefix: this.getPrefix(),
+          onChange: this.handleChange
+        }}
+      >
+        {children || null}
+      </FieldGroupContext.Provider>
+    );
   }
 
   /*
@@ -118,3 +117,17 @@ export default class FieldGroup extends React.Component<Props> {
     throw new Error(`Undefined schema for "${constructor}" instance`);
   }
 }
+
+export default ({ children, ...otherProps }: Props) => (
+  <FormContext.Consumer>
+    {formProps => (
+      <FieldContext.Consumer>
+        {fieldProps => (
+          <FieldGroup {...formProps} {...fieldProps} {...otherProps}>
+            {children}
+          </FieldGroup>
+        )}
+      </FieldContext.Consumer>
+    )}
+  </FormContext.Consumer>
+);
