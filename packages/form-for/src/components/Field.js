@@ -6,7 +6,8 @@ import type { SchemaProperty } from '../types';
 import prefixer from '../helpers/prefixer';
 import isPromise from '../helpers/isPromise';
 import debounce from '../helpers/debounce';
-import memoize, { clearMemoize } from '../helpers/memoize';
+import isMemoizeObject from '../helpers/isMemoizeObject';
+import memoize, { clearMemoize, type MemoizableResult } from '../helpers/memoize';
 import { SubmittedContext, FormContext, FieldGroupContext, FieldContext } from '../contexts';
 
 export type Props = {
@@ -87,11 +88,7 @@ export class Field extends Component<CombinedProps> {
     return (this.target || {}).validationMessage;
   }
 
-  getErrorObjectResult(response: any) {
-    if (!isPromise(response)) response = this.getErrorHelperResult(response);
-    if (typeof response === 'string') return response;
-
-    // $FlowFixMe
+  runErrorPromise(response: any) {
     this.validatingPromise = response;
 
     const handlePromiseResolve = error => {
@@ -102,7 +99,6 @@ export class Field extends Component<CombinedProps> {
       }
     };
 
-    // $FlowFixMe
     response
       .then(error => handlePromiseResolve(error || SUCCESS_ASYNC_VALIDATION))
       .catch(error => handlePromiseResolve(error.message));
@@ -110,7 +106,7 @@ export class Field extends Component<CombinedProps> {
     return Field.validatingErrorMessage;
   }
 
-  getErrorHelperResult(response: Object): Promise<?string> | ?string {
+  runErrorMemoizeObject(response: Object): MemoizableResult {
     if (!response.callback) throw new Error('Undefined `callback` in validation function object response');
 
     if (response.debounce) return debounce(this, response.callback, response.debounce);
@@ -119,7 +115,7 @@ export class Field extends Component<CombinedProps> {
     throw new Error('Invalid validation object response - please set `debounce: timeoutMillis` or `memoize: true`');
   }
 
-  getErrorFunctionResult(callback: Function) {
+  runErrorFunction(callback: Function) {
     const { name, object } = this.props;
     return callback.bind(object)(object, name);
   }
@@ -129,8 +125,9 @@ export class Field extends Component<CombinedProps> {
     if (!error) return;
 
     if (typeof error === 'string') error = this.props.object[error];
-    if (typeof error === 'function') error = this.getErrorFunctionResult(error);
-    if (typeof error === 'object') error = this.getErrorObjectResult(error);
+    if (typeof error === 'function') error = this.runErrorFunction(error);
+    if (isMemoizeObject(error)) error = this.runErrorMemoizeObject(error);
+    if (isPromise(error)) this.runErrorPromise(error);
 
     return error;
   }
