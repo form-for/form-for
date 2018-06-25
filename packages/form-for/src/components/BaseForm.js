@@ -42,7 +42,7 @@ export default class BaseForm extends Component<Props, State> {
   };
 
   isInvalid(): boolean {
-    return !!Object.keys(this.errors).length;
+    return Object.keys(this.errors).length > 0;
   }
 
   getData(): Object {
@@ -129,7 +129,7 @@ export default class BaseForm extends Component<Props, State> {
       return;
     }
 
-    const response = this.onSubmit();
+    const response = this.onSubmit(event);
 
     if (isPromise(response)) {
       this.onAsyncSubmitStart();

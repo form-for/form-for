@@ -14,11 +14,12 @@ describe('Touch', () => {
 
   it('doest not request render after touching a second time', () => {
     const wrapper = mount(
-      <Form for={object} showErrors>
+      <Form for={object}>
         <Field name="counter" />
       </Form>
     );
 
+    wrapper.find('input').simulate('focus');
     wrapper.find('input').simulate('focus');
     expect(wrapper.find('input').props()['data-count']).toEqual(1);
   });
@@ -32,17 +33,6 @@ describe('Touch', () => {
 
     const input = wrapper.find('input').first();
     expect(input.props()['data-touched']).toBeFalsy();
-  });
-
-  it('provides touch property when form has showErrors', () => {
-    const wrapper = mount(
-      <Form for={object} showErrors>
-        <Field name="name" />
-      </Form>
-    );
-
-    const input = wrapper.find('input[name="name"]').first();
-    expect(input.props()['data-touched']).toBeTruthy();
   });
 
   it('provides touch property on focus', () => {

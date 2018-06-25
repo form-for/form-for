@@ -75,7 +75,7 @@ describe('Field error', () => {
 
       describe('that returns a successful promise', () => {
         describe('with message', () => {
-          it.only('shows validating and then the error', async () => {
+          it('shows validating and then the error', async () => {
             const promise = Promise.resolve('async invalid');
             const validate = () => promise;
 
@@ -95,7 +95,7 @@ describe('Field error', () => {
           });
         });
 
-        describe('with not message', () => {
+        describe('with no message', () => {
           it('shows validating and then no error', async () => {
             const promise = Promise.resolve();
             const validate = () => promise;

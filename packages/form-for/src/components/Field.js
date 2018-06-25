@@ -92,11 +92,11 @@ export class Field extends Component<CombinedProps> {
     this.validatingPromise = response;
 
     const handlePromiseResolve = error => {
-      if (this.validatingPromise === response) {
-        this.validatingPromise = null;
-        this.asyncError = error;
-        this.forceUpdate();
-      }
+      if (this.validatingPromise !== response) return;
+
+      this.validatingPromise = null;
+      this.asyncError = error;
+      this.forceUpdate();
     };
 
     response

@@ -18,7 +18,7 @@ export default function debounce(field: Field, callback: () => Promise<*>, timeo
         try {
           resolve(await callback());
         } catch (e) {
-          reject(e.message);
+          reject(e);
         }
       }, timeout);
     });
