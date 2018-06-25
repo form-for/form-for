@@ -151,7 +151,7 @@ export default class BaseForm extends Component<Props, State> {
 
     return (
       <C {...CProps} {...this.getFormProps()} ref={this.formRef} onSubmit={this.handleSubmit}>
-        <FormContext.Provider value={{ onChange: this.handleChange }}>
+        <FormContext.Provider value={{ onFormChange: this.handleChange, onFormValidate: this.handleValidate }}>
           <SubmittedContext.Provider value={submitted}>
             <SubmittingContext.Provider value={submitting}>
               <ValidContext.Provider value={!this.isInvalid()}>

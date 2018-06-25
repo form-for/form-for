@@ -1,6 +1,6 @@
 // @flow
 
-import Field from '../components/Field';
+import { Field } from '../components/Field';
 import memoize from './memoize';
 
 let timeoutIds: { [object: Field]: TimeoutID } = {};

@@ -2,33 +2,25 @@
 
 import { createContext } from 'react';
 
-// $FlowFixMe
-export const ErrorsContext = createContext<Object>();
+type Consumer<T> = any;
 
-// $FlowFixMe
-export const ValidContext = createContext<boolean>();
+export const ErrorsContext: Consumer<Object> = createContext();
+export const ValidContext: Consumer<boolean> = createContext();
+export const SubmittedContext: Consumer<boolean> = createContext();
+export const SubmittingContext: Consumer<boolean> = createContext();
 
-// $FlowFixMe
-export const SubmittedContext = createContext<boolean>();
-
-// $FlowFixMe
-export const SubmittingContext = createContext<boolean>();
-
-// $FlowFixMe
-export const FormContext = createContext<{
+export const FormContext: Consumer<{
   onFormChange: Function,
   onFormValidate: Function
-}>();
+}> = createContext();
 
-// $FlowFixMe
-export const FieldGroupContext = createContext<{
+export const FieldGroupContext: Consumer<{
   object: Object,
   schema: Object,
   prefix: string,
   onFieldGroupChange: Function
-}>({});
+}> = createContext({});
 
-// $FlowFixMe
-export const FieldContext = createContext<{
+export const FieldContext: Consumer<{
   name: string
-}>({});
+}> = createContext({});

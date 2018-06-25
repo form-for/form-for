@@ -20,7 +20,8 @@ export type Props = {
 type CombinedProps = Props & {
   onFormChange: Function,
   onChange?: Function,
-  name?: string
+  name?: string,
+  contextPrefix?: string
 };
 
 export class FieldGroup extends Component<CombinedProps> {
@@ -31,7 +32,7 @@ export class FieldGroup extends Component<CombinedProps> {
    */
 
   getPrefix(): string {
-    return prefixer(this.context.prefix, this.context.name, this.props.prefix, this.props.index);
+    return prefixer(this.props.contextPrefix, this.props.name, this.props.prefix, this.props.index);
   }
 
   getSchema(): Schema {
@@ -71,7 +72,7 @@ export class FieldGroup extends Component<CombinedProps> {
   }
 
   dispatchFormChange(newObject?: Object) {
-    this.context.onFormChange(newObject);
+    this.props.onFormChange(newObject);
   }
 
   /*
@@ -99,8 +100,8 @@ export class FieldGroup extends Component<CombinedProps> {
         value={{
           object,
           schema: this.getSchema(),
-          prefix: this.getPrefix(),
-          onChange: this.handleChange
+          contextPrefix: this.getPrefix(),
+          onFieldGroupChange: this.handleChange
         }}
       >
         {children || null}

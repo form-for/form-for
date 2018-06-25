@@ -2,9 +2,6 @@
 
 import React, { Component, type ComponentType, type ElementRef } from 'react';
 
-// $FlowFixMe
-import { forwardRef } from 'react';
-
 import type { SchemaProperty } from '../types';
 import prefixer from '../helpers/prefixer';
 import isPromise from '../helpers/isPromise';
@@ -23,7 +20,7 @@ export type Props = {
 type CombinedProps = Props & {
   object: Object,
   schema: Object,
-  prefix: string,
+  contextPrefix: string,
   onFieldGroupChange: Function,
   onFormValidate: Function,
   submitted: boolean
@@ -46,15 +43,11 @@ export class Field extends Component<CombinedProps> {
 
   static connectedComponents: { [_: string]: ComponentType<*> } = {};
 
-  static connect(type: string, component: ComponentType<*>): void {
-    Field.connectedComponents[type] = component;
-  }
-
   /*
    * Getters
    */
 
-  getValue() {
+  getObjectValue() {
     const { name, object } = this.props;
     return object[name];
   }
@@ -73,8 +66,8 @@ export class Field extends Component<CombinedProps> {
   }
 
   getPrefixedName() {
-    const { prefix, name } = this.props;
-    return prefixer(prefix, name);
+    const { contextPrefix, name } = this.props;
+    return prefixer(contextPrefix, name);
   }
 
   getComponent(): ComponentType<*> {
@@ -82,7 +75,7 @@ export class Field extends Component<CombinedProps> {
   }
 
   getValue(incomingValue?: any) {
-    return typeof incomingValue !== 'undefined' ? incomingValue : this.getTargetValue();
+    return incomingValue !== undefined ? incomingValue : this.getTargetValue();
   }
 
   getTargetValue(): any {
@@ -220,14 +213,14 @@ export class Field extends Component<CombinedProps> {
   };
 
   handleFocus = (event?: Event) => {
-    this.target = (event || {}).target || this.target;
+    this.target = (event || this).target;
     this.touchAndRender();
 
     if (this.props.onFocus) this.props.onFocus(event);
   };
 
   handleChange = (event?: Event, value?: any, error?: any) => {
-    this.target = (event || {}).target || this.target;
+    this.target = (event || this).target;
     this.setValue(value);
     this.touch();
 
@@ -249,16 +242,23 @@ export class Field extends Component<CombinedProps> {
     // Avoid rerenderd when changing among null, false, undefined, 0 and ''
     if (!error || (typeof error === 'string' && error === '')) error = null;
 
+    const { name, submitted, ...otherProps } = this.props;
+    delete otherProps.object;
+    delete otherProps.schema;
+    delete otherProps.contextPrefix;
+    delete otherProps.onFieldGroupChange;
+    delete otherProps.onFormValidate;
+
     return (
-      <FieldContext.Provider value={{ name: this.props.name }}>
+      <FieldContext.Provider value={{ name }}>
         {React.createElement(this.getComponent(), {
           ...this.getSchemaProperty(),
-          ...this.props,
+          ...otherProps,
           name: this.getPrefixedName(),
-          value: this.getValue() || '',
+          value: this.getObjectValue() || '',
           error,
           validating: this.validatingPromise ? this.validatingPromise : undefined,
-          touched: this.touched || this.props.submitted,
+          touched: this.touched || submitted,
           onMount: this.handleMount,
           onFocus: this.handleFocus,
           onChange: this.handleChange
@@ -273,28 +273,34 @@ export class Field extends Component<CombinedProps> {
 
   warnMissingSchemaProperty() {
     const name = this.props.name;
-    const constructor = this.context.object.constructor.name;
+    const constructor = this.props.object.constructor.name;
     console.warn(`Undefined property "${name}" in schema for "${constructor}" instance`);
   }
 
   throwMissingTypeConnection() {
     const type = this.getType();
     const name = this.props.name;
-    const constructor = this.context.object.constructor.name;
+    const constructor = this.props.object.constructor.name;
     throw new Error(`Missing "${type}" connection requested for property "${name}" in "${constructor}" instance`);
   }
 }
 
-export default forwardRef((props: Props, ref: ElementRef<*>) => (
+export default (props: Props) => (
   <FormContext.Consumer>
-    {formProps => (
+    {({ onFormValidate }) => (
       <FieldGroupContext.Consumer>
         {fieldGroupProps => (
           <SubmittedContext.Consumer>
-            {submitted => <Field ref={ref} {...formProps} {...fieldGroupProps} {...props} submitted={submitted} />}
+            {submitted => (
+              <Field onFormValidate={onFormValidate} {...fieldGroupProps} {...props} submitted={submitted} />
+            )}
           </SubmittedContext.Consumer>
         )}
       </FieldGroupContext.Consumer>
     )}
   </FormContext.Consumer>
-));
+);
+
+export function connectField(type: string, component: ComponentType<*>): void {
+  Field.connectedComponents[type] = component;
+}

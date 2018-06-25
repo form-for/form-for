@@ -5,7 +5,7 @@ export type { Props as FormProps } from './components/BaseForm';
 
 import Form from './components/Form';
 
-import Field from './components/Field';
+import Field, { connectField } from './components/Field';
 export type { Props as FieldProps } from './components/Field';
 
 import FieldGroup from './components/FieldGroup';
@@ -36,6 +36,7 @@ export {
   BaseForm,
   Form,
   Field,
+  connectField,
   FieldGroup,
   ErrorsContext,
   ValidContext,

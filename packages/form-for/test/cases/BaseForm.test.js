@@ -1,10 +1,10 @@
 import React from 'react';
 import { mount } from 'enzyme';
-import { Field, BaseForm } from '../../src';
+import { Field, BaseForm, connectField } from '../../src';
 import Input from '../fixtures/Input';
 
 describe('BaseForm', () => {
-  Field.connect('text', Input);
+  connectField('text', Input);
 
   const object = {
     name: 'initial',

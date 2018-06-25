@@ -12,7 +12,7 @@ export function memoizeCompare(field: Field, fn?: Function): boolean {
   const stored = storedValues[field];
   if (fn) return fn();
 
-  const value = field.getValue();
+  const value = field.getObjectValue();
   if (stored === value) return false;
 
   storedValues[field] = value;
