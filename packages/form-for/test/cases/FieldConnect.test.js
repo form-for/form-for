@@ -1,12 +1,12 @@
 import React from 'react';
 import { mount } from 'enzyme';
-import { Field, Form } from '../../src';
+import { Field, Form, connectField } from '../../src';
 import Input from '../fixtures/Input';
 import Select from '../fixtures/Select';
 
 describe('Field connect', () => {
-  Field.connect('text', Input);
-  Field.connect('select', Select);
+  connectField('text', Input);
+  connectField('select', Select);
 
   const object = {
     schema: { name: { type: 'text' }, role: { type: 'select' } }

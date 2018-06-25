@@ -1,12 +1,12 @@
 import React from 'react';
 import { mount } from 'enzyme';
-import { Field, Form } from '../../src';
+import { Field, Form, connectField } from '../../src';
 import { TodoItem, TodoItems } from '../fixtures/TodoItems';
 import Input from '../fixtures/Input';
 
 describe('Nested fields', () => {
-  Field.connect('TodoItem[]', TodoItems);
-  Field.connect('text', Input);
+  connectField('TodoItem[]', TodoItems);
+  connectField('text', Input);
 
   const object = {
     todos: [new TodoItem(1, 'Text 1'), new TodoItem(2, 'Text 2')],

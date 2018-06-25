@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from 'enzyme';
-import { Field, Form } from '../../src';
+import { Field, Form, connectField } from '../../src';
 import Input from '../fixtures/Input';
 
 describe('Error messages', () => {
@@ -22,7 +22,7 @@ describe('Error messages', () => {
 
   it('warns on missing field in schema', () => {
     console.warn = jest.fn();
-    Field.connect('text', Input);
+    connectField('text', Input);
 
     render(
       <Form for={{ schema: {} }}>

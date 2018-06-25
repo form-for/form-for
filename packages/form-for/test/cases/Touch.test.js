@@ -1,12 +1,12 @@
 import React from 'react';
 import { mount } from 'enzyme';
-import { Field, Form } from '../../src';
+import { Field, Form, connectField } from '../../src';
 import Counter from '../fixtures/Counter';
 import Input from '../fixtures/Input';
 
 describe('Touch', () => {
-  Field.connect('counter', Counter);
-  Field.connect('text', Input);
+  connectField('counter', Counter);
+  connectField('text', Input);
 
   const object = {
     schema: { name: {}, counter: { type: 'counter' } }

@@ -1,6 +1,6 @@
 import React from 'react';
 import { mount } from 'enzyme';
-import { Field, Form, debounce } from '../../src';
+import { Field, Form, debounce, connectField } from '../../src';
 import Input from '../fixtures/Input';
 
 jest.useFakeTimers();
@@ -10,7 +10,7 @@ function flushPromises() {
 }
 
 describe('Field Error Debounce', () => {
-  Field.connect('text', Input);
+  connectField('text', Input);
 
   const object = {
     name: 'John',
@@ -49,9 +49,8 @@ describe('Field Error Debounce', () => {
   });
 
   describe('that resolves', () => {
-    it('shows validating message and then clears it', () => {
-      const promise = Promise.resolve();
-      const validate = () => ({ debounce: 500, callback: () => promise });
+    it('shows validating message and then clears it', async () => {
+      const validate = () => ({ debounce: 500, callback: async () => Promise.resolve() });
 
       const wrapper = mount(
         <Form for={{ ...object, validate }}>
@@ -64,19 +63,22 @@ describe('Field Error Debounce', () => {
 
       jest.advanceTimersByTime(500);
 
-      return flushPromises().then(() => {
-        wrapper.update();
-        expect(wrapper.find('input').prop('data-validating')).toBeFalsy();
-        expect(wrapper.find('input').prop('data-error')).toBeNull();
-        wrapper.unmount();
-      });
+      await flushPromises();
+      wrapper.update();
+      expect(wrapper.find('input').prop('data-validating')).toBeFalsy();
+      expect(wrapper.find('input').prop('data-error')).toBeNull();
+      wrapper.unmount();
     });
   });
 
   describe('that rejects', () => {
-    it('shows validating message and then the error', () => {
-      const promise = Promise.reject('async invalid');
-      const validate = () => ({ debounce: 500, callback: () => promise });
+    it('shows validating message and then the error', async () => {
+      const validate = () => ({
+        debounce: 500,
+        callback: async () => {
+          throw new Error('async invalid');
+        }
+      });
 
       const wrapper = mount(
         <Form for={{ ...object, validate }}>
@@ -89,12 +91,11 @@ describe('Field Error Debounce', () => {
 
       jest.advanceTimersByTime(500);
 
-      return flushPromises().then(() => {
-        wrapper.update();
-        expect(wrapper.find('input').prop('data-validating')).toBeFalsy();
-        expect(wrapper.find('input').prop('data-error')).toEqual('async invalid');
-        wrapper.unmount();
-      });
+      await flushPromises();
+      wrapper.update();
+      expect(wrapper.find('input').prop('data-validating')).toBeFalsy();
+      expect(wrapper.find('input').prop('data-error')).toEqual('async invalid');
+      wrapper.unmount();
     });
   });
 });

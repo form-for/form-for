@@ -30,7 +30,7 @@ export default class BaseForm extends Component<Props, State> {
 
   static Errors = ErrorsContext.Consumer;
   static Valid = ValidContext.Consumer;
-  static Submit = SubmittedContext.Consumer;
+  static Submitted = SubmittedContext.Consumer;
   static Submitting = SubmittingContext.Consumer;
 
   formRef: ElementRef<*> = React.createRef();

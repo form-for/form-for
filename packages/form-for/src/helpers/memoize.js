@@ -3,10 +3,10 @@
 import { Field } from '../components/Field';
 import isPromise from './isPromise';
 
-type Result = ?string | Promise<?string>;
+export type MemoizableResult = ?string | Promise<?string>;
 
 let storedValues: { [object: Field]: any } = {};
-let storedResults: { [object: Field]: Result } = {};
+let storedResults: { [object: Field]: MemoizableResult } = {};
 
 export function memoizeCompare(field: Field, fn?: Function): boolean {
   const stored = storedValues[field];
@@ -24,7 +24,7 @@ export function clearMemoize(field: Field) {
   delete storedResults[field];
 }
 
-export default function memoize(field: Field, callback: () => Promise<?string>): Result {
+export default function memoize(field: Field, callback: () => Promise<?string>): MemoizableResult {
   if (!memoizeCompare(field)) return storedResults[field];
 
   const promise = callback();
