@@ -19,7 +19,7 @@ export type Props = {
 
 type CombinedProps = Props & {
   onFormChange: Function,
-  onChange?: Function,
+  onFieldGroupChange?: Function,
   name?: string,
   contextPrefix?: string
 };
@@ -64,11 +64,11 @@ export class FieldGroup extends Component<CombinedProps> {
    */
 
   dispatchChange(newObject: Object) {
-    this.context.name ? this.dispatchNestedChange(newObject) : this.dispatchFormChange(newObject);
+    this.props.name ? this.dispatchNestedChange(newObject) : this.dispatchFormChange(newObject);
   }
 
   dispatchNestedChange(newObject: Object) {
-    this.context.onChange(this.context.name, newObject, this.props.index);
+    this.props.onFieldGroupChange(this.props.name, newObject, this.props.index);
   }
 
   dispatchFormChange(newObject?: Object) {
@@ -122,13 +122,17 @@ export class FieldGroup extends Component<CombinedProps> {
 export default ({ children, ...otherProps }: Props) => (
   <FormContext.Consumer>
     {formProps => (
-      <FieldContext.Consumer>
-        {fieldProps => (
-          <FieldGroup {...formProps} {...fieldProps} {...otherProps}>
-            {children}
-          </FieldGroup>
+      <FieldGroupContext.Consumer>
+        {({ onFieldGroupChange }) => (
+          <FieldContext.Consumer>
+            {fieldProps => (
+              <FieldGroup {...formProps} {...fieldProps} {...otherProps} onFieldGroupChange={onFieldGroupChange}>
+                {children}
+              </FieldGroup>
+            )}
+          </FieldContext.Consumer>
         )}
-      </FieldContext.Consumer>
+      </FieldGroupContext.Consumer>
     )}
   </FormContext.Consumer>
 );
