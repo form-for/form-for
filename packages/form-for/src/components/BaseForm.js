@@ -93,9 +93,9 @@ export default class BaseForm extends React.Component<Props, State> {
     this.setState({ submitted: true, submitting: true });
   }
 
-  onAsyncSubmitFinish() {
+  onAsyncSubmitFinish = () => {
     this.setState({ submitting: false });
-  }
+  };
 
   onInvalidSubmit(event: ?any) {
     const isDOMEvent = event && event.target;
@@ -122,10 +122,9 @@ export default class BaseForm extends React.Component<Props, State> {
     const currentError = this.errors[name];
     if (currentError !== error) this.hasNewErrors = true;
 
-    this.errors = {
-      ...this.errors,
-      [name]: error ? error : undefined
-    };
+    this.errors = { ...this.errors };
+    if (error) this.errors[name] = error;
+    else delete this.errors[name];
   };
 
   handleSubmit = (event?: any) => {
