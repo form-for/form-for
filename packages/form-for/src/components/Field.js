@@ -192,7 +192,10 @@ export class FieldComponent extends React.Component<CombinedProps> {
     this.clearBrowserCustomValidity();
 
     this.incomingError = incomingError;
-    const error = this.getError();
+    let error = this.getError();
+
+    // Avoid rerenderd when changing among null, false, undefined, 0 and ''
+    if (!error || (typeof error === 'string' && error === '')) error = null;
 
     this.setBrowserCustomValidity(error);
     this.dispatchValidation(error);
@@ -234,10 +237,7 @@ export class FieldComponent extends React.Component<CombinedProps> {
   }
 
   render() {
-    let error = this.validate();
-
-    // Avoid rerenderd when changing among null, false, undefined, 0 and ''
-    if (!error || (typeof error === 'string' && error === '')) error = null;
+    const error = this.validate();
 
     const { name, submitted, ...otherProps } = this.props;
     delete otherProps.object;

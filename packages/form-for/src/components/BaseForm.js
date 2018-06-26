@@ -1,7 +1,6 @@
 // @flow
 
 import * as React from 'react';
-import type { Node, ComponentType, ElementRef } from 'react';
 
 import FieldGroup from './FieldGroup';
 import isPromise from '../helpers/isPromise';
@@ -24,17 +23,18 @@ type State = {
 };
 
 export default class BaseForm extends React.Component<Props, State> {
-  static formComponent: ComponentType<*> | string = 'form';
+  static formComponent: React.ComponentType<*> | string = 'form';
   static formComponentProps = { noValidate: true };
-  static fieldGroupComponent: ComponentType<*> = FieldGroup;
+  static fieldGroupComponent: React.ComponentType<*> = FieldGroup;
 
   static Errors = ErrorsContext.Consumer;
   static Valid = ValidContext.Consumer;
   static Submitted = SubmittedContext.Consumer;
   static Submitting = SubmittingContext.Consumer;
 
-  formRef: ElementRef<*> = React.createRef();
+  formRef: React.ElementRef<*> = React.createRef();
   errors: Object = {};
+  hasNewErrors: boolean;
 
   state = {
     submitted: false,
@@ -49,7 +49,7 @@ export default class BaseForm extends React.Component<Props, State> {
     return this.props.for || {};
   }
 
-  getChildren(): Node {
+  getChildren(): React.Node {
     const { for: object, schema, children } = this.props;
 
     if (!object) return children;
@@ -98,7 +98,7 @@ export default class BaseForm extends React.Component<Props, State> {
   }
 
   onInvalidSubmit(event: ?any) {
-    const isDOMEvent = event && event.currentTarget;
+    const isDOMEvent = event && event.target;
     if (event && isDOMEvent) this.onDOMInvalidSubmit(event);
   }
 
@@ -119,13 +119,18 @@ export default class BaseForm extends React.Component<Props, State> {
   };
 
   handleValidate = (name: string, error: ?string) => {
-    if (error) this.errors[name] = error;
-    else delete this.errors[name];
+    const currentError = this.errors[name];
+    if (currentError !== error) this.hasNewErrors = true;
+
+    this.errors = {
+      ...this.errors,
+      [name]: error ? error : undefined
+    };
   };
 
-  handleSubmit = (event: any) => {
+  handleSubmit = (event?: any) => {
     if (this.isInvalid()) {
-      this.onInvalidSubmit();
+      this.onInvalidSubmit(event);
       return;
     }
 
@@ -143,7 +148,16 @@ export default class BaseForm extends React.Component<Props, State> {
    * Lifecycle
    */
 
-  render(): Node {
+  componentDidMount() {
+    if (this.hasNewErrors) this.forceUpdate();
+  }
+
+  componentDidUpdate() {
+    if (this.hasNewErrors) this.forceUpdate();
+  }
+
+  render(): React.Node {
+    this.hasNewErrors = false;
     const { submitted, submitting } = this.state;
 
     const C = this.constructor.formComponent;
