@@ -1,6 +1,6 @@
 // @flow
 
-import { Field } from 'form-for';
+import { connectField } from 'form-for';
 import { inputTypes } from 'form-for-components';
 
 import Checkbox from './Checkbox';
@@ -25,28 +25,11 @@ import RequiredAbbreviation from './RequiredAbbreviation';
 import humanizeOptions from './humanizeOptions';
 
 function connectFields() {
-  Field.connect(
-    'checkbox',
-    Checkbox
-  );
-  Field.connect(
-    'radio',
-    Radio
-  );
-  Field.connect(
-    'select',
-    Select
-  );
-  Field.connect(
-    'textarea',
-    TextArea
-  );
-  inputTypes.forEach(type =>
-    Field.connect(
-      type,
-      Input
-    )
-  );
+  connectField('checkbox', Checkbox);
+  connectField('radio', Radio);
+  connectField('select', Select);
+  connectField('textarea', TextArea);
+  inputTypes.forEach(type => connectField(type, Input));
 }
 
 export {

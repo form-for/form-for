@@ -14,7 +14,7 @@ export type Props = {
   schema?: Schema,
   prefix?: string,
   index?: any,
-  children: Node
+  children: React.Node
 };
 
 type CombinedProps = Props & {
@@ -26,6 +26,9 @@ type CombinedProps = Props & {
 
 export class FieldGroupComponent extends React.Component<CombinedProps> {
   errors: Object = {};
+
+  // static Valid = FieldGroupValidContext.Consumer;
+  // static Errors = FieldGroupErrorsContext.Consumer;
 
   /*
    * Getters
@@ -119,7 +122,7 @@ export class FieldGroupComponent extends React.Component<CombinedProps> {
   }
 }
 
-export function withFieldGroupContext(Component: React.ComponentType<*>) {
+export function withFieldGroupContext(Component: React.ComponentType<CombinedProps>) {
   return ({ children, ...otherProps }: Props) => (
     <FormContext.Consumer>
       {formProps => (

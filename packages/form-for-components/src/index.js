@@ -1,6 +1,6 @@
 // @flow
 
-import { Field } from 'form-for';
+import { connectField } from 'form-for';
 
 import Checkbox from './Checkbox';
 import Input from './Input';
@@ -33,28 +33,11 @@ const inputTypes = [
 ];
 
 function connectFields() {
-  Field.connect(
-    'checkbox',
-    Checkbox
-  );
-  Field.connect(
-    'radio',
-    Radio
-  );
-  Field.connect(
-    'select',
-    Select
-  );
-  Field.connect(
-    'textarea',
-    TextArea
-  );
-  inputTypes.forEach(type =>
-    Field.connect(
-      type,
-      Input
-    )
-  );
+  connectField('checkbox', Checkbox);
+  connectField('radio', Radio);
+  connectField('select', Select);
+  connectField('textarea', TextArea);
+  inputTypes.forEach(type => connectField(type, Input));
 }
 
 export { connectFields, inputTypes, Checkbox, Input, Radio, TextArea, Select };

@@ -12,7 +12,7 @@ import type { Schema } from '../types';
 export type Props = {
   for?: Object,
   schema?: Schema,
-  children: Node,
+  children: React.Node,
   onInvalidSubmit?: (errors: Object) => any,
   onSubmit?: (event: SyntheticEvent<HTMLFormElement>, data: Object) => any,
   onChange?: (data: Object) => any

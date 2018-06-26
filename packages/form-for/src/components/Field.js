@@ -282,7 +282,7 @@ export class FieldComponent extends React.Component<CombinedProps> {
   }
 }
 
-export function withFieldContext(Component: React.ComponentType<*>) {
+export function withFieldContext(Component: React.ComponentType<CombinedProps>) {
   return (props: Props) => (
     <FormContext.Consumer>
       {({ onFormValidate }) => (
