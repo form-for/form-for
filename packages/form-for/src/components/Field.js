@@ -1,6 +1,6 @@
 // @flow
 
-import React, { Component, type ComponentType, type ElementRef } from 'react';
+import * as React from 'react';
 
 import type { SchemaProperty } from '../types';
 import prefixer from '../helpers/prefixer';
@@ -29,7 +29,7 @@ type CombinedProps = Props & {
 
 const SUCCESS_ASYNC_VALIDATION = '__success_async__';
 
-export class Field extends Component<CombinedProps> {
+export class FieldComponent extends React.Component<CombinedProps> {
   target: Object;
   touched: ?boolean;
   incomingError: ?string;
@@ -42,7 +42,7 @@ export class Field extends Component<CombinedProps> {
    * Component binding
    */
 
-  static connectedComponents: { [_: string]: ComponentType<*> } = {};
+  static connectedComponents: { [_: string]: React.ComponentType<*> } = {};
 
   /*
    * Getters
@@ -71,8 +71,8 @@ export class Field extends Component<CombinedProps> {
     return prefixer(contextPrefix, name);
   }
 
-  getComponent(): ComponentType<*> {
-    return Field.connectedComponents[this.getType()] || this.throwMissingTypeConnection();
+  getComponent(): React.ComponentType<*> {
+    return FieldComponent.connectedComponents[this.getType()] || this.throwMissingTypeConnection();
   }
 
   getValue(incomingValue?: any) {
@@ -103,7 +103,7 @@ export class Field extends Component<CombinedProps> {
       .then(error => handlePromiseResolve(error || SUCCESS_ASYNC_VALIDATION))
       .catch(error => handlePromiseResolve(error.message));
 
-    return Field.validatingErrorMessage;
+    return FieldComponent.validatingErrorMessage;
   }
 
   runErrorMemoizeObject(response: Object): MemoizableResult {
@@ -254,7 +254,7 @@ export class Field extends Component<CombinedProps> {
           name: this.getPrefixedName(),
           value: this.getObjectValue() || '',
           error,
-          validating: this.validatingPromise ? this.validatingPromise : undefined,
+          validating: this.validatingPromise ? true : undefined,
           touched: this.touched || submitted,
           onMount: this.handleMount,
           onFocus: this.handleFocus,
@@ -282,22 +282,26 @@ export class Field extends Component<CombinedProps> {
   }
 }
 
-export default (props: Props) => (
-  <FormContext.Consumer>
-    {({ onFormValidate }) => (
-      <FieldGroupContext.Consumer>
-        {fieldGroupProps => (
-          <SubmittedContext.Consumer>
-            {submitted => (
-              <Field onFormValidate={onFormValidate} {...fieldGroupProps} {...props} submitted={submitted} />
-            )}
-          </SubmittedContext.Consumer>
-        )}
-      </FieldGroupContext.Consumer>
-    )}
-  </FormContext.Consumer>
-);
+export function withFieldContext(Component: React.ComponentType<*>) {
+  return (props: Props) => (
+    <FormContext.Consumer>
+      {({ onFormValidate }) => (
+        <FieldGroupContext.Consumer>
+          {fieldGroupProps => (
+            <SubmittedContext.Consumer>
+              {submitted => (
+                <FieldComponent onFormValidate={onFormValidate} {...fieldGroupProps} {...props} submitted={submitted} />
+              )}
+            </SubmittedContext.Consumer>
+          )}
+        </FieldGroupContext.Consumer>
+      )}
+    </FormContext.Consumer>
+  );
+}
 
-export function connectField(type: string, component: ComponentType<*>): void {
-  Field.connectedComponents[type] = component;
+export default withFieldContext(FieldComponent);
+
+export function connectField(type: string, component: React.ComponentType<*>): void {
+  FieldComponent.connectedComponents[type] = component;
 }

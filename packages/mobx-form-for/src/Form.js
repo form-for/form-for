@@ -9,9 +9,6 @@ import FieldGroup from './FieldGroup';
 
 class Form extends BaseForm {
   static fieldGroupComponent = FieldGroup;
-
-  // static Errors = observer(BaseForm.Errors);
-  // static Submit = observer(BaseForm.Submit);
 }
 
 export default observer(Form);

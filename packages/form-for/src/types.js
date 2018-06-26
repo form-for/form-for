@@ -7,7 +7,7 @@ export type ComponentProps = {
   name: string,
   type?: string,
   error?: string,
-  validating?: string,
+  validating?: boolean,
   touched: boolean,
   value: any,
   onMount: Function,

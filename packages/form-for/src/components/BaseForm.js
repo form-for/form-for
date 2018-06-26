@@ -1,6 +1,6 @@
 // @flow
 
-import React, { Component, createElement } from 'react';
+import * as React from 'react';
 import type { Node, ComponentType, ElementRef } from 'react';
 
 import FieldGroup from './FieldGroup';
@@ -23,7 +23,7 @@ type State = {
   submitting: boolean
 };
 
-export default class BaseForm extends Component<Props, State> {
+export default class BaseForm extends React.Component<Props, State> {
   static formComponent: ComponentType<*> | string = 'form';
   static formComponentProps = { noValidate: true };
   static fieldGroupComponent: ComponentType<*> = FieldGroup;
@@ -54,7 +54,7 @@ export default class BaseForm extends Component<Props, State> {
 
     if (!object) return children;
 
-    return createElement(this.constructor.fieldGroupComponent, {
+    return React.createElement(this.constructor.fieldGroupComponent, {
       for: this.getData(),
       schema,
       children

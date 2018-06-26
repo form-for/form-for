@@ -1,14 +1,14 @@
 // @flow
 
-import { Field } from '../components/Field';
+import { FieldComponent } from '../components/Field';
 import isPromise from './isPromise';
 
 export type MemoizableResult = ?string | Promise<?string>;
 
-let storedValues: { [object: Field]: any } = {};
-let storedResults: { [object: Field]: MemoizableResult } = {};
+let storedValues: { [object: FieldComponent]: any } = {};
+let storedResults: { [object: FieldComponent]: MemoizableResult } = {};
 
-export function memoizeCompare(field: Field, fn?: Function): boolean {
+export function memoizeCompare(field: FieldComponent, fn?: Function): boolean {
   const stored = storedValues[field];
   if (fn) return fn();
 
@@ -19,12 +19,12 @@ export function memoizeCompare(field: Field, fn?: Function): boolean {
   return true;
 }
 
-export function clearMemoize(field: Field) {
+export function clearMemoize(field: FieldComponent) {
   delete storedValues[field];
   delete storedResults[field];
 }
 
-export default function memoize(field: Field, callback: () => Promise<?string>): MemoizableResult {
+export default function memoize(field: FieldComponent, callback: () => Promise<?string>): MemoizableResult {
   if (!memoizeCompare(field)) return storedResults[field];
 
   const promise = callback();

@@ -1,6 +1,6 @@
 // @flow
 
-import React, { Component, type Node } from 'react';
+import * as React from 'react';
 import type { Schema } from '../types';
 import cloneObject from '../helpers/cloneObject';
 import prefixer from '../helpers/prefixer';
@@ -19,12 +19,12 @@ export type Props = {
 
 type CombinedProps = Props & {
   onFormChange: Function,
-  onFieldGroupChange?: Function,
+  onFieldGroupChange: Function,
   name?: string,
   contextPrefix?: string
 };
 
-export class FieldGroup extends Component<CombinedProps> {
+export class FieldGroupComponent extends React.Component<CombinedProps> {
   errors: Object = {};
 
   /*
@@ -119,20 +119,24 @@ export class FieldGroup extends Component<CombinedProps> {
   }
 }
 
-export default ({ children, ...otherProps }: Props) => (
-  <FormContext.Consumer>
-    {formProps => (
-      <FieldGroupContext.Consumer>
-        {({ onFieldGroupChange }) => (
-          <FieldContext.Consumer>
-            {fieldProps => (
-              <FieldGroup {...formProps} {...fieldProps} {...otherProps} onFieldGroupChange={onFieldGroupChange}>
-                {children}
-              </FieldGroup>
-            )}
-          </FieldContext.Consumer>
-        )}
-      </FieldGroupContext.Consumer>
-    )}
-  </FormContext.Consumer>
-);
+export function withFieldGroupContext(Component: React.ComponentType<*>) {
+  return ({ children, ...otherProps }: Props) => (
+    <FormContext.Consumer>
+      {formProps => (
+        <FieldGroupContext.Consumer>
+          {({ onFieldGroupChange }) => (
+            <FieldContext.Consumer>
+              {fieldProps => (
+                <Component {...formProps} {...fieldProps} {...otherProps} onFieldGroupChange={onFieldGroupChange}>
+                  {children}
+                </Component>
+              )}
+            </FieldContext.Consumer>
+          )}
+        </FieldGroupContext.Consumer>
+      )}
+    </FormContext.Consumer>
+  );
+}
+
+export default withFieldGroupContext(FieldGroupComponent);

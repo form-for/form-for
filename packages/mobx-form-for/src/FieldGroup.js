@@ -2,9 +2,9 @@
 
 import { action } from 'mobx';
 import { observer } from 'mobx-react';
-import { FieldGroup as BaseFieldGroup } from 'form-for';
+import { withFieldGroupContext, FieldGroupComponent } from 'form-for';
 
-class FieldGroup extends BaseFieldGroup {
+class FieldGroup extends FieldGroupComponent {
   getMutatedObject(name: string, value: any): Object {
     if (this.props.for[name] !== value) {
       const mutator = () => (this.props.for[name] = value);
@@ -19,4 +19,4 @@ class FieldGroup extends BaseFieldGroup {
   }
 }
 
-export default observer(FieldGroup);
+export default withFieldGroupContext(observer(FieldGroup));
