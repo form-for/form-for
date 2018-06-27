@@ -20,7 +20,7 @@ export type Props = {
   schema?: Schema,
   children: React.Node,
   onInvalidSubmit?: (errors: Object) => any,
-  onSubmit?: (event: SyntheticEvent<HTMLFormElement>, data: Object) => any,
+  onSubmit?: (event: ?any, data: Object) => any,
   onChange?: (data: Object) => any
 };
 
@@ -102,11 +102,13 @@ export default class BaseForm extends React.Component<Props, State> {
   onInvalidSubmit(event: ?any) {
     const isDOMEvent = event && event.target;
     if (event && isDOMEvent) this.onDOMInvalidSubmit(event);
+
+    this.setState({ submitted: true });
   }
 
-  onDOMInvalidSubmit(event: SyntheticEvent<HTMLFormElement>) {
+  onDOMInvalidSubmit(event: any) {
     event.preventDefault();
-    if (event.currentTarget.reportValidity) event.currentTarget.reportValidity();
+    if (event.target.reportValidity) event.target.reportValidity();
   }
 
   /*
