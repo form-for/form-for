@@ -7,7 +7,7 @@ import prefixer from '../helpers/prefixer';
 import mutateObject from '../helpers/mutateObject';
 import { FieldGroupContext } from '../contexts';
 import { FieldContext } from '../contexts';
-import { FormContext } from '../contexts';
+import { FormChangeContext } from '../contexts';
 
 export type Props = {
   for: Object,
@@ -124,13 +124,18 @@ export class FieldGroupComponent extends React.Component<CombinedProps> {
 
 export function withFieldGroupContext(Component: React.ComponentType<CombinedProps>) {
   return ({ children, ...otherProps }: Props) => (
-    <FormContext.Consumer>
-      {formProps => (
+    <FormChangeContext.Consumer>
+      {onFormChange => (
         <FieldGroupContext.Consumer>
           {({ onFieldGroupChange }) => (
             <FieldContext.Consumer>
               {fieldProps => (
-                <Component {...formProps} {...fieldProps} {...otherProps} onFieldGroupChange={onFieldGroupChange}>
+                <Component
+                  {...fieldProps}
+                  {...otherProps}
+                  onFormChange={onFormChange}
+                  onFieldGroupChange={onFieldGroupChange}
+                >
                   {children}
                 </Component>
               )}
@@ -138,7 +143,7 @@ export function withFieldGroupContext(Component: React.ComponentType<CombinedPro
           )}
         </FieldGroupContext.Consumer>
       )}
-    </FormContext.Consumer>
+    </FormChangeContext.Consumer>
   );
 }
 

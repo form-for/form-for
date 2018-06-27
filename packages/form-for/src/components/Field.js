@@ -8,7 +8,7 @@ import isPromise from '../helpers/isPromise';
 import debounce from '../helpers/debounce';
 import isMemoizeObject from '../helpers/isMemoizeObject';
 import memoize, { clearMemoize, type MemoizableResult } from '../helpers/memoize';
-import { SubmittedContext, FormContext, FieldGroupContext, FieldContext } from '../contexts';
+import { ValidateContext, FormSubmittedContext, FieldGroupContext, FieldContext } from '../contexts';
 
 export type Props = {
   name: string,
@@ -23,20 +23,21 @@ type CombinedProps = Props & {
   schema: Object,
   contextPrefix: string,
   onFieldGroupChange: Function,
-  onFormValidate: Function,
+  onValidate: Function,
   submitted: boolean
 };
 
 const SUCCESS_ASYNC_VALIDATION = '__success_async__';
 
 export class FieldComponent extends React.Component<CombinedProps> {
+  static validatingErrorMessage = 'Validating';
+
   target: Object;
   touched: ?boolean;
   incomingError: ?string;
 
   asyncError: ?string;
   validatingPromise: ?Promise<?string>;
-  static validatingErrorMessage = 'Validating';
 
   /*
    * Component binding
@@ -127,7 +128,7 @@ export class FieldComponent extends React.Component<CombinedProps> {
     if (typeof error === 'string') error = this.props.object[error];
     if (typeof error === 'function') error = this.runErrorFunction(error);
     if (isMemoizeObject(error)) error = this.runErrorMemoizeObject(error);
-    if (isPromise(error)) this.runErrorPromise(error);
+    if (isPromise(error)) error = this.runErrorPromise(error);
 
     return error;
   }
@@ -169,7 +170,7 @@ export class FieldComponent extends React.Component<CombinedProps> {
    * Dispatchers
    */
   dispatchValidation(error: ?string) {
-    this.props.onFormValidate(this.getPrefixedName(), error);
+    this.props.onValidate(this.getPrefixedName(), error);
   }
 
   /*
@@ -209,6 +210,8 @@ export class FieldComponent extends React.Component<CombinedProps> {
 
   handleMount = (target: Object) => {
     this.target = target;
+
+    // Force update to fetch and display new error
     this.forceUpdate();
   };
 
@@ -244,7 +247,7 @@ export class FieldComponent extends React.Component<CombinedProps> {
     delete otherProps.schema;
     delete otherProps.contextPrefix;
     delete otherProps.onFieldGroupChange;
-    delete otherProps.onFormValidate;
+    delete otherProps.onValidate;
 
     return (
       <FieldContext.Provider value={{ name }}>
@@ -284,19 +287,19 @@ export class FieldComponent extends React.Component<CombinedProps> {
 
 export function withFieldContext(Component: React.ComponentType<CombinedProps>) {
   return (props: Props) => (
-    <FormContext.Consumer>
-      {({ onFormValidate }) => (
+    <ValidateContext.Consumer>
+      {onValidate => (
         <FieldGroupContext.Consumer>
           {fieldGroupProps => (
-            <SubmittedContext.Consumer>
+            <FormSubmittedContext.Consumer>
               {submitted => (
-                <FieldComponent onFormValidate={onFormValidate} {...fieldGroupProps} {...props} submitted={submitted} />
+                <FieldComponent onValidate={onValidate} {...fieldGroupProps} {...props} submitted={submitted} />
               )}
-            </SubmittedContext.Consumer>
+            </FormSubmittedContext.Consumer>
           )}
         </FieldGroupContext.Consumer>
       )}
-    </FormContext.Consumer>
+    </ValidateContext.Consumer>
   );
 }
 

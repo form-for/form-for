@@ -2,10 +2,17 @@
 
 import * as React from 'react';
 
+import Validate from './Validate';
 import FieldGroup from './FieldGroup';
 import isPromise from '../helpers/isPromise';
 
-import { ErrorsContext, ValidContext, SubmittedContext, SubmittingContext, FormContext } from '../contexts';
+import {
+  FormErrorsContext,
+  FormValidContext,
+  FormSubmittedContext,
+  FormSubmittingContext,
+  FormChangeContext
+} from '../contexts';
 import type { Schema } from '../types';
 
 export type Props = {
@@ -27,23 +34,18 @@ export default class BaseForm extends React.Component<Props, State> {
   static formComponentProps = { noValidate: true };
   static fieldGroupComponent: React.ComponentType<*> = FieldGroup;
 
-  static Errors = ErrorsContext.Consumer;
-  static Valid = ValidContext.Consumer;
-  static Submitted = SubmittedContext.Consumer;
-  static Submitting = SubmittingContext.Consumer;
+  static Errors = FormErrorsContext.Consumer;
+  static Valid = FormValidContext.Consumer;
+  static Submitted = FormSubmittedContext.Consumer;
+  static Submitting = FormSubmittingContext.Consumer;
 
   formRef: React.ElementRef<*> = React.createRef();
-  errors: Object = {};
-  hasNewErrors: boolean;
+  valid: boolean = true;
 
   state = {
     submitted: false,
     submitting: false
   };
-
-  isInvalid(): boolean {
-    return Object.keys(this.errors).length > 0;
-  }
 
   getData(): Object {
     return this.props.for || {};
@@ -90,11 +92,11 @@ export default class BaseForm extends React.Component<Props, State> {
   }
 
   onAsyncSubmitStart() {
-    this.setState({ submitted: true, submitting: true });
+    this.setState({ submitting: true });
   }
 
   onAsyncSubmitFinish = () => {
-    this.setState({ submitting: false });
+    this.setState({ submitted: true, submitting: false });
   };
 
   onInvalidSubmit(event: ?any) {
@@ -118,17 +120,12 @@ export default class BaseForm extends React.Component<Props, State> {
     if (onChange) onChange(this.getData());
   };
 
-  handleValidate = (name: string, error: ?string) => {
-    const currentError = this.errors[name];
-    if (currentError !== error) this.hasNewErrors = true;
-
-    this.errors = { ...this.errors };
-    if (error) this.errors[name] = error;
-    else delete this.errors[name];
+  handleValidate = (errors: Object) => {
+    this.valid = Object.keys(errors).length === 0;
   };
 
   handleSubmit = (event?: any) => {
-    if (this.isInvalid()) {
+    if (!this.valid) {
       this.onInvalidSubmit(event);
       return;
     }
@@ -147,16 +144,7 @@ export default class BaseForm extends React.Component<Props, State> {
    * Lifecycle
    */
 
-  componentDidMount() {
-    if (this.hasNewErrors) this.forceUpdate();
-  }
-
-  componentDidUpdate() {
-    if (this.hasNewErrors) this.forceUpdate();
-  }
-
   render(): React.Node {
-    this.hasNewErrors = false;
     const { submitted, submitting } = this.state;
 
     const C = this.constructor.formComponent;
@@ -164,15 +152,19 @@ export default class BaseForm extends React.Component<Props, State> {
 
     return (
       <C {...CProps} {...this.getFormProps()} ref={this.formRef} onSubmit={this.handleSubmit}>
-        <FormContext.Provider value={{ onFormChange: this.handleChange, onFormValidate: this.handleValidate }}>
-          <SubmittedContext.Provider value={submitted}>
-            <SubmittingContext.Provider value={submitting}>
-              <ValidContext.Provider value={!this.isInvalid()}>
-                <ErrorsContext.Provider value={this.errors}>{this.getChildren()}</ErrorsContext.Provider>
-              </ValidContext.Provider>
-            </SubmittingContext.Provider>
-          </SubmittedContext.Provider>
-        </FormContext.Provider>
+        <FormChangeContext.Provider value={this.handleChange}>
+          <FormSubmittedContext.Provider value={submitted}>
+            <FormSubmittingContext.Provider value={submitting}>
+              <Validate
+                onValidate={this.handleValidate}
+                errorsContext={FormErrorsContext}
+                validContext={FormValidContext}
+              >
+                {this.getChildren()}
+              </Validate>
+            </FormSubmittingContext.Provider>
+          </FormSubmittedContext.Provider>
+        </FormChangeContext.Provider>
       </C>
     );
   }

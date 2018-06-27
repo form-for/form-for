@@ -11,16 +11,6 @@ export type { Props as FieldProps } from './components/Field';
 import FieldGroup, { FieldGroupComponent, withFieldGroupContext } from './components/FieldGroup';
 export type { Props as FieldGroupProps } from './components/FieldGroup';
 
-import {
-  ErrorsContext,
-  ValidContext,
-  SubmittedContext,
-  SubmittingContext,
-  FormContext,
-  FieldGroupContext,
-  FieldContext
-} from './contexts';
-
 export type { SchemaProperty, Schema, ComponentProps } from './types';
 
 import fieldDecorator from './decorators/fieldDecorator';
@@ -42,13 +32,6 @@ export {
   FieldGroup,
   FieldGroupComponent,
   withFieldGroupContext,
-  ErrorsContext,
-  ValidContext,
-  SubmittedContext,
-  SubmittingContext,
-  FormContext,
-  FieldGroupContext,
-  FieldContext,
   fieldDecorator as field,
   cloneObject,
   debounce,
