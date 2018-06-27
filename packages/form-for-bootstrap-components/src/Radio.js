@@ -16,6 +16,12 @@ export type Props = {
 } & RadioProps;
 
 export default class Radio extends React.PureComponent<Props> {
+  input: ?HTMLInputElement;
+
+  componentDidMount() {
+    this.props.onMount(this.input);
+  }
+
   render() {
     const humanizedName = humanized(this);
     const helpProps = help(this);
@@ -53,7 +59,7 @@ export default class Radio extends React.PureComponent<Props> {
 
     return (
       <div key={props.value} className="custom-control custom-radio">
-        <input id={id} {...props} />
+        <input ref={el => (this.input = el)} id={id} {...props} />
         <label className="custom-control-label" htmlFor={id}>
           {label}
         </label>

@@ -35,7 +35,7 @@ export default class Radio extends React.PureComponent<Props> {
 
     return (
       <span key={value}>
-        <input {...inputProps} /> {label}
+        <input ref={el => (this.input = el)} {...inputProps} /> {label}
       </span>
     );
   }
