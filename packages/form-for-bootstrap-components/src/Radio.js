@@ -48,7 +48,8 @@ export default class Radio extends React.PureComponent<Props> {
         <Help id={helpProps.id} text={helpProps.text} />
 
         {/* Workaround for Bootstrap 4 issue - https://github.com/twbs/bootstrap/issues/24624 */}
-        <div aria-hidden="true" className="form-control is-invalid" style={{ display: 'none' }} />
+        {props.touched &&
+          props.error && <div aria-hidden="true" className="form-control is-invalid" style={{ display: 'none' }} />}
         <Feedback text={props.error} />
       </div>
     );
