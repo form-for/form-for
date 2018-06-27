@@ -5,6 +5,7 @@ import type { ComponentProps } from 'form-for';
 import { Checkbox as BaseCheckbox } from 'form-for-components';
 import { help, humanized, uniqueId } from 'form-for-component-helpers';
 import Help from './Help';
+import Feedback from './Feedback';
 
 export type Props = ComponentProps & {
   className?: string,
@@ -39,6 +40,7 @@ export default class Checkbox extends React.PureComponent<Props> {
         </label>
 
         <Help id={helpProps.id} text={helpProps.text} />
+        <Feedback text={props.error} />
       </div>
     );
   }

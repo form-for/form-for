@@ -28,21 +28,21 @@ const user = new User();
 
 Just wanna play with it? Check out the demo
 
-* [Live](https://form-for.pedrosm.com)
-* [Codesandbox Demo](https://codesandbox.io/s/github/form-for/demo)
-* [Repository](https://github.com/form-for/demo)
+- [Live](https://form-for.pedrosm.com)
+- [Codesandbox Demo](https://codesandbox.io/s/github/form-for/demo)
+- [Repository](https://github.com/form-for/demo)
 
 ## Key Features
 
-* Convention over configuration - it _just works_ for most cases
-* Seemless integration between custom and HTML 5 Validation
-  * Custom validations are set using `setCustomValidity` for better browser integration
-  * HTML 5 validation errors are provided to the component to be displayed and have better **accessibility** and UX
-* Built-in support for nested fields
-  * Often used for array fields
-* Validation among fields
-  * Often used for validations like `password confirmation`
-* Optimized rerenders with [MobX](https://github.com/mobxjs/mobx)
+- Convention over configuration - it _just works_ for most cases
+- Seemless integration between custom and HTML 5 Validation
+  - Custom validations are set using `setCustomValidity` for better browser integration
+  - HTML 5 validation errors are provided to the component to be displayed and have better **accessibility** and UX
+- Built-in support for nested fields
+  - Often used for array fields
+- Validation among fields
+  - Often used for validations like `password confirmation`
+- Optimized rerenders with [MobX](https://github.com/mobxjs/mobx)
 
 ## Install
 
@@ -56,8 +56,8 @@ or https://unpkg.com/form-for/umd
 
 ### Plug 'n play state management
 
-* React setState **(the default one)**
-* [MobX Binding](https://github.com/form-for/form-for/tree/master/packages/mobx-form-for) - [Demo](https://github.com/form-for/demo)
+- React setState **(the default one)**
+- [MobX Binding](https://github.com/form-for/form-for/tree/master/packages/mobx-form-for) - [Demo](https://github.com/form-for/demo)
 
 **Why there is no Redux binding?**
 
@@ -65,8 +65,8 @@ or https://unpkg.com/form-for/umd
 
 ### Plug 'n play components
 
-* [Base components](https://github.com/form-for/form-for/tree/master/packages/form-for-bootstrap-components)
-* [Bootstrap 4 components](https://github.com/form-for/form-for/tree/master/packages/form-for-bootstrap-components)
+- [Base components](https://github.com/form-for/form-for/tree/master/packages/form-for-bootstrap-components)
+- [Bootstrap 4 components](https://github.com/form-for/form-for/tree/master/packages/form-for-bootstrap-components)
 
 ## Schema
 
@@ -231,25 +231,9 @@ this.state = { nameError: 'invalid name' };
 <Field name="name" error={this.state.nameError}>
 ```
 
-### Skip validation
-
-If for some reason you need to skip validations, just use the `noValidate` prop.
-
-```js
-<Form noValidate>...</Form>
-```
-
 ## Touched
 
 The `touched` property provided to a field component means that a field has been focused at least once. This is used to display error messages only after the user has gotten to an input.
-
-### Touched on Mount
-
-There may be cases when you want to display the errors from the beginning, even before the user touches a field. For that, you can use `touchOnMount` on `<Form>`;
-
-```js
-<Form touchOnMount>...</Form>
-```
 
 ## Creating components
 
@@ -300,8 +284,8 @@ export default class Input extends React.PureComponent<ComponentProps> {
 }
 ```
 
-* Check out [form-for-components](form-for-components) for handy base components.
-* Check out [form-for-bootstrap-components](https://github.com/form-for/form-for/tree/master/packages/form-for-bootstrap-components) for ready to go Bootstrap 4 components.
+- Check out [form-for-components](form-for-components) for handy base components.
+- Check out [form-for-bootstrap-components](https://github.com/form-for/form-for/tree/master/packages/form-for-bootstrap-components) for ready to go Bootstrap 4 components.
 
 ### Validation Events
 
@@ -309,14 +293,14 @@ These events must be psased down to the field, so form-for can properly handle t
 
 For all the events, if value and error are not provided they are guessed from the `event.target`
 
-* `onMount(target: ?HTMLElement)`
+- `onMount(target: ?HTMLElement)`
 
 This event is used to `setCustomValidity`, prevent the form from being submitted with pending custom validations and
 allowing to focus on the field with error.
 
-* `onFocus(event: Event)`
+- `onFocus(event: Event)`
 
-* `onChange(event: Event, value?: any, error?: any)`
+- `onChange(event: Event, value?: any, error?: any)`
 
 If you're building a fancy component, such as a image cropper, you may need to provide the actual `value` and `error`,
 unless these can be guessed from `event.target`.
@@ -342,26 +326,26 @@ All form-for packages are built with flow and provides support from the get go. 
 
 To use the flow typings shipped with form-for packages:
 
-* In `.flowconfig`, you cannot ignore `node_modules`.
-* In `.flowconfig`, you cannot import it explicitly in the `[libs]` section.
-* You **do not** need to install library definition using flow-typed.
+- In `.flowconfig`, you cannot ignore `node_modules`.
+- In `.flowconfig`, you cannot import it explicitly in the `[libs]` section.
+- You **do not** need to install library definition using flow-typed.
 
 ## Roadmap
 
-* Typescript typings
-* [mobx-state-tree](https://github.com/mobxjs/mobx-state-tree) binding
+- Typescript typings
+- [mobx-state-tree](https://github.com/mobxjs/mobx-state-tree) binding
 
-* In depth blog post about form-for
-* More examples
-  * Pure react
-  * Redux
-  * Async validation
-  * Calculation
-* Egghead.io course
+- In depth blog post about form-for
+- More examples
+  - Pure react
+  - Redux
+  - Async validation
+  - Calculation
+- Egghead.io course
 
 ## Resources
 
-* [Contributing Guide](./CONTRIBUTING.md)
-* [Code of Conduct](./CODE_OF_CONDUCT.md)
+- [Contributing Guide](./CONTRIBUTING.md)
+- [Code of Conduct](./CODE_OF_CONDUCT.md)
 
-* The logo was created by Xicons.co and can be found [here](https://www.iconfinder.com/icons/2024631/document_documents_file_files_text_texts_icon).
+- The logo was created by Xicons.co and can be found [here](https://www.iconfinder.com/icons/2024631/document_documents_file_files_text_texts_icon).

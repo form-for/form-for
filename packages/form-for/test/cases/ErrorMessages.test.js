@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from 'enzyme';
-import { Field, Form } from '../../src';
+import { Field, Form, connectField } from '../../src';
 import Input from '../fixtures/Input';
 
 describe('Error messages', () => {
@@ -13,24 +13,38 @@ describe('Error messages', () => {
 
     expect(() =>
       render(
-        <Form for={{ schema: {} }}>
+        <Form for={{ schema: { name: 'text' } }}>
           <Field name="name" />
         </Form>
       )
     ).toThrow(message);
   });
 
-  it('warns on missing field in schema', () => {
-    console.warn = jest.fn();
-    Field.connect('text', Input);
+  describe('missing field warning', () => {
+    beforeEach(() => {
+      console.warn = jest.fn();
+      connectField('text', Input);
+    });
 
-    render(
-      <Form for={{ schema: {} }}>
-        <Field name="name" />
-      </Form>
-    );
+    it('warns on missing field in schema', () => {
+      render(
+        <Form for={{ schema: {} }}>
+          <Field name="name" />
+        </Form>
+      );
 
-    const message = `Undefined property "name" in schema for "Object" instance`;
-    expect(console.warn).toHaveBeenCalledWith(message);
+      const message = `Undefined property "name" in schema for "Object" instance`;
+      expect(console.warn).toHaveBeenCalledWith(message);
+    });
+
+    it('does not warn on missing field in schema if inline type is given', () => {
+      render(
+        <Form for={{ schema: {} }}>
+          <Field name="name" type="text" />
+        </Form>
+      );
+
+      expect(console.warn).not.toHaveBeenCalled();
+    });
   });
 });

@@ -1,18 +1,42 @@
 // @flow
 
-import BaseForm from './BaseForm';
-export type { Props as FormProps, SchemaProperty, Schema } from './BaseForm';
+import BaseForm from './components/BaseForm';
+export type { Props as FormProps } from './components/BaseForm';
 
-import Form from './Form';
+import Form from './components/Form';
 
-import Field from './Field';
-export type { ComponentProps, Props as FieldProps } from './Field';
+import Field, { FieldComponent, withFieldContext, connectField } from './components/Field';
+export type { Props as FieldProps } from './components/Field';
 
-import FieldGroup from './FieldGroup';
-export type { Props as FieldGroupProps } from './FieldGroup';
+import FieldGroup, { FieldGroupComponent, withFieldGroupContext } from './components/FieldGroup';
+export type { Props as FieldGroupProps } from './components/FieldGroup';
 
-import fieldDecorator from './fieldDecorator';
+export type { SchemaProperty, Schema, ComponentProps } from './types';
 
-import cloneObject from './cloneObject';
+import fieldDecorator from './decorators/fieldDecorator';
 
-export { BaseForm, Form, Field, FieldGroup, fieldDecorator as field, cloneObject };
+import cloneObject from './helpers/cloneObject';
+import debounce from './helpers/debounce';
+import isPromise from './helpers/isPromise';
+import memoize from './helpers/memoize';
+import mutateObject from './helpers/mutateObject';
+import prefixer from './helpers/prefixer';
+
+export {
+  BaseForm,
+  Form,
+  Field,
+  FieldComponent,
+  withFieldContext,
+  connectField,
+  FieldGroup,
+  FieldGroupComponent,
+  withFieldGroupContext,
+  fieldDecorator as field,
+  cloneObject,
+  debounce,
+  isPromise,
+  memoize,
+  mutateObject,
+  prefixer
+};

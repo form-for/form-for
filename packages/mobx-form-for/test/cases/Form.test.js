@@ -1,11 +1,11 @@
 import React from 'react';
 import { observable } from 'mobx';
 import { mount } from 'enzyme';
-import { Field, Form } from '../../src';
+import { Field, Form, connectField } from '../../src';
 import Input from '../fixtures/Input';
 
 describe('Form', () => {
-  Field.connect('text', Input);
+  connectField('text', Input);
 
   const object = observable({ name: 'John' });
   const schema = { name: { type: 'text' } };

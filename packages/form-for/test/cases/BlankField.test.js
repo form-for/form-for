@@ -1,10 +1,10 @@
 import React from 'react';
 import { mount } from 'enzyme';
-import { Field, Form } from '../../src';
+import { Form, Field, connectField } from '../../src';
 import Input from '../fixtures/Input';
 
 describe('Blank field', () => {
-  Field.connect('text', Input);
+  connectField('text', Input);
 
   const object = {
     schema: { name: { type: 'text' } }

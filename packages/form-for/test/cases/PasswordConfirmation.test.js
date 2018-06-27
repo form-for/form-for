@@ -1,10 +1,10 @@
 import React from 'react';
 import { mount } from 'enzyme';
-import { field, Field, Form } from '../../src';
+import { field, Field, Form, connectField } from '../../src';
 import Input from '../fixtures/Input';
 
 describe('Password Confirmation', () => {
-  Field.connect('text', Input);
+  connectField('text', Input);
 
   class User {
     @field password;

@@ -16,6 +16,12 @@ export type Props = {
 } & RadioProps;
 
 export default class Radio extends React.PureComponent<Props> {
+  input: ?HTMLInputElement;
+
+  componentDidMount() {
+    this.props.onMount(this.input);
+  }
+
   render() {
     const humanizedName = humanized(this);
     const helpProps = help(this);
@@ -42,7 +48,8 @@ export default class Radio extends React.PureComponent<Props> {
         <Help id={helpProps.id} text={helpProps.text} />
 
         {/* Workaround for Bootstrap 4 issue - https://github.com/twbs/bootstrap/issues/24624 */}
-        <div aria-hidden="true" className="form-control is-invalid" style={{ display: 'none' }} />
+        {props.touched &&
+          props.error && <div aria-hidden="true" className="form-control is-invalid" style={{ display: 'none' }} />}
         <Feedback text={props.error} />
       </div>
     );
@@ -53,7 +60,7 @@ export default class Radio extends React.PureComponent<Props> {
 
     return (
       <div key={props.value} className="custom-control custom-radio">
-        <input id={id} {...props} />
+        <input ref={el => (this.input = el)} id={id} {...props} />
         <label className="custom-control-label" htmlFor={id}>
           {label}
         </label>

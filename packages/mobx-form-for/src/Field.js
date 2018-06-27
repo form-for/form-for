@@ -1,6 +1,6 @@
 // @flow
 
 import { observer } from 'mobx-react';
-import { Field } from 'form-for';
+import { withFieldContext, FieldComponent } from 'form-for';
 
-export default observer(Field);
+export default withFieldContext(observer(FieldComponent));
