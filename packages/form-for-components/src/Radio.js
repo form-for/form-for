@@ -15,6 +15,7 @@ export default class Radio extends React.PureComponent<Props> {
     const { error, options, map, ...props } = this.props;
     delete props.onMount;
     delete props.touched;
+    delete props.validating;
 
     const checked = value === props.value;
     return { ...props, checked, 'aria-invalid': error, value, type: 'radio' };

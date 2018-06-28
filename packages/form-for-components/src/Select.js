@@ -21,6 +21,7 @@ export default class SelectInput extends React.PureComponent<Props> {
     delete props.onMount;
     delete props.touched;
     delete props.type;
+    delete props.validating;
 
     return (
       <select ref={el => (this.select = el)} aria-invalid={error} {...props}>

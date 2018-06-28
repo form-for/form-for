@@ -14,6 +14,7 @@ export default class Input extends React.PureComponent<ComponentProps> {
     const { error, ...props } = { ...this.props };
     delete props.onMount;
     delete props.touched;
+    delete props.validating;
 
     return <input ref={el => (this.input = el)} aria-invalid={!!error} {...props} />;
   }

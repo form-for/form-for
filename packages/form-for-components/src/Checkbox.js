@@ -14,6 +14,7 @@ export default class Checkbox extends React.PureComponent<ComponentProps> {
     const { error, value, ...props } = { ...this.props };
     delete props.onMount;
     delete props.touched;
+    delete props.validating;
 
     return <input ref={el => (this.input = el)} {...props} checked={!!value} aria-invalid={!!error} type="checkbox" />;
   }
