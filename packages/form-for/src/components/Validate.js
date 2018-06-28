@@ -61,7 +61,7 @@ export default class Validate extends React.Component<Props> {
   enforceRender() {
     setTimeout(() => {
       if (this.mounted) this.forceUpdate();
-    }, 1);
+    }, 0);
   }
 
   render() {

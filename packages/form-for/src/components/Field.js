@@ -108,15 +108,16 @@ export class FieldComponent extends React.Component<CombinedProps> {
     return FieldComponent.validatingErrorMessage;
   }
 
-  runErrorObjectHelper(response: Object): MemoizableResult {
+  runMemoizeObject(response: Object): MemoizableResult {
     if (!response.callback) throw new Error('Undefined `callback` in validation function object response');
 
+    const shouldMemoize = response.memoize !== false;
     if (response.debounce) {
-      if (response.memoize) return memoizeAndDebounce(this, response.callback, response.debounce);
+      if (shouldMemoize) return memoizeAndDebounce(this, response.callback, response.debounce);
       return debounce(this, response.callback, response.debounce);
     }
 
-    if (response.memoize) return memoize(this, response.callback);
+    if (shouldMemoize) return memoize(this, response.callback);
 
     throw new Error('Invalid validation object response - please set `debounce: timeoutMillis` or `memoize: true`');
   }
@@ -132,7 +133,7 @@ export class FieldComponent extends React.Component<CombinedProps> {
 
     if (typeof error === 'string') error = this.props.object[error];
     if (typeof error === 'function') error = this.runErrorFunction(error);
-    if (isMemoizeObject(error)) error = this.runErrorObjectHelper(error);
+    if (isMemoizeObject(error)) error = this.runMemoizeObject(error);
     if (isPromise(error)) error = this.runErrorPromise(error);
 
     return error;
