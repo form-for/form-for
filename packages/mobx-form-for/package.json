@@ -1,6 +1,7 @@
 {
   "name": "mobx-form-for",
   "description": "form-for state management with MobX ",
+  "version": "2.0.0-alpha",
   "keywords": [
     "react-component",
     "react",
@@ -12,7 +13,6 @@
     "mobx",
     "reactive"
   ],
-  "version": "1.0.2",
   "main": "cjs/index.js",
   "module": "es/index.js",
   "umd:main": "umd/index.min.js",
@@ -21,7 +21,7 @@
     "es"
   ],
   "peerDependencies": {
-    "form-for": "^1.1.0",
+    "form-for": "^2.0.0-alpha",
     "mobx": "^4.0.0, ^5.0.0",
     "mobx-react": "^5.0.0",
     "react": "^16.3.0"

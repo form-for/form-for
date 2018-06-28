@@ -1,7 +1,7 @@
 {
   "name": "form-for-bootstrap-components",
   "description": "Simple and accessible Bootstrap 4 form-for components",
-  "version": "1.0.5",
+  "version": "2.0.0-alpha",
   "keywords": [
     "react-component",
     "react",
@@ -21,12 +21,12 @@
     "es"
   ],
   "dependencies": {
-    "form-for-components": "^1.1.0",
-    "form-for-component-helpers": "^1.1.0"
+    "form-for-components": "^2.0.0-alpha",
+    "form-for-component-helpers": "^2.0.0-alpha"
   },
   "peerDependencies": {
     "react": "^16.3.0",
-    "form-for": "^1.1.0"
+    "form-for": "^2.0.0-alpha"
   },
   "license": "MIT",
   "homepage": "https://github.com/form-for/form-for",
