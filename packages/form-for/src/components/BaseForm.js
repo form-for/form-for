@@ -20,7 +20,7 @@ export type Props = {
   schema?: Schema,
   children: React.Node,
   onInvalidSubmit?: (errors: Object) => any,
-  onSubmit?: (event: ?any, data: Object) => any,
+  onSubmit?: (event: any, data: Object) => any,
   onChange?: (data: Object) => any
 };
 
