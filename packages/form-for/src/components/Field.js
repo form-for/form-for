@@ -23,14 +23,14 @@ type CombinedProps = Props & {
   schema: Object,
   contextPrefix: string,
   onFieldGroupChange: Function,
-  onValidate: Function,
-  submitted: boolean
+  onValidate: Function
 };
 
 const SUCCESS_ASYNC_VALIDATION = '__success_async__';
 
 export class FieldComponent extends React.Component<CombinedProps> {
   static validatingErrorMessage = 'Validating';
+  static formSubmittedContextComponent = FormSubmittedContext.Consumer;
 
   target: Object;
   touched: ?boolean;
@@ -107,11 +107,14 @@ export class FieldComponent extends React.Component<CombinedProps> {
     return FieldComponent.validatingErrorMessage;
   }
 
-  runErrorMemoizeObject(response: Object): MemoizableResult {
+  runErrorObjectHelper(response: Object): MemoizableResult {
     if (!response.callback) throw new Error('Undefined `callback` in validation function object response');
 
-    if (response.debounce) return debounce(this, response.callback, response.debounce);
-    if (response.memoize) return memoize(this, response.callback);
+    let callback;
+    if (response.debounce) callback = () => debounce(this, response.callback, response.debounce);
+    if (response.memoize) return memoize(this, callback || response.callback);
+
+    if (callback) return callback();
 
     throw new Error('Invalid validation object response - please set `debounce: timeoutMillis` or `memoize: true`');
   }
@@ -127,7 +130,7 @@ export class FieldComponent extends React.Component<CombinedProps> {
 
     if (typeof error === 'string') error = this.props.object[error];
     if (typeof error === 'function') error = this.runErrorFunction(error);
-    if (isMemoizeObject(error)) error = this.runErrorMemoizeObject(error);
+    if (isMemoizeObject(error)) error = this.runErrorObjectHelper(error);
     if (isPromise(error)) error = this.runErrorPromise(error);
 
     return error;
@@ -242,27 +245,32 @@ export class FieldComponent extends React.Component<CombinedProps> {
   render() {
     const error = this.validate();
 
-    const { name, submitted, ...otherProps } = this.props;
+    const { name, ...otherProps } = this.props;
     delete otherProps.object;
     delete otherProps.schema;
     delete otherProps.contextPrefix;
     delete otherProps.onFieldGroupChange;
     delete otherProps.onValidate;
 
+    const C = this.getComponent();
+    const CSubmitted = this.constructor.formSubmittedContextComponent;
+
+    const CProps = {
+      ...this.getSchemaProperty(),
+      ...otherProps,
+      name: this.getPrefixedName(),
+      value: this.getObjectValue() || '',
+      error,
+      validating: this.validatingPromise ? true : undefined,
+      touched: this.touched,
+      onMount: this.handleMount,
+      onFocus: this.handleFocus,
+      onChange: this.handleChange
+    };
+
     return (
       <FieldContext.Provider value={{ name }}>
-        {React.createElement(this.getComponent(), {
-          ...this.getSchemaProperty(),
-          ...otherProps,
-          name: this.getPrefixedName(),
-          value: this.getObjectValue() || '',
-          error,
-          validating: this.validatingPromise ? true : undefined,
-          touched: this.touched || submitted,
-          onMount: this.handleMount,
-          onFocus: this.handleFocus,
-          onChange: this.handleChange
-        })}
+        <CSubmitted>{submitted => <C {...CProps} touched={CProps.touched || submitted} />}</CSubmitted>
       </FieldContext.Provider>
     );
   }
@@ -290,13 +298,7 @@ export function withFieldContext(Component: React.ComponentType<CombinedProps>) 
     <ValidateContext.Consumer>
       {onValidate => (
         <FieldGroupContext.Consumer>
-          {fieldGroupProps => (
-            <FormSubmittedContext.Consumer>
-              {submitted => (
-                <FieldComponent onValidate={onValidate} {...fieldGroupProps} {...props} submitted={submitted} />
-              )}
-            </FormSubmittedContext.Consumer>
-          )}
+          {fieldGroupProps => <FieldComponent onValidate={onValidate} {...fieldGroupProps} {...props} />}
         </FieldGroupContext.Consumer>
       )}
     </ValidateContext.Consumer>

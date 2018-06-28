@@ -5,33 +5,25 @@ import isPromise from './isPromise';
 
 export type MemoizableResult = ?string | Promise<?string>;
 
-let storedValues: { [object: FieldComponent]: any } = {};
-let storedResults: { [object: FieldComponent]: MemoizableResult } = {};
-
-export function memoizeCompare(field: FieldComponent, fn?: Function): boolean {
-  const stored = storedValues[field];
-  if (fn) return fn();
-
-  const value = field.getObjectValue();
-  if (stored === value) return false;
-
-  storedValues[field] = value;
-  return true;
-}
+const storedValues: { [object: FieldComponent]: { [value: any]: any } } = {};
 
 export function clearMemoize(field: FieldComponent) {
   delete storedValues[field];
-  delete storedResults[field];
 }
 
 export default function memoize(field: FieldComponent, callback: () => Promise<?string>): MemoizableResult {
-  if (!memoizeCompare(field)) return storedResults[field];
+  if (!storedValues[field]) storedValues[field] = {};
+
+  const value = field.getObjectValue();
+  const stored = storedValues[field][value];
+
+  if (stored) return stored;
 
   const promise = callback();
-  storedResults[field] = promise;
+  storedValues[field][value] = promise;
 
-  const setValue = value => (storedResults[field] = value);
+  const setValue = value => (storedValues[field][value] = value);
   promise.then(setValue, setValue);
 
-  return storedResults[field];
+  return storedValues[field][value];
 }

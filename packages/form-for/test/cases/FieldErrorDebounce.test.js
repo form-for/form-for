@@ -17,7 +17,7 @@ describe('Field Error Debounce', () => {
     schema: { name: { type: 'text', error: 'validate' } }
   };
 
-  it('debounces and memoizes the validation', () => {
+  it('debounces the validation', () => {
     const callback = jest.fn().mockReturnValue(Promise.resolve());
     const validate = () => ({ debounce: 500, callback });
 
@@ -43,8 +43,7 @@ describe('Field Error Debounce', () => {
     jest.advanceTimersByTime(400);
     expect(callback).toHaveBeenCalledTimes(0);
 
-    changeValue('New value 2'); // Check if memoizing
-    jest.advanceTimersByTime(400);
+    jest.advanceTimersByTime(100);
     expect(callback).toHaveBeenCalledTimes(1);
   });
 

@@ -31,7 +31,11 @@ describe('Field Error Memoize', () => {
     expect(callback).toHaveBeenCalledTimes(1);
     changeValue('New value');
     expect(callback).toHaveBeenCalledTimes(2);
+    changeValue('John');
+    expect(callback).toHaveBeenCalledTimes(2);
     changeValue('New value');
     expect(callback).toHaveBeenCalledTimes(2);
+    changeValue('Another new value');
+    expect(callback).toHaveBeenCalledTimes(3);
   });
 });
