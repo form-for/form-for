@@ -5,9 +5,10 @@ import * as React from 'react';
 import type { SchemaProperty } from '../types';
 import prefixer from '../helpers/prefixer';
 import isPromise from '../helpers/isPromise';
-import debounce from '../helpers/debounce';
 import isMemoizeObject from '../helpers/isMemoizeObject';
+import debounce from '../helpers/debounce';
 import memoize, { clearMemoize, type MemoizableResult } from '../helpers/memoize';
+import memoizeAndDebounce from '../helpers/memoizeAndDebounce';
 import { ValidateContext, FormSubmittedContext, FieldGroupContext, FieldContext } from '../contexts';
 
 export type Props = {
@@ -110,11 +111,12 @@ export class FieldComponent extends React.Component<CombinedProps> {
   runErrorObjectHelper(response: Object): MemoizableResult {
     if (!response.callback) throw new Error('Undefined `callback` in validation function object response');
 
-    let callback;
-    if (response.debounce) callback = () => debounce(this, response.callback, response.debounce);
-    if (response.memoize) return memoize(this, callback || response.callback);
+    if (response.debounce) {
+      if (response.memoize) return memoizeAndDebounce(this, response.callback, response.debounce);
+      return debounce(this, response.callback, response.debounce);
+    }
 
-    if (callback) return callback();
+    if (response.memoize) return memoize(this, response.callback);
 
     throw new Error('Invalid validation object response - please set `debounce: timeoutMillis` or `memoize: true`');
   }

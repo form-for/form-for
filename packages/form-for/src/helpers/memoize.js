@@ -11,19 +11,30 @@ export function clearMemoize(field: FieldComponent) {
   delete storedValues[field];
 }
 
-export default function memoize(field: FieldComponent, callback: () => Promise<?string>): MemoizableResult {
+function getFieldObject(field: FieldComponent) {
   if (!storedValues[field]) storedValues[field] = {};
+  return storedValues[field];
+}
 
-  const value = field.getObjectValue();
-  const stored = storedValues[field][value];
+export function hasMemoizedValue(field: FieldComponent): ?any {
+  const fieldValue = field.getObjectValue();
+  return getFieldObject(field).hasOwnProperty(fieldValue);
+}
 
-  if (stored) return stored;
+export function memoizedValue(field: FieldComponent): ?any {
+  const fieldValue = field.getObjectValue();
+  return getFieldObject(field)[fieldValue];
+}
 
+export default function memoize(field: FieldComponent, callback: () => Promise<?any>): MemoizableResult {
+  if (hasMemoizedValue(field)) return memoizedValue(field);
+
+  const fieldValue = field.getObjectValue();
   const promise = callback();
-  storedValues[field][value] = promise;
+  storedValues[field][fieldValue] = promise;
 
-  const setValue = value => (storedValues[field][value] = value);
+  const setValue = value => (storedValues[field][fieldValue] = value);
   promise.then(setValue, setValue);
 
-  return storedValues[field][value];
+  return storedValues[field][fieldValue];
 }

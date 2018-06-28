@@ -6,7 +6,7 @@ import isPromise from './isPromise';
 const DEFAULT_DEBOUNCE_TIME_MS = 500;
 let timeoutIds: { [object: FieldComponent]: TimeoutID } = {};
 
-function debounce(field: FieldComponent, callback: () => Promise<*>, timeout?: number): Promise<?string> {
+function debounce(field: FieldComponent, callback: () => Promise<?any>, timeout?: number): Promise<?any> {
   if (timeoutIds[field]) clearTimeout(timeoutIds[field]);
   timeout = !debounce || timeout === true ? DEFAULT_DEBOUNCE_TIME_MS : timeout;
 
