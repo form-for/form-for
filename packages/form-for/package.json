@@ -1,6 +1,6 @@
 {
   "name": "form-for",
-  "description": "ReactJS forms made easy.",
+  "description": "ReactJS forms made easy",
   "version": "2.0.0-alpha",
   "keywords": [
     "react-component",
@@ -9,9 +9,7 @@
     "form",
     "forms",
     "simple-form",
-    "form-for",
-    "form-for-components",
-    "helpers"
+    "form-for"
   ],
   "main": "cjs/index.js",
   "module": "es/index.js",
