@@ -33,7 +33,10 @@ export default function memoize(field: FieldComponent, callback: () => Promise<?
   const promise = callback();
   storedValues[field][fieldValue] = promise;
 
-  const setValue = value => (storedValues[field][fieldValue] = value);
+  const setValue = value => {
+    // If the field has been removed storedValues[field] won't exist anymore
+    if (storedValues[field]) storedValues[field][fieldValue] = value;
+  };
   promise.then(setValue, setValue);
 
   return storedValues[field][fieldValue];

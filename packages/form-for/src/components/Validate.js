@@ -5,16 +5,30 @@ import { ValidateContext, type Context } from '../contexts';
 
 type Props = {
   children: React.Node,
-  onValidate: Function,
+  onValidate?: Function,
   errorsContext: Context<Object>,
   validContext: Context<boolean>
 };
 
-export default class Validate extends React.Component<Props> {
+type CombinedProps = Props & {
+  onParentValidate?: Function
+};
+
+class Validate extends React.Component<CombinedProps> {
   rendering: boolean = false;
   renderRequested: boolean = false;
   errors: Object = {};
   mounted: boolean = false;
+
+  dispatchValidate() {
+    const { onValidate } = this.props;
+    if (onValidate) onValidate(this.errors);
+  }
+
+  dispatchParentValidate(name: string, error: ?string) {
+    const { onParentValidate } = this.props;
+    if (onParentValidate) onParentValidate(name, error);
+  }
 
   handleValidate = (name: string, error: ?string) => {
     const { [name]: currentError, ...newErrors } = this.errors;
@@ -23,8 +37,9 @@ export default class Validate extends React.Component<Props> {
     this.errors = newErrors;
     if (error) this.errors[name] = error;
 
-    this.props.onValidate(this.errors);
+    this.dispatchValidate();
     this.requestRender();
+    this.dispatchParentValidate(name, error);
   };
 
   get valid(): boolean {
@@ -66,7 +81,6 @@ export default class Validate extends React.Component<Props> {
 
   render() {
     this.rendering = true;
-
     const { children, errorsContext, validContext } = this.props;
 
     const ErrorProvider = errorsContext.Provider;
@@ -81,3 +95,9 @@ export default class Validate extends React.Component<Props> {
     );
   }
 }
+
+export default (props: Props) => (
+  <ValidateContext.Consumer>
+    {onValidate => <Validate {...props} onParentValidate={onValidate} />}
+  </ValidateContext.Consumer>
+);

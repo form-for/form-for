@@ -7,6 +7,7 @@ import FieldGroup from './FieldGroup';
 import isPromise from '../helpers/isPromise';
 
 import {
+  FormDataContext,
   FormErrorsContext,
   FormValidContext,
   FormSubmittedContext,
@@ -26,7 +27,7 @@ export type Props = {
 
 type State = {
   submitted: boolean,
-  submitting: boolean
+  submitting: ?Promise<*>
 };
 
 export default class BaseForm extends React.Component<Props, State> {
@@ -34,6 +35,7 @@ export default class BaseForm extends React.Component<Props, State> {
   static formComponentProps = { noValidate: true };
   static fieldGroupComponent: React.ComponentType<*> = FieldGroup;
 
+  static Data = FormDataContext.Consumer;
   static Errors = FormErrorsContext.Consumer;
   static Valid = FormValidContext.Consumer;
   static Submitted = FormSubmittedContext.Consumer;
@@ -44,7 +46,7 @@ export default class BaseForm extends React.Component<Props, State> {
 
   state = {
     submitted: false,
-    submitting: false
+    submitting: null
   };
 
   getData(): Object {
@@ -87,16 +89,16 @@ export default class BaseForm extends React.Component<Props, State> {
     if (onSubmit) return onSubmit(event, this.getData());
   }
 
-  onSyncSubmit() {
+  onSyncSubmit(submitResponse: any) {
     this.setState({ submitted: true });
   }
 
-  onAsyncSubmitStart() {
-    this.setState({ submitting: true });
+  onAsyncSubmitStart(submitting: Promise<*>) {
+    this.setState({ submitting });
   }
 
   onAsyncSubmitFinish = () => {
-    this.setState({ submitted: true, submitting: false });
+    this.setState({ submitted: true, submitting: null });
   };
 
   onInvalidSubmit(event: ?any) {
@@ -135,7 +137,7 @@ export default class BaseForm extends React.Component<Props, State> {
     const response = this.onSubmit(event);
 
     if (isPromise(response)) {
-      this.onAsyncSubmitStart();
+      this.onAsyncSubmitStart(response);
       response.then(this.onAsyncSubmitFinish).catch(this.onAsyncSubmitFinish);
     } else {
       this.onSyncSubmit();
@@ -154,19 +156,21 @@ export default class BaseForm extends React.Component<Props, State> {
 
     return (
       <C {...CProps} {...this.getFormProps()} ref={this.formRef} onSubmit={this.handleSubmit}>
-        <FormChangeContext.Provider value={this.handleChange}>
-          <FormSubmittedContext.Provider value={submitted}>
-            <FormSubmittingContext.Provider value={submitting}>
-              <Validate
-                onValidate={this.handleValidate}
-                errorsContext={FormErrorsContext}
-                validContext={FormValidContext}
-              >
-                {this.getChildren()}
-              </Validate>
-            </FormSubmittingContext.Provider>
-          </FormSubmittedContext.Provider>
-        </FormChangeContext.Provider>
+        <FormDataContext.Provider value={this.getData()}>
+          <FormChangeContext.Provider value={this.handleChange}>
+            <FormSubmittedContext.Provider value={submitted}>
+              <FormSubmittingContext.Provider value={submitting}>
+                <Validate
+                  onValidate={this.handleValidate}
+                  errorsContext={FormErrorsContext}
+                  validContext={FormValidContext}
+                >
+                  {this.getChildren()}
+                </Validate>
+              </FormSubmittingContext.Provider>
+            </FormSubmittedContext.Provider>
+          </FormChangeContext.Provider>
+        </FormDataContext.Provider>
       </C>
     );
   }

@@ -2,29 +2,33 @@
 
 import * as React from 'react';
 
+import FieldGroup from './FieldGroup';
+
 import type { SchemaProperty } from '../types';
+import { ValidateContext, FormSubmittedContext, FieldGroupContext, FieldContext } from '../contexts';
+
 import prefixer from '../helpers/prefixer';
 import isPromise from '../helpers/isPromise';
 import isMemoizeObject from '../helpers/isMemoizeObject';
 import debounce from '../helpers/debounce';
 import memoize, { clearMemoize, type MemoizableResult } from '../helpers/memoize';
 import memoizeAndDebounce from '../helpers/memoizeAndDebounce';
-import { ValidateContext, FormSubmittedContext, FieldGroupContext, FieldContext } from '../contexts';
 
 export type Props = {
   name: string,
   type?: string,
   error?: string,
   onFocus?: Function,
-  onChange?: Function
+  onChange?: Function,
+  children?: React.Node
 };
 
 type CombinedProps = Props & {
-  object: Object,
-  schema: Object,
+  contextFor: Object,
+  contextSchema: Object,
   contextPrefix: string,
-  onFieldGroupChange: Function,
-  onValidate: Function
+  contextOnChange: Function,
+  contextOnValidate: Function
 };
 
 const SUCCESS_ASYNC_VALIDATION = '__success_async__';
@@ -32,6 +36,7 @@ const SUCCESS_ASYNC_VALIDATION = '__success_async__';
 export class FieldComponent extends React.Component<CombinedProps> {
   static validatingErrorMessage = 'Validating';
   static formSubmittedContextComponent = FormSubmittedContext.Consumer;
+  static fieldGroupComponent = FieldGroup;
 
   target: Object;
   touched: ?boolean;
@@ -50,15 +55,15 @@ export class FieldComponent extends React.Component<CombinedProps> {
    * Getters
    */
 
-  getObjectValue() {
-    const { name, object } = this.props;
-    return object[name];
+  getObjectValue(): ?any {
+    const { name, contextFor } = this.props;
+    return contextFor[name];
   }
 
   getSchemaProperty(): SchemaProperty {
-    const { name, schema, type } = this.props;
+    const { name, contextSchema, type } = this.props;
 
-    const property = schema[name];
+    const property = contextSchema[name];
     if (!property && !type) this.warnMissingSchemaProperty();
 
     return property || {};
@@ -123,15 +128,15 @@ export class FieldComponent extends React.Component<CombinedProps> {
   }
 
   runErrorFunction(callback: Function) {
-    const { name, object } = this.props;
-    return callback.bind(object)(object, name);
+    const { name, contextFor } = this.props;
+    return callback.bind(contextFor)(contextFor, name);
   }
 
   getSchemaError(): ?string | Promise<?string> {
     let error = this.getSchemaProperty().error;
     if (!error) return;
 
-    if (typeof error === 'string') error = this.props.object[error];
+    if (typeof error === 'string') error = this.props.contextFor[error];
     if (typeof error === 'function') error = this.runErrorFunction(error);
     if (isMemoizeObject(error)) error = this.runMemoizeObject(error);
     if (isPromise(error)) error = this.runErrorPromise(error);
@@ -155,8 +160,8 @@ export class FieldComponent extends React.Component<CombinedProps> {
    */
 
   setValue(incomingValue: ?any) {
-    const { name, onFieldGroupChange } = this.props;
-    onFieldGroupChange(name, this.getValue(incomingValue));
+    const { name, contextOnChange } = this.props;
+    contextOnChange(name, this.getValue(incomingValue));
   }
 
   setBrowserCustomValidity(message?: ?string): void {
@@ -176,7 +181,7 @@ export class FieldComponent extends React.Component<CombinedProps> {
    * Dispatchers
    */
   dispatchValidation(error: ?string) {
-    this.props.onValidate(this.getPrefixedName(), error);
+    this.props.contextOnValidate(this.getPrefixedName(), error);
   }
 
   /*
@@ -194,11 +199,9 @@ export class FieldComponent extends React.Component<CombinedProps> {
     if (!wasTouched) this.forceUpdate();
   }
 
-  validate(incomingError?: any): ?string {
+  validate(): ?string {
     this.validatingPromise = null;
     this.clearBrowserCustomValidity();
-
-    this.incomingError = incomingError;
     let error = this.getError();
 
     // Avoid rerenderd when changing among null, false, undefined, 0 and ''
@@ -230,8 +233,8 @@ export class FieldComponent extends React.Component<CombinedProps> {
 
   handleChange = (event?: Event, value?: any, error?: any) => {
     this.target = (event || this).target;
+    this.incomingError = error;
     this.setValue(value);
-    this.touch();
 
     if (this.props.onChange) this.props.onChange(event);
   };
@@ -241,19 +244,37 @@ export class FieldComponent extends React.Component<CombinedProps> {
    */
 
   componentWillUnmount() {
-    this.dispatchValidation();
-    clearMemoize(this);
+    if (!this.props.children) {
+      this.dispatchValidation();
+      clearMemoize(this);
+    }
   }
 
   render() {
+    return this.props.children ? this.renderInline() : this.renderConnected();
+  }
+
+  renderInline() {
+    const { name, children } = this.props;
+
+    const CFieldGroup = this.constructor.fieldGroupComponent;
+
+    return (
+      <FieldContext.Provider value={{ name }}>
+        <CFieldGroup for={this.getObjectValue() || {}}>{children}</CFieldGroup>
+      </FieldContext.Provider>
+    );
+  }
+
+  renderConnected() {
     const error = this.validate();
 
     const { name, ...otherProps } = this.props;
-    delete otherProps.object;
-    delete otherProps.schema;
+    delete otherProps.contextFor;
+    delete otherProps.contextSchema;
     delete otherProps.contextPrefix;
-    delete otherProps.onFieldGroupChange;
-    delete otherProps.onValidate;
+    delete otherProps.contextOnChange;
+    delete otherProps.contextOnValidate;
 
     const C = this.getComponent();
     const CSubmitted = this.constructor.formSubmittedContextComponent;
@@ -284,14 +305,14 @@ export class FieldComponent extends React.Component<CombinedProps> {
 
   warnMissingSchemaProperty() {
     const name = this.props.name;
-    const constructor = this.props.object.constructor.name;
+    const constructor = this.props.contextFor.constructor.name;
     console.warn(`Undefined property "${name}" in schema for "${constructor}" instance`);
   }
 
   throwMissingTypeConnection() {
     const type = this.getType();
     const name = this.props.name;
-    const constructor = this.props.object.constructor.name;
+    const constructor = this.props.contextFor.constructor.name;
     throw new Error(`Missing "${type}" connection requested for property "${name}" in "${constructor}" instance`);
   }
 }
@@ -301,7 +322,16 @@ export function withFieldContext(Component: React.ComponentType<CombinedProps>) 
     <ValidateContext.Consumer>
       {onValidate => (
         <FieldGroupContext.Consumer>
-          {fieldGroupProps => <FieldComponent onValidate={onValidate} {...fieldGroupProps} {...props} />}
+          {fieldGroupContext => (
+            <FieldComponent
+              contextOnValidate={onValidate}
+              contextFor={fieldGroupContext.for}
+              contextSchema={fieldGroupContext.schema}
+              contextPrefix={fieldGroupContext.prefix}
+              contextOnChange={fieldGroupContext.onChange}
+              {...props}
+            />
+          )}
         </FieldGroupContext.Consumer>
       )}
     </ValidateContext.Consumer>

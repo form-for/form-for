@@ -1,13 +1,22 @@
 // @flow
 
 import * as React from 'react';
+
 import type { Schema } from '../types';
+
 import cloneObject from '../helpers/cloneObject';
 import prefixer from '../helpers/prefixer';
 import mutateObject from '../helpers/mutateObject';
-import { FieldGroupContext } from '../contexts';
-import { FieldContext } from '../contexts';
-import { FormChangeContext } from '../contexts';
+
+import Validate from './Validate';
+
+import {
+  FieldContext,
+  FormChangeContext,
+  FieldGroupContext,
+  FieldGroupValidContext,
+  FieldGroupErrorsContext
+} from '../contexts';
 
 export type Props = {
   for: Object,
@@ -18,24 +27,26 @@ export type Props = {
 };
 
 type CombinedProps = Props & {
-  onFormChange: Function,
-  onFieldGroupChange: Function,
-  name?: string,
-  contextPrefix?: string
+  contextOnFormChange: Function,
+  contextFor?: Object,
+  contextName?: string,
+  contextPrefix?: string,
+  contextOnFieldGroupChange: Function
 };
 
 export class FieldGroupComponent extends React.Component<CombinedProps> {
   errors: Object = {};
 
-  // static Valid = FieldGroupValidContext.Consumer;
-  // static Errors = FieldGroupErrorsContext.Consumer;
+  static Valid = FieldGroupValidContext.Consumer;
+  static Errors = FieldGroupErrorsContext.Consumer;
 
   /*
    * Getters
    */
 
   getPrefix(): string {
-    return prefixer(this.props.contextPrefix, this.props.name, this.props.prefix, this.props.index);
+    const { contextPrefix, contextName, prefix, index } = this.props;
+    return prefixer(contextPrefix, contextName, prefix, index);
   }
 
   getSchema(): Schema {
@@ -47,35 +58,20 @@ export class FieldGroupComponent extends React.Component<CombinedProps> {
   }
 
   /*
-   * Actions
-   */
-
-  mutateError(name: string, value: any, index: ?any): void {
-    if (this.errors[name] === value) return;
-
-    if (value) {
-      if (!index) this.errors[name] = value;
-      else this.errors[name][index] = value;
-    } else {
-      if (!index) delete this.errors[name];
-      else delete this.errors[name][index];
-    }
-  }
-
-  /*
    * Dispatchers
    */
 
   dispatchChange(newObject: Object) {
-    this.props.name ? this.dispatchNestedChange(newObject) : this.dispatchFormChange(newObject);
+    this.props.contextName ? this.dispatchNestedChange(newObject) : this.dispatchFormChange(newObject);
   }
 
   dispatchNestedChange(newObject: Object) {
-    this.props.onFieldGroupChange(this.props.name, newObject, this.props.index);
+    const { index, contextName, contextOnFieldGroupChange } = this.props;
+    contextOnFieldGroupChange(contextName, newObject, index);
   }
 
   dispatchFormChange(newObject?: Object) {
-    this.props.onFormChange(newObject);
+    this.props.contextOnFormChange(newObject);
   }
 
   /*
@@ -87,6 +83,10 @@ export class FieldGroupComponent extends React.Component<CombinedProps> {
     this.dispatchChange(newObject);
   }
 
+  /*
+   * Bound handlers
+   */
+
   handleChange = (name: string, value: any, index?: any) => {
     this.onChange(name, value, index);
   };
@@ -96,18 +96,16 @@ export class FieldGroupComponent extends React.Component<CombinedProps> {
    */
 
   render() {
-    const { for: object, children } = this.props;
-
     return (
       <FieldGroupContext.Provider
         value={{
-          object,
+          for: this.props.for,
           schema: this.getSchema(),
-          contextPrefix: this.getPrefix(),
-          onFieldGroupChange: this.handleChange
+          prefix: this.getPrefix(),
+          onChange: this.handleChange
         }}
       >
-        {children || null}
+        {this.props.children || null}
       </FieldGroupContext.Provider>
     );
   }
@@ -127,16 +125,21 @@ export function withFieldGroupContext(Component: React.ComponentType<CombinedPro
     <FormChangeContext.Consumer>
       {onFormChange => (
         <FieldGroupContext.Consumer>
-          {({ onFieldGroupChange }) => (
+          {fieldGroupContext => (
             <FieldContext.Consumer>
               {fieldProps => (
                 <Component
-                  {...fieldProps}
                   {...otherProps}
-                  onFormChange={onFormChange}
-                  onFieldGroupChange={onFieldGroupChange}
+                  contextOnFormChange={onFormChange}
+                  contextFor={fieldGroupContext.for}
+                  contextSchema={fieldGroupContext.schema}
+                  contextPrefix={fieldGroupContext.prefix}
+                  contextName={fieldProps.name}
+                  contextOnFieldGroupChange={fieldGroupContext.onChange}
                 >
-                  {children}
+                  <Validate errorsContext={FieldGroupErrorsContext} validContext={FieldGroupValidContext}>
+                    {children}
+                  </Validate>
                 </Component>
               )}
             </FieldContext.Consumer>
