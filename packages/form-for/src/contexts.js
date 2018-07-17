@@ -31,13 +31,26 @@ export const FormValidContext: Context<boolean> = createContext();
 export const FormSubmittedContext: Context<boolean> = createContext();
 export const FormSubmittingContext: Context<?Promise<*>> = createContext();
 
-export const FieldGroupContext: Context<{
+type FieldGroupContextProps = {
   for: Object,
   schema: Object,
   prefix: string,
   onChange: Function
-}> = createContext({});
+};
+export const FieldGroupContext: Context<FieldGroupContextProps> = createContext({});
 export const FieldGroupErrorsContext: Context<Object> = createContext();
 export const FieldGroupValidContext: Context<boolean> = createContext();
 
 export const FieldContext: Context<{ name: string }> = createContext({});
+
+export const ArrayFieldContext: Context<FieldGroupContextProps & { index: number }> = createContext();
+export const ArrayFieldHelpersContext: Context<{
+  insert: (index: any, item: any) => any,
+  move: (fromIndex: any, toIndex: any) => any,
+  remove: (index: any) => any,
+  push: (item: any) => any,
+  pop: () => any,
+  shift: () => any,
+  unshift: (item: any) => any,
+  swap: (indexA: any, indexB: any) => any
+}> = createContext();

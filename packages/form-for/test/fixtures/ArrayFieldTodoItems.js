@@ -1,0 +1,30 @@
+// @flow
+
+import * as React from 'react';
+import { field, Field, ArrayField, type ComponentProps } from '../../src';
+
+export class TodoItem {
+  @field uid: any;
+  @field text: string;
+
+  constructor(uid: any, text: string) {
+    this.uid = uid;
+    this.text = text;
+  }
+}
+
+export class ArrayFieldTodoItems extends React.Component<ComponentProps> {
+  render() {
+    const { value } = this.props;
+
+    return (
+      <fieldset className="form-group">
+        <legend>Todo Items</legend>
+
+        <ArrayField>
+          <Field name="text" />
+        </ArrayField>
+      </fieldset>
+    );
+  }
+}

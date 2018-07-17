@@ -37,6 +37,7 @@ type CombinedProps = Props & {
 export class FieldGroupComponent extends React.Component<CombinedProps> {
   errors: Object = {};
 
+  static Consumer = FieldGroupContext.Consumer;
   static Valid = FieldGroupValidContext.Consumer;
   static Errors = FieldGroupErrorsContext.Consumer;
 

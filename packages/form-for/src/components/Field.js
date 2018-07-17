@@ -3,6 +3,7 @@
 import * as React from 'react';
 
 import FieldGroup from './FieldGroup';
+import ArrayField from './ArrayField';
 
 import type { SchemaProperty } from '../types';
 import { ValidateContext, FormSubmittedContext, FieldGroupContext, FieldContext } from '../contexts';
@@ -37,6 +38,8 @@ export class FieldComponent extends React.Component<CombinedProps> {
   static validatingErrorMessage = 'Validating';
   static formSubmittedContextComponent = FormSubmittedContext.Consumer;
   static fieldGroupComponent = FieldGroup;
+
+  static Array = ArrayField;
 
   target: Object;
   touched: ?boolean;

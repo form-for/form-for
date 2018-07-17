@@ -26,6 +26,7 @@ export {
   BaseForm,
   Form,
   Field,
+  ArrayField,
   FieldComponent,
   withFieldContext,
   connectField,
