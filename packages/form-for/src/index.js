@@ -1,43 +1,32 @@
 // @flow
 
-import BaseForm from './components/BaseForm';
+export { default as BaseForm } from './components/BaseForm';
 export type { Props as FormProps } from './components/BaseForm';
 
-import Form from './components/Form';
+export { default as Form } from './components/Form';
 
-import Field, { FieldComponent, withFieldContext, connectField } from './components/Field';
+export { default as Field, FieldComponent, withFieldContext, connectField } from './components/Field';
 export type { Props as FieldProps } from './components/Field';
 
-import FieldGroup, { FieldGroupComponent, withFieldGroupContext } from './components/FieldGroup';
+export { default as FieldGroup, FieldGroupComponent, withFieldGroupContext } from './components/FieldGroup';
 export type { Props as FieldGroupProps } from './components/FieldGroup';
+
+export { default as FieldMap } from './components/FieldMap';
+export { default as FieldMove } from './components/FieldMove';
+export { default as FieldPop } from './components/FieldPop';
+export { default as FieldPush } from './components/FieldPush';
+export { default as FieldRemove } from './components/FieldRemove';
+export { default as FieldShift } from './components/FieldShift';
+export { default as FieldSwap } from './components/FieldSwap';
+export { default as FieldUnshift } from './components/FieldUnshift';
 
 export type { SchemaProperty, Schema, ComponentProps } from './types';
 
-import fieldDecorator from './decorators/fieldDecorator';
+export { default as field } from './decorators/fieldDecorator';
 
-import cloneObject from './helpers/cloneObject';
-import debounce from './helpers/debounce';
-import isPromise from './helpers/isPromise';
-import memoize from './helpers/memoize';
-import mutateObject from './helpers/mutateObject';
-import prefixer from './helpers/prefixer';
-
-export {
-  BaseForm,
-  Form,
-  Field,
-  ArrayField,
-  FieldComponent,
-  withFieldContext,
-  connectField,
-  FieldGroup,
-  FieldGroupComponent,
-  withFieldGroupContext,
-  fieldDecorator as field,
-  cloneObject,
-  debounce,
-  isPromise,
-  memoize,
-  mutateObject,
-  prefixer
-};
+export { default as cloneObject } from './helpers/cloneObject';
+import { default as debounce } from './helpers/debounce';
+import { default as isPromise } from './helpers/isPromise';
+import { default as memoize } from './helpers/memoize';
+import { default as mutateObject } from './helpers/mutateObject';
+import { default as prefixer } from './helpers/prefixer';

@@ -1,7 +1,7 @@
 // @flow
 
 import * as React from 'react';
-import { field, Field, ArrayField, type ComponentProps } from '../../src';
+import { field, Field, type ComponentProps } from '../../src';
 
 export class TodoItem {
   @field uid: any;
@@ -21,9 +21,9 @@ export class ArrayFieldTodoItems extends React.Component<ComponentProps> {
       <fieldset className="form-group">
         <legend>Todo Items</legend>
 
-        <ArrayField>
+        <Field.Map>
           <Field name="text" />
-        </ArrayField>
+        </Field.Map>
       </fieldset>
     );
   }
