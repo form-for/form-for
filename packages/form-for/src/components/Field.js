@@ -32,17 +32,6 @@ type CombinedProps = Props & {
   contextOnValidate: Function
 };
 
-<Field name="todos">
-  <Field.Map>
-    <Field name="done" />
-    <Field name="text" />
-
-    <Field.Remove>{remove => <button onClick={remove}>Delete</button>}</Field.Remove>
-  </Field.Map>
-
-  <Field.Push>{push => <button onClick={() => push({})}>Add</button>}</Field.Push>
-</Field>;
-
 const SUCCESS_ASYNC_VALIDATION = '__success_async__';
 
 export class FieldComponent extends React.Component<CombinedProps> {
