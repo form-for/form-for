@@ -1,11 +1,10 @@
 import React from 'react';
 import { mount } from 'enzyme';
 import { Field, Form, connectField } from '../../src';
-import { TodoItem, TodoItems } from '../fixtures/TodoItems';
+import { TodoItem } from '../fixtures/TodoItems';
 import Input from '../fixtures/Input';
 
-describe('Nested object fields', () => {
-  connectField('TodoItem{}', TodoItems);
+describe('Nested inline object fields', () => {
   connectField('text', Input);
 
   const object = {
@@ -16,7 +15,12 @@ describe('Nested object fields', () => {
   it('displays nested field', () => {
     const wrapper = mount(
       <Form for={object}>
-        <Field name="todos" />
+        <Field name="todos">
+          <Field.Map>
+            <Field name="uid" />
+            <Field name="text" />
+          </Field.Map>
+        </Field>
       </Form>
     );
 
@@ -34,7 +38,12 @@ describe('Nested object fields', () => {
 
     const wrapper = mount(
       <Form for={object} onChange={onChange}>
-        <Field name="todos" />
+        <Field name="todos">
+          <Field.Map>
+            <Field name="uid" />
+            <Field name="text" />
+          </Field.Map>
+        </Field>
       </Form>
     );
 
