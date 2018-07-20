@@ -26,11 +26,7 @@ export class InlineFieldComponent extends React.Component<CombinedProps> {
 
   getSchema(): Schema {
     const { name, contextSchema } = this.props;
-
-    const schema = contextSchema[name] || (this.getFor() || {}).schema;
-    if (!schema) this.throwMissingSchema();
-
-    return schema;
+    return contextSchema[name] || (this.getFor() || {}).schema;
   }
 
   render() {
@@ -42,18 +38,10 @@ export class InlineFieldComponent extends React.Component<CombinedProps> {
     if (!value) return null;
 
     return (
-      <CFieldGroup for={value} schema={this.getSchema()}>
+      <CFieldGroup for={value} schema={this.getSchema() || {}}>
         {children}
       </CFieldGroup>
     );
-  }
-
-  /*
-   * Errors
-   */
-
-  throwMissingSchema() {
-    console.warn(`Undefined schema for inline field "${this.props.name}"`);
   }
 }
 

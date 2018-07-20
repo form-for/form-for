@@ -41,7 +41,7 @@ export class FieldGroupComponent extends React.Component<CombinedProps> {
    */
 
   getPrefix(): string {
-    const { contextPrefix, contextName, prefix, index } = this.props;
+    let { contextPrefix, contextName, prefix, index } = this.props;
     return prefixer(contextPrefix, contextName, prefix, index);
   }
 
@@ -49,7 +49,12 @@ export class FieldGroupComponent extends React.Component<CombinedProps> {
     return this.props.schema || this.props.for.schema || this.throwUndefinedSchema();
   }
 
+  getMutatedIndexedObject(index: any, value: any): Object {
+    return mutateObject(this.props.for, index, value);
+  }
+
   getMutatedObject(name: string, value: any, index: ?any): Object {
+    if (!name && index) return this.getMutatedIndexedObject(index, value);
     return mutateObject(this.props.for, name, value, index);
   }
 
@@ -58,7 +63,7 @@ export class FieldGroupComponent extends React.Component<CombinedProps> {
    */
 
   dispatchChange(newObject: Object) {
-    this.props.contextName ? this.dispatchNestedChange(newObject) : this.dispatchFormChange(newObject);
+    this.props.contextOnFieldGroupChange ? this.dispatchNestedChange(newObject) : this.dispatchFormChange(newObject);
   }
 
   dispatchNestedChange(newObject: Object) {
@@ -134,13 +139,13 @@ export function withFieldGroupContext(Component: React.ComponentType<CombinedPro
                 <FieldNameContext.Consumer>
                   {fieldName => (
                     <Component
-                      {...otherProps}
                       contextOnFormChange={onFormChange}
                       contextFor={fieldGroupContext.for}
                       contextSchema={fieldGroupContext.schema}
                       contextPrefix={fieldGroupContext.prefix}
                       contextName={fieldName}
                       contextOnFieldGroupChange={fieldGroupContext.onChange}
+                      {...otherProps}
                     >
                       <Validate errorsContext={FieldGroupErrorsContext} validContext={FieldGroupValidContext}>
                         {children}

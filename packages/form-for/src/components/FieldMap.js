@@ -3,6 +3,7 @@
 import * as React from 'react';
 import { FieldGroupContext } from '../contexts';
 import cloneObject from '../helpers/cloneObject';
+import FieldGroup from './FieldGroup';
 
 type Props = {
   children: React.Node | ((value: any, index: any) => React.Node)
@@ -15,11 +16,15 @@ type CombinedProps = Props & {
 export class FieldMapComponent extends React.Component<CombinedProps> {
   render() {
     const { contextFor, children } = this.props;
-    const renderFunction = typeof children === 'function' ? this.renderChildrenFunction : this.renderChildrenNode;
+    const renderFunction: any = typeof children === 'function' ? this.renderChildrenFunction : this.renderChildrenNode;
 
     return Object.keys(contextFor).map(index => {
-      // $FlowFixMe
-      return renderFunction(contextFor[index], index);
+      const value = contextFor[index];
+      return (
+        <FieldGroup for={value} index={index} key={index} contextName={null}>
+          {renderFunction(value, index)}
+        </FieldGroup>
+      );
     });
   }
 
