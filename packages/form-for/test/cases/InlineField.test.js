@@ -4,7 +4,7 @@ import { Field, FieldGroup, Form, connectField } from '../../src';
 import { TodoItem } from '../fixtures/TodoItems';
 import Input from '../fixtures/Input';
 
-describe('Nested inline fields', () => {
+describe('Inline field', () => {
   connectField('text', Input);
 
   const object = {

@@ -1,15 +1,15 @@
 import React from 'react';
 import { mount } from 'enzyme';
-import { Field, FieldGroup, Form, connectField } from '../../src';
+import { Field, Form, connectField } from '../../src';
 import { TodoItem } from '../fixtures/TodoItems';
 import Input from '../fixtures/Input';
 
-describe('Nested inline array fields', () => {
+describe('Inline object map', () => {
   connectField('text', Input);
 
   const object = {
-    todos: [new TodoItem(1, 'Text 1'), new TodoItem(2, 'Text 2')],
-    schema: {}
+    todos: { first: new TodoItem(1, 'Text 1'), second: new TodoItem(2, 'Text 2') },
+    schema: { todos: { type: 'TodoItem{}' } }
   };
 
   it('displays nested field', () => {
@@ -24,16 +24,16 @@ describe('Nested inline array fields', () => {
       </Form>
     );
 
-    const firstInput = wrapper.find('input[name="todos[0][text]"]');
+    const firstInput = wrapper.find('input[name="todos[first][text]"]');
     expect(firstInput.length).toEqual(1);
 
-    const secondInput = wrapper.find('input[name="todos[1][text]"]');
+    const secondInput = wrapper.find('input[name="todos[second][text]"]');
     expect(secondInput.length).toEqual(1);
   });
 
   it('updates value properly', () => {
     const onChange = jest.fn(data => {
-      expect(data.todos[0].text).toEqual('New text');
+      expect(data.todos.first.text).toEqual('New text');
     });
 
     const wrapper = mount(
@@ -48,7 +48,7 @@ describe('Nested inline array fields', () => {
     );
 
     wrapper
-      .find('input[name="todos[0][text]"]')
+      .find('input[name="todos[first][text]"]')
       .first()
       .simulate('change', { target: { value: 'New text' } });
 

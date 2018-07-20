@@ -287,7 +287,7 @@ export class ConnectedFieldComponent extends React.Component<CombinedProps> {
   warnMissingSchemaProperty() {
     const name = this.props.name;
     const constructor = this.props.contextFor.constructor.name;
-    console.warn(`Undefined property "${name}" in schema for "${constructor}" instance`);
+    console.warn(`Undefined property "${name}" in schema for "${constructor}" instance, defaulting to type "text"`);
   }
 
   throwMissingTypeConnection() {

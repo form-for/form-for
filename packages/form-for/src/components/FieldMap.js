@@ -6,22 +6,26 @@ import cloneObject from '../helpers/cloneObject';
 import FieldGroup from './FieldGroup';
 
 type Props = {
+  keyProp?: string,
   children: React.Node | ((value: any, index: any) => React.Node)
 };
 
 type CombinedProps = Props & {
-  contextFor: Object
+  contextFor: Object,
+  contextSchema: Object
 };
 
 export class FieldMapComponent extends React.Component<CombinedProps> {
   render() {
-    const { contextFor, children } = this.props;
+    const { keyProp, children, contextFor, contextSchema } = this.props;
     const renderFunction: any = typeof children === 'function' ? this.renderChildrenFunction : this.renderChildrenNode;
 
     return Object.keys(contextFor).map(index => {
       const value = contextFor[index];
+      const key = keyProp ? value[keyProp] : index;
+
       return (
-        <FieldGroup for={value} index={index} key={index} contextName={null}>
+        <FieldGroup for={value} index={index} key={key} contextName={null} schema={value.schema || contextSchema}>
           {renderFunction(value, index)}
         </FieldGroup>
       );
@@ -45,7 +49,9 @@ export class FieldMapComponent extends React.Component<CombinedProps> {
 export function withFieldMapContext(Component: React.ComponentType<CombinedProps>) {
   return (props: Props) => (
     <FieldGroupContext.Consumer>
-      {fieldGroupContext => <Component {...props} contextFor={fieldGroupContext.for} />}
+      {fieldGroupContext => (
+        <Component {...props} contextFor={fieldGroupContext.for} contextSchema={fieldGroupContext.schema} />
+      )}
     </FieldGroupContext.Consumer>
   );
 }

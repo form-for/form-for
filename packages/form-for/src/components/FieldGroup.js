@@ -46,7 +46,7 @@ export class FieldGroupComponent extends React.Component<CombinedProps> {
   }
 
   getSchema(): Schema {
-    return this.props.schema || this.props.for.schema || this.throwUndefinedSchema();
+    return this.props.schema || this.props.for.schema || {};
   }
 
   getMutatedIndexedObject(index: any, value: any): Object {
@@ -109,15 +109,6 @@ export class FieldGroupComponent extends React.Component<CombinedProps> {
         {this.props.children || null}
       </FieldGroupContext.Provider>
     );
-  }
-
-  /*
-   * Errors
-   */
-
-  throwUndefinedSchema(): any {
-    const constructor = this.props.for.constructor.name;
-    throw new Error(`Undefined schema for "${constructor}" instance`);
   }
 }
 

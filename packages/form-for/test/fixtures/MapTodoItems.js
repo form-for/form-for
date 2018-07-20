@@ -13,7 +13,7 @@ export class TodoItem {
   }
 }
 
-export class ArrayFieldTodoItems extends React.Component<ComponentProps> {
+export class MapTodoItems extends React.Component<ComponentProps> {
   render() {
     const { value } = this.props;
 
@@ -21,7 +21,7 @@ export class ArrayFieldTodoItems extends React.Component<ComponentProps> {
       <fieldset className="form-group">
         <legend>Todo Items</legend>
 
-        <Field.Map>
+        <Field.Map keyProp="uid">
           <Field name="text" />
         </Field.Map>
       </fieldset>
