@@ -3,7 +3,7 @@ import { render } from 'enzyme';
 import { Field, Form, connectField } from '../../src';
 import Input from '../fixtures/Input';
 
-describe('Field type', () => {
+describe('Default field type', () => {
   connectField('text', Input);
 
   const object = {

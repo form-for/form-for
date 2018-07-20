@@ -1,11 +1,10 @@
 import React from 'react';
 import { mount } from 'enzyme';
 import { Field, FieldGroup, Form, connectField } from '../../src';
-import { TodoItem, TodoItems } from '../fixtures/TodoItems';
+import { TodoItem } from '../fixtures/TodoItems';
 import Input from '../fixtures/Input';
 
 describe('Nested inline fields', () => {
-  connectField('TodoItem{}', TodoItems);
   connectField('text', Input);
 
   const object = {
