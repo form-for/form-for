@@ -1,4 +1,6 @@
-export default function prefixer(...prefixes: (?string)[]) {
+// $flow
+
+export default function prefixer(...prefixes: (?string)[]): string {
   return prefixes
     .filter(prefix => prefix || prefix === 0)
     .map((prefix: string, index: number) => (index === 0 ? prefix : `[${prefix}]`))

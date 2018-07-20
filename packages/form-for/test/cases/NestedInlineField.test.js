@@ -59,5 +59,8 @@ describe('Nested fields', () => {
       .simulate('change', { target: { value: 'New text' } });
 
     expect(onChange).toHaveBeenCalled();
+
+    const input = wrapper.find('input[name="company[address]"]');
+    expect(input.prop('value')).toEqual('New text');
   });
 });

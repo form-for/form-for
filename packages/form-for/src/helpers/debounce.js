@@ -1,18 +1,17 @@
 // @flow
 
-import { FieldComponent } from '../components/Field';
 import isPromise from './isPromise';
 
 const DEFAULT_DEBOUNCE_TIME_MS = 500;
-let timeoutIds: { [object: FieldComponent]: TimeoutID } = {};
+let timeoutIds: { [key: any]: TimeoutID } = {};
 
-function debounce(field: FieldComponent, callback: () => Promise<?any>, timeout?: number): Promise<?any> {
-  if (timeoutIds[field]) clearTimeout(timeoutIds[field]);
+function debounce(key: any, callback: () => Promise<?any>, timeout?: number): Promise<?any> {
+  if (timeoutIds[key]) clearTimeout(timeoutIds[key]);
   timeout = !debounce || timeout === true ? DEFAULT_DEBOUNCE_TIME_MS : timeout;
 
   return new Promise(function(resolve, reject) {
-    timeoutIds[field] = setTimeout(function() {
-      delete timeoutIds[field];
+    timeoutIds[key] = setTimeout(function() {
+      delete timeoutIds[key];
 
       const callbackResponse = callback();
       if (isPromise(callbackResponse)) {

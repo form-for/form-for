@@ -11,7 +11,7 @@ type Props = {
 };
 
 type CombinedProps = Props & {
-  onParentValidate?: Function
+  contextOnValidate?: Function
 };
 
 class Validate extends React.Component<CombinedProps> {
@@ -25,9 +25,9 @@ class Validate extends React.Component<CombinedProps> {
     if (onValidate) onValidate(this.errors);
   }
 
-  dispatchParentValidate(name: string, error: ?string) {
-    const { onParentValidate } = this.props;
-    if (onParentValidate) onParentValidate(name, error);
+  dispatchContextValidate(name: string, error: ?string) {
+    const { contextOnValidate } = this.props;
+    if (contextOnValidate) contextOnValidate(name, error);
   }
 
   handleValidate = (name: string, error: ?string) => {
@@ -39,7 +39,7 @@ class Validate extends React.Component<CombinedProps> {
 
     this.dispatchValidate();
     this.requestRender();
-    this.dispatchParentValidate(name, error);
+    this.dispatchContextValidate(name, error);
   };
 
   get valid(): boolean {
@@ -98,6 +98,6 @@ class Validate extends React.Component<CombinedProps> {
 
 export default (props: Props) => (
   <ValidateContext.Consumer>
-    {onValidate => <Validate {...props} onParentValidate={onValidate} />}
+    {onValidate => <Validate {...props} contextOnValidate={onValidate} />}
   </ValidateContext.Consumer>
 );

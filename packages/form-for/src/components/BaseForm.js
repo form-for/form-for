@@ -5,16 +5,16 @@ import * as React from 'react';
 import Validate from './Validate';
 import FieldGroup from './FieldGroup';
 import isPromise from '../helpers/isPromise';
+import { type Schema } from '../types';
 
 import {
-  FormDataContext,
+  FormForContext,
   FormErrorsContext,
   FormValidContext,
   FormSubmittedContext,
   FormSubmittingContext,
   FormChangeContext
 } from '../contexts';
-import type { Schema } from '../types';
 
 export type Props = {
   for?: Object,
@@ -35,11 +35,12 @@ export default class BaseForm extends React.Component<Props, State> {
   static formComponentProps = { noValidate: true };
   static fieldGroupComponent: React.ComponentType<*> = FieldGroup;
 
-  static Data = FormDataContext.Consumer;
+  static For = FormForContext.Consumer;
   static Errors = FormErrorsContext.Consumer;
   static Valid = FormValidContext.Consumer;
   static Submitted = FormSubmittedContext.Consumer;
   static Submitting = FormSubmittingContext.Consumer;
+  static Change = FormChangeContext.Consumer;
 
   formRef: React.ElementRef<*> = React.createRef();
   valid: boolean = true;
@@ -156,7 +157,7 @@ export default class BaseForm extends React.Component<Props, State> {
 
     return (
       <C {...CProps} {...this.getFormProps()} ref={this.formRef} onSubmit={this.handleSubmit}>
-        <FormDataContext.Provider value={this.getData()}>
+        <FormForContext.Provider value={this.getData()}>
           <FormChangeContext.Provider value={this.handleChange}>
             <FormSubmittedContext.Provider value={submitted}>
               <FormSubmittingContext.Provider value={submitting}>
@@ -170,7 +171,7 @@ export default class BaseForm extends React.Component<Props, State> {
               </FormSubmittingContext.Provider>
             </FormSubmittedContext.Provider>
           </FormChangeContext.Provider>
-        </FormDataContext.Provider>
+        </FormForContext.Provider>
       </C>
     );
   }

@@ -3,20 +3,19 @@
 import * as React from 'react';
 
 import type { Schema } from '../types';
+import {
+  FormChangeContext,
+  FieldGroupContext,
+  FieldGroupValidContext,
+  FieldGroupErrorsContext,
+  FieldNameContext,
+  ValidateContext
+} from '../contexts';
 
-import cloneObject from '../helpers/cloneObject';
 import prefixer from '../helpers/prefixer';
 import mutateObject from '../helpers/mutateObject';
 
 import Validate from './Validate';
-
-import {
-  FieldContext,
-  FormChangeContext,
-  FieldGroupContext,
-  FieldGroupValidContext,
-  FieldGroupErrorsContext
-} from '../contexts';
 
 export type Props = {
   for: Object,
@@ -36,10 +35,6 @@ type CombinedProps = Props & {
 
 export class FieldGroupComponent extends React.Component<CombinedProps> {
   errors: Object = {};
-
-  static Consumer = FieldGroupContext.Consumer;
-  static Valid = FieldGroupValidContext.Consumer;
-  static Errors = FieldGroupErrorsContext.Consumer;
 
   /*
    * Getters
@@ -122,33 +117,44 @@ export class FieldGroupComponent extends React.Component<CombinedProps> {
 }
 
 export function withFieldGroupContext(Component: React.ComponentType<CombinedProps>) {
-  return ({ children, ...otherProps }: Props) => (
-    <FormChangeContext.Consumer>
-      {onFormChange => (
-        <FieldGroupContext.Consumer>
-          {fieldGroupContext => (
-            <FieldContext.Consumer>
-              {fieldProps => (
-                <Component
-                  {...otherProps}
-                  contextOnFormChange={onFormChange}
-                  contextFor={fieldGroupContext.for}
-                  contextSchema={fieldGroupContext.schema}
-                  contextPrefix={fieldGroupContext.prefix}
-                  contextName={fieldProps.name}
-                  contextOnFieldGroupChange={fieldGroupContext.onChange}
-                >
-                  <Validate errorsContext={FieldGroupErrorsContext} validContext={FieldGroupValidContext}>
-                    {children}
-                  </Validate>
-                </Component>
+  return class extends React.Component<Props> {
+    static Context = FieldGroupContext.Consumer;
+    static Valid = FieldGroupValidContext.Consumer;
+    static Errors = FieldGroupErrorsContext.Consumer;
+    static Validate = ValidateContext.Consumer;
+
+    render() {
+      const { children, ...otherProps } = this.props;
+
+      return (
+        <FormChangeContext.Consumer>
+          {onFormChange => (
+            <FieldGroupContext.Consumer>
+              {fieldGroupContext => (
+                <FieldNameContext.Consumer>
+                  {fieldName => (
+                    <Component
+                      {...otherProps}
+                      contextOnFormChange={onFormChange}
+                      contextFor={fieldGroupContext.for}
+                      contextSchema={fieldGroupContext.schema}
+                      contextPrefix={fieldGroupContext.prefix}
+                      contextName={fieldName}
+                      contextOnFieldGroupChange={fieldGroupContext.onChange}
+                    >
+                      <Validate errorsContext={FieldGroupErrorsContext} validContext={FieldGroupValidContext}>
+                        {children}
+                      </Validate>
+                    </Component>
+                  )}
+                </FieldNameContext.Consumer>
               )}
-            </FieldContext.Consumer>
+            </FieldGroupContext.Consumer>
           )}
-        </FieldGroupContext.Consumer>
-      )}
-    </FormChangeContext.Consumer>
-  );
+        </FormChangeContext.Consumer>
+      );
+    }
+  };
 }
 
 export default withFieldGroupContext(FieldGroupComponent);

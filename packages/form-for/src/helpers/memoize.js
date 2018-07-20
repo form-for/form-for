@@ -1,43 +1,37 @@
 // @flow
 
-import { FieldComponent } from '../components/Field';
 import isPromise from './isPromise';
 
-export type MemoizableResult = ?string | Promise<?string>;
+const storedValues: { [key: any]: { [value: any]: any } } = {};
 
-const storedValues: { [object: FieldComponent]: { [value: any]: any } } = {};
-
-export function clearMemoize(field: FieldComponent) {
-  delete storedValues[field];
+export function clearMemoize(key: any) {
+  delete storedValues[key];
 }
 
-function getFieldObject(field: FieldComponent) {
-  if (!storedValues[field]) storedValues[field] = {};
-  return storedValues[field];
+function getStoredValues(key: any) {
+  if (!storedValues[key]) storedValues[key] = {};
+  return storedValues[key];
 }
 
-export function hasMemoizedValue(field: FieldComponent): ?any {
-  const fieldValue = field.getObjectValue();
-  return getFieldObject(field).hasOwnProperty(fieldValue);
+export function hasMemoizedValue(key: any, value: any): ?any {
+  return getStoredValues(key).hasOwnProperty(value);
 }
 
-export function memoizedValue(field: FieldComponent): ?any {
-  const fieldValue = field.getObjectValue();
-  return getFieldObject(field)[fieldValue];
+export function memoizedValue(key: any, value: any): ?any {
+  return getStoredValues(key)[value];
 }
 
-export default function memoize(field: FieldComponent, callback: () => Promise<?any>): MemoizableResult {
-  if (hasMemoizedValue(field)) return memoizedValue(field);
+export default function memoize(key: any, value: any, callback: () => Promise<?any>): any {
+  if (hasMemoizedValue(key, value)) return memoizedValue(key, value);
 
-  const fieldValue = field.getObjectValue();
   const promise = callback();
-  storedValues[field][fieldValue] = promise;
+  getStoredValues(key)[value] = promise;
 
   const setValue = value => {
     // If the field has been removed storedValues[field] won't exist anymore
-    if (storedValues[field]) storedValues[field][fieldValue] = value;
+    if (storedValues[key]) storedValues[key][value] = value;
   };
   promise.then(setValue, setValue);
 
-  return storedValues[field][fieldValue];
+  return storedValues[key][value];
 }
