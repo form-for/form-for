@@ -53,8 +53,12 @@ export class FieldGroupComponent extends React.Component<CombinedProps> {
     return mutateObject(this.props.for, index, value);
   }
 
-  getMutatedObject(name: string, value: any, index: ?any): Object {
-    if (!name && index) return this.getMutatedIndexedObject(index, value);
+  getMutatedObject(name: ?string, value: any, index: ?any): Object {
+    if (!name) {
+      if (index) return this.getMutatedIndexedObject(index, value);
+      return value;
+    }
+
     return mutateObject(this.props.for, name, value, index);
   }
 
@@ -79,7 +83,7 @@ export class FieldGroupComponent extends React.Component<CombinedProps> {
    * Handlers
    */
 
-  onChange(name: string, value: any, index?: any) {
+  onChange(name: ?string, value: any, index?: any) {
     const newObject = this.getMutatedObject(name, value, index);
     this.dispatchChange(newObject);
   }

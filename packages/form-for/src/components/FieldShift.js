@@ -19,7 +19,10 @@ export class FieldShiftComponent extends React.Component<CombinedProps> {
 
     const newValue = cloneObject(contextFor);
     if (Array.isArray(newValue)) {
+      newValue.shift();
     } else {
+      const firstKey = Object.keys(newValue).shift();
+      delete newValue[firstKey];
     }
 
     contextOnChange(null, newValue);

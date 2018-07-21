@@ -24,19 +24,11 @@ export type { Props as ConnectedFieldProps } from './components/ConnectedField';
 export { default as FieldGroup, FieldGroupComponent, withFieldGroupContext } from './components/FieldGroup';
 export type { Props as FieldGroupProps } from './components/FieldGroup';
 
-export { default as FieldInsert, withFieldInsertContext, FieldInsertComponent } from './components/FieldInsert';
-export { default as FieldMap, withFieldMapContext, FieldMapComponent } from './components/FieldMap';
-export { default as FieldMove, withFieldMoveContext, FieldMoveComponent } from './components/FieldMove';
-export { default as FieldPop, withFieldPopContext, FieldPopComponent } from './components/FieldPop';
-export { default as FieldPush, withFieldPushContext, FieldPushComponent } from './components/FieldPush';
-export { default as FieldRemove, withFieldRemoveContext, FieldRemoveComponent } from './components/FieldRemove';
-export { default as FieldShift, withFieldShiftContext, FieldShiftComponent } from './components/FieldShift';
-export { default as FieldSwap, withFieldSwapContext, FieldSwapComponent } from './components/FieldSwap';
-export { default as FieldUnshift, withFieldUnshiftContext, FieldUnshiftComponent } from './components/FieldUnshift';
-
 export type { SchemaProperty, Schema, ComponentProps } from './types';
 
 export { default as field } from './decorators/fieldDecorator';
+
+export { default as FieldMap, withFieldMapContext, FieldMapComponent } from './components/FieldMap';
 
 export { default as cloneObject } from './helpers/cloneObject';
 export { default as debounce } from './helpers/debounce';
@@ -47,4 +39,10 @@ export { default as memoizeAndDebounce } from './helpers/memoizeAndDebounce';
 export { default as mutateObject } from './helpers/mutateObject';
 export { default as prefixer } from './helpers/prefixer';
 
-export { FieldGroupContext, FieldGroupErrorsContext, FieldGroupValidContext, FieldNameContext } from './contexts';
+export {
+  FieldGroupContext,
+  FieldGroupErrorsContext,
+  FieldGroupValidContext,
+  FieldNameContext,
+  FieldMapContext
+} from './contexts';

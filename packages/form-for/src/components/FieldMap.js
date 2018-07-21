@@ -1,7 +1,7 @@
 // @flow
 
 import * as React from 'react';
-import { FieldGroupContext } from '../contexts';
+import { FieldGroupContext, FieldMapContext } from '../contexts';
 import cloneObject from '../helpers/cloneObject';
 import FieldGroup from './FieldGroup';
 
@@ -12,12 +12,15 @@ type Props = {
 
 type CombinedProps = Props & {
   contextFor: Object,
-  contextSchema: Object
+  contextSchema: Object,
+  contextOnChange: Function
 };
 
 export class FieldMapComponent extends React.Component<CombinedProps> {
+  static Context = FieldMapContext.Consumer;
+
   render() {
-    const { keyProp, children, contextFor, contextSchema } = this.props;
+    const { keyProp, children, contextFor, contextSchema, contextOnChange } = this.props;
     const renderFunction: any = typeof children === 'function' ? this.renderChildrenFunction : this.renderChildrenNode;
 
     return Object.keys(contextFor).map(index => {
@@ -26,7 +29,9 @@ export class FieldMapComponent extends React.Component<CombinedProps> {
 
       return (
         <FieldGroup for={value} index={index} key={key} contextName={null} schema={value.schema || contextSchema}>
-          {renderFunction(value, index)}
+          <FieldMapContext.Provider value={{ for: contextFor, value, index, onChange: contextOnChange }}>
+            {renderFunction(value, index)}
+          </FieldMapContext.Provider>
         </FieldGroup>
       );
     });
@@ -50,7 +55,12 @@ export function withFieldMapContext(Component: React.ComponentType<CombinedProps
   return (props: Props) => (
     <FieldGroupContext.Consumer>
       {fieldGroupContext => (
-        <Component {...props} contextFor={fieldGroupContext.for} contextSchema={fieldGroupContext.schema} />
+        <Component
+          {...props}
+          contextFor={fieldGroupContext.for}
+          contextSchema={fieldGroupContext.schema}
+          contextOnChange={fieldGroupContext.onChange}
+        />
       )}
     </FieldGroupContext.Consumer>
   );

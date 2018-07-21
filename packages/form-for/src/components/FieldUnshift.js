@@ -16,13 +16,7 @@ type CombinedProps = Props & {
 export class FieldUnshiftComponent extends React.Component<CombinedProps> {
   handleUnshift = (value: any) => {
     const { contextFor, contextOnChange } = this.props;
-
-    const newValue = cloneObject(contextFor);
-    if (Array.isArray(newValue)) {
-    } else {
-    }
-
-    contextOnChange(null, newValue);
+    contextOnChange(null, [value, ...contextFor]);
   };
 
   render() {

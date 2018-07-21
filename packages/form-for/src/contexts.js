@@ -41,3 +41,5 @@ export const FieldGroupErrorsContext: Context<Object> = createContext();
 export const FieldGroupValidContext: Context<boolean> = createContext();
 
 export const FieldNameContext: Context<string> = createContext();
+
+export const FieldMapContext: Context<{ for: any, value: any, index: any, onChange: Function }> = createContext({});

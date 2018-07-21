@@ -19,7 +19,10 @@ export class FieldPopComponent extends React.Component<CombinedProps> {
 
     const newValue = cloneObject(contextFor);
     if (Array.isArray(newValue)) {
+      newValue.pop();
     } else {
+      const lastKey = Object.keys(newValue).pop();
+      delete newValue[lastKey];
     }
 
     contextOnChange(null, newValue);

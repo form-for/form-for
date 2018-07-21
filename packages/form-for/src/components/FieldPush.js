@@ -16,13 +16,7 @@ type CombinedProps = Props & {
 export class FieldPushComponent extends React.Component<CombinedProps> {
   handlePush = (value: any) => {
     const { contextFor, contextOnChange } = this.props;
-
-    const newValue = cloneObject(contextFor);
-    if (Array.isArray(newValue)) {
-    } else {
-    }
-
-    contextOnChange(null, newValue);
+    contextOnChange(null, [...contextFor, value]);
   };
 
   render() {

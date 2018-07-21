@@ -35,6 +35,7 @@ const SUCCESS_ASYNC_VALIDATION = '__success_async__';
 
 export class ConnectedFieldComponent extends React.Component<CombinedProps> {
   static validatingErrorMessage = 'Validating';
+  static connectedComponents: { [_: string]: React.ComponentType<*> } = {};
 
   target: Object;
   touched: ?boolean;
@@ -42,12 +43,6 @@ export class ConnectedFieldComponent extends React.Component<CombinedProps> {
 
   asyncError: ?string;
   validatingPromise: ?Promise<?string>;
-
-  /*
-   * Component binding
-   */
-
-  static connectedComponents: { [_: string]: React.ComponentType<*> } = {};
 
   /*
    * Getters

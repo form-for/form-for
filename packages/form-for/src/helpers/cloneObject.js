@@ -1,5 +1,6 @@
 // @flow
 
 export default function cloneObject(object: Object, ...sources: Object[]): Object {
-  return Object.assign(Object.create(Object.getPrototypeOf(object)), object, ...sources);
+  const newObject = Object.create(Object.getPrototypeOf(object));
+  return Object.assign(newObject, object, ...sources);
 }

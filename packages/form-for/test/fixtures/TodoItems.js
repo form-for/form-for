@@ -5,6 +5,10 @@ import { field, Field, FieldGroup, type ComponentProps } from '../../src';
 
 export class TodoItem {
   @field uid: any;
+
+  @field({ type: 'toggle' })
+  done: boolean;
+
   @field text: string;
 
   constructor(uid: any, text: string) {
