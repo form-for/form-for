@@ -9,6 +9,10 @@ export default class Mutator {
     this.for = value;
   }
 
+  push(value: any) {
+    return [...this.for, value];
+  }
+
   remove(index: any) {
     const method = Array.isArray(this.for) ? this.removeArrayIndex : this.removeObjectIndex;
     return method.bind(this)(index);

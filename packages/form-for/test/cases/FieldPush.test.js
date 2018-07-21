@@ -10,7 +10,7 @@ describe('FieldPush', () => {
   let object;
 
   beforeEach(() => {
-    const object = {
+    object = {
       items: ['a']
     };
   });
