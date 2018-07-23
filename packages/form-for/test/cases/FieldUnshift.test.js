@@ -4,7 +4,7 @@ import { Field, FieldGroup, Form, connectField } from '../../src';
 import { TodoItem } from '../fixtures/TodoItems';
 import Input from '../fixtures/Input';
 
-describe('Field.Push', () => {
+describe('Field.Unshift', () => {
   connectField('text', Input);
 
   let object;
@@ -15,15 +15,15 @@ describe('Field.Push', () => {
     };
   });
 
-  it('adds a new value at the end', () => {
+  it('adds a new value at the beginning', () => {
     const onChange = jest.fn(data => {
-      expect(data.items).toEqual(['a', 'b']);
+      expect(data.items).toEqual(['b', 'a']);
     });
 
     const wrapper = mount(
       <Form for={object} onChange={onChange}>
         <Field name="items">
-          <Field.Push>{push => <button onClick={() => push('b')} />}</Field.Push>
+          <Field.Unshift>{unshift => <button onClick={() => unshift('b')} />}</Field.Unshift>
         </Field>
       </Form>
     );
