@@ -16,7 +16,7 @@ describe('Field.Move', () => {
     });
 
     describe('bound in a field map', () => {
-      it('move itself to requested position', () => {
+      it('moves itself to requested position', () => {
         const onChange = jest.fn(data => {
           expect(data.items).toEqual(['b', 'a', 'c']);
         });
@@ -25,7 +25,7 @@ describe('Field.Move', () => {
           <Form for={object} onChange={onChange}>
             <Field name="items">
               <Field.Map>
-                <Field.Move>{move => <button onClick={() => move(1)} />}</Field.Move>
+                <Field.Move bound>{move => <button onClick={() => move(1)} />}</Field.Move>
               </Field.Map>
             </Field>
           </Form>
@@ -53,11 +53,7 @@ describe('Field.Move', () => {
         </Form>
       );
 
-      wrapper
-        .find('button')
-        .first()
-        .simulate('click');
-
+      wrapper.find('button').simulate('click');
       expect(onChange).toHaveBeenCalled();
     });
   });
@@ -77,18 +73,12 @@ describe('Field.Move', () => {
       const wrapper = mount(
         <Form for={object} onChange={onChange}>
           <Field name="items">
-            <Field.Map>
-              <Field.Move>{move => <button onClick={() => move('first', 'fourth')} />}</Field.Move>
-            </Field.Map>
+            <Field.Move>{move => <button onClick={() => move('first', 'fourth')} />}</Field.Move>
           </Field>
         </Form>
       );
 
-      wrapper
-        .find('button')
-        .first()
-        .simulate('click');
-
+      wrapper.find('button').simulate('click');
       expect(onChange).toHaveBeenCalled();
     });
   });

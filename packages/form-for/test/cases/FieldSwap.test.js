@@ -15,6 +15,31 @@ describe('Field.Swap', () => {
     };
   });
 
+  describe('bound in field map', () => {
+    it('swaps itself with requested position', () => {
+      const onChange = jest.fn(data => {
+        expect(data.items).toEqual(['c', 'b', 'a']);
+      });
+
+      const wrapper = mount(
+        <Form for={object} onChange={onChange}>
+          <Field name="items">
+            <Field.Map>
+              <Field.Swap bound>{swap => <button onClick={() => swap(2)} />}</Field.Swap>
+            </Field.Map>
+          </Field>
+        </Form>
+      );
+
+      wrapper
+        .find('button')
+        .first()
+        .simulate('click');
+
+      expect(onChange).toHaveBeenCalled();
+    });
+  });
+
   it('swaps two values', () => {
     const onChange = jest.fn(data => {
       expect(data.items).toEqual(['c', 'b', 'a']);
@@ -28,11 +53,7 @@ describe('Field.Swap', () => {
       </Form>
     );
 
-    wrapper
-      .find('button')
-      .first()
-      .simulate('click');
-
+    wrapper.find('button').simulate('click');
     expect(onChange).toHaveBeenCalled();
   });
 });

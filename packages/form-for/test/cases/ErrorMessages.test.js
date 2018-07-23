@@ -4,10 +4,6 @@ import { Field, Form, connectField } from '../../src';
 import Input from '../fixtures/Input';
 
 describe('Error messages', () => {
-  it('throws on missing schema', () => {
-    expect(() => render(<Form for={{}} />)).toThrow(`Undefined schema for "Object" instance`);
-  });
-
   it('throws on missing field connection', () => {
     const message = `Missing "text" connection requested for property "name" in "Object" instance`;
 
@@ -33,7 +29,7 @@ describe('Error messages', () => {
         </Form>
       );
 
-      const message = `Undefined property "name" in schema for "Object" instance`;
+      const message = `Undefined property "name" in schema for "Object" instance, defaulting to type "text"`;
       expect(console.warn).toHaveBeenCalledWith(message);
     });
 

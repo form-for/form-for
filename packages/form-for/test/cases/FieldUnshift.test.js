@@ -28,11 +28,7 @@ describe('Field.Unshift', () => {
       </Form>
     );
 
-    wrapper
-      .find('button')
-      .first()
-      .simulate('click');
-
+    wrapper.find('button').simulate('click');
     expect(onChange).toHaveBeenCalled();
   });
 });

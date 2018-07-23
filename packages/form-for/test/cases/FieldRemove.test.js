@@ -81,11 +81,7 @@ describe('Field.Remove', () => {
           </Form>
         );
 
-        wrapper
-          .find('button')
-          .last()
-          .simulate('click');
-
+        wrapper.find('button').simulate('click');
         expect(onChange).toHaveBeenCalled();
       });
     });
@@ -164,11 +160,7 @@ describe('Field.Remove', () => {
           </Form>
         );
 
-        wrapper
-          .find('button')
-          .last()
-          .simulate('click');
-
+        wrapper.find('button').simulate('click');
         expect(onChange).toHaveBeenCalled();
       });
     });
