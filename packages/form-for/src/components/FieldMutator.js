@@ -27,7 +27,7 @@ export class FieldMutatorComponent extends React.Component<CombinedProps> {
     const { bound, contextFor, contextIndex, contextOnChange, contextMutator, methodName } = this.props;
 
     const mutator = new contextMutator(contextFor);
-    if (bound || !args.length) args[0] = contextIndex;
+    if (bound || !args.length) args.unshift(contextIndex);
 
     // $FlowFixMe
     const method = mutator[methodName].bind(mutator);

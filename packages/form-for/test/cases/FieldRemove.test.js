@@ -76,9 +76,7 @@ describe('Field.Remove', () => {
         const wrapper = mount(
           <Form for={object} onChange={onChange}>
             <Field name="items">
-              <Field.Map>
-                <Field.Remove>{remove => <button onClick={() => remove(0)} />}</Field.Remove>
-              </Field.Map>
+              <Field.Remove>{remove => <button onClick={() => remove(0)} />}</Field.Remove>
             </Field>
           </Form>
         );
@@ -161,9 +159,7 @@ describe('Field.Remove', () => {
         const wrapper = mount(
           <Form for={object} onChange={onChange}>
             <Field name="items">
-              <Field.Map>
-                <Field.Remove>{remove => <button onClick={() => remove('first')} />}</Field.Remove>
-              </Field.Map>
+              <Field.Remove>{remove => <button onClick={() => remove('first')} />}</Field.Remove>
             </Field>
           </Form>
         );

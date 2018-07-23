@@ -23,9 +23,7 @@ describe('Field.Shift', () => {
       const wrapper = mount(
         <Form for={object} onChange={onChange}>
           <Field name="items">
-            <Field.Map>
-              <Field.Shift>{shift => <button onClick={shift} />}</Field.Shift>
-            </Field.Map>
+            <Field.Shift>{shift => <button onClick={shift} />}</Field.Shift>
           </Field>
         </Form>
       );
@@ -54,9 +52,7 @@ describe('Field.Shift', () => {
       const wrapper = mount(
         <Form for={object} onChange={onChange}>
           <Field name="items">
-            <Field.Map>
-              <Field.Shift>{shift => <button onClick={shift} />}</Field.Shift>
-            </Field.Map>
+            <Field.Shift>{shift => <button onClick={shift} />}</Field.Shift>
           </Field>
         </Form>
       );

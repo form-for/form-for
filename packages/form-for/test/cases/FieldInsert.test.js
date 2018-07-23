@@ -23,9 +23,7 @@ describe('Field.Insert', () => {
       const wrapper = mount(
         <Form for={object} onChange={onChange}>
           <Field name="items">
-            <Field.Map>
-              <Field.Insert>{insert => <button onClick={() => insert(1, 'c')} />}</Field.Insert>
-            </Field.Map>
+            <Field.Insert>{insert => <button onClick={() => insert(1, 'c')} />}</Field.Insert>
           </Field>
         </Form>
       );
@@ -54,9 +52,7 @@ describe('Field.Insert', () => {
       const wrapper = mount(
         <Form for={object} onChange={onChange}>
           <Field name="items">
-            <Field.Map>
-              <Field.Insert>{insert => <button onClick={() => insert('third', 'c')} />}</Field.Insert>
-            </Field.Map>
+            <Field.Insert>{insert => <button onClick={() => insert('third', 'c')} />}</Field.Insert>
           </Field>
         </Form>
       );
