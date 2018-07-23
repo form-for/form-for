@@ -4,7 +4,7 @@ import { Field, FieldGroup, Form, connectField } from '../../src';
 import { TodoItem } from '../fixtures/TodoItems';
 import Input from '../fixtures/Input';
 
-describe('FieldPush', () => {
+describe('Field.Push', () => {
   connectField('text', Input);
 
   let object;

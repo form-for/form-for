@@ -33,7 +33,8 @@ export class FieldMutatorComponent extends React.Component<CombinedProps> {
     const method = mutator[methodName].bind(mutator);
     if (!method) throw new Error(`Undefined mutator method ${methodName}`);
 
-    contextOnChange(null, method(...args));
+    method(...args);
+    contextOnChange(null, mutator.for);
   };
 
   render() {

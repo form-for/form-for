@@ -10,7 +10,7 @@ export default class Mutator {
   }
 
   clone(value: any) {
-    return Array.isArray(value) ? value.splice() : cloneObject(value);
+    return Array.isArray(value) ? value.slice() : cloneObject(value);
   }
 
   inArrayObject(name: string, ...args: any[]) {
