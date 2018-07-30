@@ -29,12 +29,7 @@ export class FieldMutatorComponent extends React.Component<CombinedProps> {
     const mutator = new contextMutator(contextFor);
     if (bound || !args.length) args.unshift(contextIndex);
 
-    // $FlowFixMe
-    const method = mutator[methodName].bind(mutator);
-    if (!method) throw new Error(`Undefined mutator method ${methodName}`);
-
-    method(...args);
-    contextOnChange(null, mutator.for);
+    contextOnChange(null, mutator.mutate(methodName, args));
   };
 
   render() {
@@ -42,7 +37,7 @@ export class FieldMutatorComponent extends React.Component<CombinedProps> {
   }
 }
 
-export function withFieldMutatorContext(Component: React.ComponentType<*>) {
+export function withFieldMutatorContext(Component: React.ComponentType<*>, MutatorClass: typeof Mutator) {
   return class extends React.Component<Props & { methodName: string }> {
     static create(methodName: string): (props: Props) => React.Node {
       const C = this;
@@ -60,7 +55,7 @@ export function withFieldMutatorContext(Component: React.ComponentType<*>) {
                   contextFor={fieldMapContext.for || fieldGroupContext.for}
                   contextIndex={fieldMapContext.index}
                   contextOnChange={fieldMapContext.onChange || fieldGroupContext.onChange}
-                  contextMutator={Mutator}
+                  contextMutator={MutatorClass}
                 />
               )}
             </FieldGroupContext.Consumer>
@@ -71,4 +66,4 @@ export function withFieldMutatorContext(Component: React.ComponentType<*>) {
   };
 }
 
-export default withFieldMutatorContext(FieldMutatorComponent);
+export default withFieldMutatorContext(FieldMutatorComponent, Mutator);

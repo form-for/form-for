@@ -49,13 +49,13 @@ export class FieldGroupComponent extends React.Component<CombinedProps> {
     return this.props.schema || this.props.for.schema || {};
   }
 
-  getMutatedIndexedObject(index: any, value: any): Object {
+  getMutatedObjectIndex(index: any, value: any): Object {
     return mutateObject(this.props.for, index, value);
   }
 
   getMutatedObject(name: ?string, value: any, index: ?any): Object {
     if (!name) {
-      if (index) return this.getMutatedIndexedObject(index, value);
+      if (index) return this.getMutatedObjectIndex(index, value);
       return value;
     }
 

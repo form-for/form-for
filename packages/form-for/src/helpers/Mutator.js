@@ -6,10 +6,20 @@ export default class Mutator {
   for: any;
 
   constructor(value: any) {
-    this.for = this.clone(value);
+    this.for = this.before(value);
   }
 
-  clone(value: any) {
+  mutate(methodName: string, args: any[]) {
+    // $FlowFixMe
+    const method = this[methodName].bind(this);
+    if (!methodName) throw new Error(`Undefined mutator method ${methodName}`);
+
+    // $FlowFixMe
+    method(...args);
+    return this.for;
+  }
+
+  before(value: any) {
     return Array.isArray(value) ? value.slice() : cloneObject(value);
   }
 

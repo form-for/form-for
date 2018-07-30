@@ -5,8 +5,10 @@ export type { Props as FormProps } from './components/BaseForm';
 
 export { default as Form } from './components/Form';
 
-export { default as Field } from './components/Field';
+export { default as Field, FieldComponent, withFieldStatics } from './components/Field';
 export type { Props as FieldProps } from './components/Field';
+
+export { default as FieldMutator, FieldMutatorComponent, withFieldMutatorContext } from './components/FieldMutator';
 
 export { default as InlineField, InlineFieldComponent, withInlineFieldContext } from './components/InlineField';
 export type { Props as InlineFieldProps } from './components/InlineField';
@@ -38,6 +40,7 @@ export { default as memoize, clearMemoize, hasMemoizedValue, memoizedValue } fro
 export { default as memoizeAndDebounce } from './helpers/memoizeAndDebounce';
 export { default as mutateObject } from './helpers/mutateObject';
 export { default as prefixer } from './helpers/prefixer';
+export { default as Mutator } from './helpers/Mutator';
 
 export {
   FieldGroupContext,

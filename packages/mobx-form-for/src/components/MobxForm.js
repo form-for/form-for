@@ -4,7 +4,7 @@ import { observer } from 'mobx-react';
 import * as React from 'react';
 
 import { BaseForm } from 'form-for';
-import FieldGroup from './FieldGroup';
+import FieldGroup from './MobxFieldGroup';
 
 class Form extends BaseForm {
   static fieldGroupComponent = FieldGroup;

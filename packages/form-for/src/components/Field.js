@@ -12,28 +12,37 @@ import FieldMap from './FieldMap';
 export type Props = InlineFieldProps | ConnectedFieldProps;
 
 export class FieldComponent extends React.Component<Props> {
+  static inlineFieldComponent = InlineField;
+  static connectedFieldComponent = ConnectedField;
+
   render() {
     const { name, children } = this.props;
-    const component = children ? <InlineField {...this.props} /> : <ConnectedField {...this.props} />;
-    return <FieldNameContext.Provider value={name}>{component}</FieldNameContext.Provider>;
+    const C = children ? this.constructor.inlineFieldComponent : this.constructor.connectedFieldComponent;
+
+    return (
+      <FieldNameContext.Provider value={name}>
+        <C {...this.props} />
+      </FieldNameContext.Provider>
+    );
   }
 }
 
-export function withFieldStatics(Component: typeof FieldComponent, Mutator: typeof FieldMutator) {
-  return class extends Component {
+export function withFieldStatics(Component: typeof FieldComponent, MutatorComponent: typeof FieldMutator) {
+  // $FlowFixMe
+  return class extends Component<Props> {
     static Name = FieldNameContext.Consumer;
 
     static Map = FieldMap;
-    static Mutator = Mutator;
+    static Mutator = MutatorComponent;
 
-    static Insert = Mutator.create('insert');
-    static Move = Mutator.create('move');
-    static Pop = Mutator.create('pop');
-    static Push = Mutator.create('push');
-    static Remove = Mutator.create('remove');
-    static Shift = Mutator.create('shift');
-    static Swap = Mutator.create('swap');
-    static Unshift = Mutator.create('unshift');
+    static Insert = MutatorComponent.create('insert');
+    static Move = MutatorComponent.create('move');
+    static Pop = MutatorComponent.create('pop');
+    static Push = MutatorComponent.create('push');
+    static Remove = MutatorComponent.create('remove');
+    static Shift = MutatorComponent.create('shift');
+    static Swap = MutatorComponent.create('swap');
+    static Unshift = MutatorComponent.create('unshift');
   };
 }
 
