@@ -277,16 +277,14 @@ export class ConnectedFieldComponent extends React.Component<CombinedProps> {
    */
 
   warnMissingSchemaProperty() {
-    const name = this.props.name;
+    const { name } = this.props;
     const constructor = this.props.contextFor.constructor.name;
-    console.warn(`Undefined property "${name}" in schema for "${constructor}" instance, defaulting to type "text"`);
+    console.warn(`[Form-for] Undefined property "${name}" in schema for "${constructor}" instance`);
   }
 
   throwMissingTypeConnection() {
-    const type = this.getType();
-    const name = this.props.name;
-    const constructor = this.props.contextFor.constructor.name;
-    throw new Error(`Missing "${type}" connection requested for property "${name}" in "${constructor}" instance`);
+    const { name } = this.props;
+    throw new Error(`[Form-for] Missing field connection "${this.getType()}" requested for "${name}" property"`);
   }
 }
 

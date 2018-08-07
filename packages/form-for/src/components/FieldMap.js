@@ -59,7 +59,7 @@ export function withFieldMapContext(Component: React.ComponentType<CombinedProps
         <FieldGroupContext.Consumer>
           {fieldGroupContext => (
             <Component
-              {...props}
+              {...this.props}
               contextFor={fieldGroupContext.for}
               contextSchema={fieldGroupContext.schema}
               contextOnChange={fieldGroupContext.onChange}
