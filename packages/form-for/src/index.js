@@ -41,11 +41,3 @@ export { default as memoizeAndDebounce } from './helpers/memoizeAndDebounce';
 export { default as mutateObject } from './helpers/mutateObject';
 export { default as prefixer } from './helpers/prefixer';
 export { default as Mutator } from './helpers/Mutator';
-
-export {
-  FieldGroupContext,
-  FieldGroupErrorsContext,
-  FieldGroupValidContext,
-  FieldNameContext,
-  FieldMapContext
-} from './contexts';

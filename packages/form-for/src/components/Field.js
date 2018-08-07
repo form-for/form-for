@@ -26,12 +26,16 @@ export class FieldComponent extends React.Component<Props> {
   }
 }
 
-export function withFieldStatics(Component: typeof FieldComponent, MutatorComponent: typeof FieldMutator) {
+export function withFieldStatics(
+  Component: typeof FieldComponent,
+  MutatorComponent: typeof FieldMutator,
+  MapComponent: typeof FieldMap
+) {
   // $FlowFixMe
   return class extends Component<Props> {
     static Name = FieldNameContext.Consumer;
 
-    static Map = FieldMap;
+    static Map = MapComponent;
     static Mutator = MutatorComponent;
 
     static Insert = MutatorComponent.create('insert');
@@ -45,4 +49,4 @@ export function withFieldStatics(Component: typeof FieldComponent, MutatorCompon
   };
 }
 
-export default withFieldStatics(FieldComponent, FieldMutator);
+export default withFieldStatics(FieldComponent, FieldMutator, FieldMap);

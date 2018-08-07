@@ -17,8 +17,6 @@ type CombinedProps = Props & {
 };
 
 export class FieldMapComponent extends React.Component<CombinedProps> {
-  static Context = FieldMapContext.Consumer;
-
   render() {
     const { keyProp, children, contextFor, contextSchema, contextOnChange } = this.props;
     const renderFunction: any = typeof children === 'function' ? this.renderChildrenFunction : this.renderChildrenNode;
@@ -52,18 +50,25 @@ export class FieldMapComponent extends React.Component<CombinedProps> {
 }
 
 export function withFieldMapContext(Component: React.ComponentType<CombinedProps>) {
-  return (props: Props) => (
-    <FieldGroupContext.Consumer>
-      {fieldGroupContext => (
-        <Component
-          {...props}
-          contextFor={fieldGroupContext.for}
-          contextSchema={fieldGroupContext.schema}
-          contextOnChange={fieldGroupContext.onChange}
-        />
-      )}
-    </FieldGroupContext.Consumer>
-  );
+  // $FlowFixMe
+  return class extends Component<Props> {
+    static Context = FieldMapContext.Consumer;
+
+    render() {
+      return (
+        <FieldGroupContext.Consumer>
+          {fieldGroupContext => (
+            <Component
+              {...props}
+              contextFor={fieldGroupContext.for}
+              contextSchema={fieldGroupContext.schema}
+              contextOnChange={fieldGroupContext.onChange}
+            />
+          )}
+        </FieldGroupContext.Consumer>
+      );
+    }
+  };
 }
 
 export default withFieldMapContext(FieldMapComponent);

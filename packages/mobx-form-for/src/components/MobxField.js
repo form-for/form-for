@@ -6,10 +6,11 @@ import { withFieldStatics, FieldComponent } from 'form-for';
 import MobxFieldMutator from './MobxFieldMutator';
 import MobxInlineField from './MobxInlineField';
 import MobxConnectedField from './MobxConnectedField';
+import MobxFieldMap from './MobxFieldMap';
 
 class MobxFieldComponent extends FieldComponent {
   static inlineFieldComponent = MobxInlineField;
   static connectedFieldComponent = MobxConnectedField;
 }
 
-export default withFieldStatics(observer(MobxFieldComponent), MobxFieldMutator);
+export default withFieldStatics(observer(MobxFieldComponent), MobxFieldMutator, MobxFieldMap);
