@@ -40,6 +40,10 @@ export class FieldGroupComponent extends React.Component<CombinedProps> {
    * Getters
    */
 
+  isNested(): boolean {
+    return this.props.contextOnFieldGroupChange;
+  }
+
   getPrefix(): string {
     let { contextPrefix, contextName, prefix, index } = this.props;
     return prefixer(contextPrefix, contextName, prefix, index);
@@ -67,7 +71,7 @@ export class FieldGroupComponent extends React.Component<CombinedProps> {
    */
 
   dispatchChange(newObject: Object) {
-    this.props.contextOnFieldGroupChange ? this.dispatchNestedChange(newObject) : this.dispatchFormChange(newObject);
+    this.isNested() ? this.dispatchNestedChange(newObject) : this.dispatchFormChange(newObject);
   }
 
   dispatchNestedChange(newObject: Object) {

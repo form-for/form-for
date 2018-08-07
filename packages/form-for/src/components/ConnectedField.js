@@ -19,8 +19,7 @@ export type Props = {
   type?: string,
   error?: string,
   onFocus?: Function,
-  onChange?: Function,
-  children?: React.Node
+  onChange?: Function
 };
 
 type CombinedProps = Props & {
@@ -237,10 +236,8 @@ export class ConnectedFieldComponent extends React.Component<CombinedProps> {
    */
 
   componentWillUnmount() {
-    if (!this.props.children) {
-      this.dispatchValidation();
-      clearMemoize(this);
-    }
+    this.dispatchValidation();
+    clearMemoize(this);
   }
 
   render() {
