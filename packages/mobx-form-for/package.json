@@ -1,7 +1,7 @@
 {
   "name": "mobx-form-for",
   "description": "form-for state management with MobX ",
-  "version": "2.0.0-alpha",
+  "version": "2.0.0-alpha.1",
   "keywords": [
     "react-component",
     "react",
@@ -21,7 +21,7 @@
     "es"
   ],
   "peerDependencies": {
-    "form-for": "^2.0.0-alpha",
+    "form-for": "^2.0.0-alpha.2",
     "mobx": "^4.0.0 || ^5.0.0",
     "mobx-react": "^5.0.0",
     "react": "^16.3.0"
