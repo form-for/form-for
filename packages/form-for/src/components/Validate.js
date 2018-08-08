@@ -42,7 +42,7 @@ class Validate extends React.Component<CombinedProps> {
     this.dispatchContextValidate(name, error);
   };
 
-  get valid(): boolean {
+  isValid(): boolean {
     return Object.keys(this.errors).length === 0;
   }
 
@@ -89,7 +89,7 @@ class Validate extends React.Component<CombinedProps> {
     return (
       <ValidateContext.Provider value={this.handleValidate}>
         <ErrorProvider value={this.errors}>
-          <ValidProvider value={this.valid}>{children}</ValidProvider>
+          <ValidProvider value={this.isValid()}>{children}</ValidProvider>
         </ErrorProvider>
       </ValidateContext.Provider>
     );

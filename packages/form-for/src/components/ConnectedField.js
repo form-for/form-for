@@ -100,7 +100,7 @@ export class ConnectedFieldComponent extends React.Component<CombinedProps> {
 
     response
       .then(error => handlePromiseResolve(error || SUCCESS_ASYNC_VALIDATION))
-      .catch(error => handlePromiseResolve(error.message));
+      .catch(error => handlePromiseResolve(error.message || error || 'Invalid'));
 
     return ConnectedFieldComponent.validatingErrorMessage;
   }

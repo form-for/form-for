@@ -5,7 +5,7 @@ import { Observer } from 'mobx-react';
 import { BaseForm } from 'form-for';
 
 type Props = {
-  children: (value: T) => React.Node
+  children: (value: Object) => React.Node
 };
 
 export default (props: Props) => (

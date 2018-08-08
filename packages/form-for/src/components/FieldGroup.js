@@ -41,7 +41,7 @@ export class FieldGroupComponent extends React.Component<CombinedProps> {
    */
 
   isNested(): boolean {
-    return this.props.contextOnFieldGroupChange;
+    return !!this.props.contextOnFieldGroupChange;
   }
 
   getPrefix(): string {

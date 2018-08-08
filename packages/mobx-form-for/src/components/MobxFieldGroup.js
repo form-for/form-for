@@ -10,9 +10,9 @@ class MobxFieldGroupComponent extends FieldGroupComponent {
 
     if (this.props.for[key] !== value) {
       const descriptionKey = `${this.getPrefix()}[${key}]`;
-      if (!isObservableProp(this.props.for, name)) this.warnNotObservable(descriptionKey);
+      if (!isObservableProp(this.props.for, key)) this.warnNotObservable(descriptionKey);
 
-      const mutator = () => (this.props.for[name] = value);
+      const mutator = () => (this.props.for[key] = value);
       runInAction(`Update form value ${descriptionKey} to ${value}`, mutator);
     }
 
