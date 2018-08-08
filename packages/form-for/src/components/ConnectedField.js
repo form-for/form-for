@@ -94,13 +94,17 @@ export class ConnectedFieldComponent extends React.Component<CombinedProps> {
       if (this.validatingPromise !== response) return;
 
       this.validatingPromise = null;
-      this.asyncError = error;
+
+      // This must be truthy, otherwise it will cause an infite render loop
+      this.asyncError = error || 'Invalid';
       this.forceUpdate();
     };
 
     response
       .then(error => handlePromiseResolve(error || SUCCESS_ASYNC_VALIDATION))
-      .catch(error => handlePromiseResolve(error.message || error || 'Invalid'));
+
+      // Error here can be either an Error or a string
+      .catch(error => handlePromiseResolve(error.message || error));
 
     return ConnectedFieldComponent.validatingErrorMessage;
   }
