@@ -20,12 +20,15 @@ export interface Context<T> {
   Consumer: Consumer<T>;
 }
 
+export type TouchedOn = 'focus' | 'change' | 'blur';
+
 const createContext: any = React.createContext;
 
 export const ValidateContext: Context<Function> = createContext();
 
 export const FormForContext: Context<Object> = createContext();
 export const FormChangeContext: Context<Function> = createContext();
+export const FormTouchedOnContext: Context<TouchedOn> = createContext('blur');
 export const FormErrorsContext: Context<Object> = createContext();
 export const FormValidContext: Context<boolean> = createContext();
 export const FormSubmittedContext: Context<boolean> = createContext();

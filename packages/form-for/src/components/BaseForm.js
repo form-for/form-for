@@ -13,7 +13,9 @@ import {
   FormValidContext,
   FormSubmittedContext,
   FormSubmittingContext,
-  FormChangeContext
+  FormChangeContext,
+  FormTouchedOnContext,
+  type TouchedOn
 } from '../contexts';
 
 export type Props = {
@@ -22,7 +24,8 @@ export type Props = {
   children: React.Node,
   onInvalidSubmit?: (errors: Object) => any,
   onSubmit?: (event: any, data: Object) => any,
-  onChange?: (data: Object) => any
+  onChange?: (data: Object) => any,
+  touchedOn?: TouchedOn
 };
 
 type State = {
@@ -31,11 +34,12 @@ type State = {
 };
 
 export default class BaseForm extends React.Component<Props, State> {
+  static defaultProps: Object = { noValidate: true, touchedOn: 'blur' };
   static formComponent: React.ComponentType<*> | string = 'form';
-  static formComponentProps = { noValidate: true };
   static fieldGroupComponent: React.ComponentType<*> = FieldGroup;
 
   static For = FormForContext.Consumer;
+  static TouchedOn = FormTouchedOnContext.Consumer;
   static Errors = FormErrorsContext.Consumer;
   static Valid = FormValidContext.Consumer;
   static Submitted = FormSubmittedContext.Consumer;
@@ -66,8 +70,12 @@ export default class BaseForm extends React.Component<Props, State> {
     });
   }
 
+  getProps() {
+    return { ...BaseForm.defaultProps, ...this.props };
+  }
+
   getFormProps() {
-    const { ...formProps } = this.props;
+    const formProps = { ...BaseForm.defaultProps, ...this.props };
 
     // Remove props that should not be passed down
     delete formProps.for;
@@ -75,6 +83,7 @@ export default class BaseForm extends React.Component<Props, State> {
     delete formProps.children;
     delete formProps.onInvalidSubmit;
     delete formProps.onChange;
+    delete formProps.touchedOn;
 
     return formProps;
   }
@@ -153,24 +162,26 @@ export default class BaseForm extends React.Component<Props, State> {
     const { submitted, submitting } = this.state;
 
     const C = this.constructor.formComponent;
-    const CProps = this.constructor.formComponentProps;
+    const props = this.getProps();
 
     return (
-      <C {...CProps} {...this.getFormProps()} ref={this.formRef} onSubmit={this.handleSubmit}>
+      <C {...this.getFormProps()} ref={this.formRef} onSubmit={this.handleSubmit}>
         <FormForContext.Provider value={this.getData()}>
-          <FormChangeContext.Provider value={this.handleChange}>
-            <FormSubmittedContext.Provider value={submitted}>
-              <FormSubmittingContext.Provider value={submitting}>
-                <Validate
-                  onValidate={this.handleValidate}
-                  errorsContext={FormErrorsContext}
-                  validContext={FormValidContext}
-                >
-                  {this.getChildren()}
-                </Validate>
-              </FormSubmittingContext.Provider>
-            </FormSubmittedContext.Provider>
-          </FormChangeContext.Provider>
+          <FormTouchedOnContext.Provider value={props.touchedOn}>
+            <FormChangeContext.Provider value={this.handleChange}>
+              <FormSubmittedContext.Provider value={submitted}>
+                <FormSubmittingContext.Provider value={submitting}>
+                  <Validate
+                    onValidate={this.handleValidate}
+                    errorsContext={FormErrorsContext}
+                    validContext={FormValidContext}
+                  >
+                    {this.getChildren()}
+                  </Validate>
+                </FormSubmittingContext.Provider>
+              </FormSubmittedContext.Provider>
+            </FormChangeContext.Provider>
+          </FormTouchedOnContext.Provider>
         </FormForContext.Provider>
       </C>
     );

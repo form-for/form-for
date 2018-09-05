@@ -3,7 +3,14 @@
 import * as React from 'react';
 
 import type { SchemaProperty } from '../types';
-import { FormSubmittedContext, FieldNameContext, FieldGroupContext, ValidateContext } from '../contexts';
+import {
+  FormSubmittedContext,
+  FieldNameContext,
+  FieldGroupContext,
+  ValidateContext,
+  FormTouchedOnContext,
+  type TouchedOn
+} from '../contexts';
 
 import prefixer from '../helpers/prefixer';
 import isPromise from '../helpers/isPromise';
@@ -19,7 +26,8 @@ export type Props = {
   type?: string,
   error?: string,
   onFocus?: Function,
-  onChange?: Function
+  onChange?: Function,
+  onBlur?: Function
 };
 
 type CombinedProps = Props & {
@@ -27,7 +35,8 @@ type CombinedProps = Props & {
   contextSchema: Object,
   contextPrefix: string,
   contextOnChange: Function,
-  contextOnValidate: Function
+  contextOnValidate: Function,
+  contextTouchedOn: TouchedOn
 };
 
 const SUCCESS_ASYNC_VALIDATION = '__success_async__';
@@ -184,15 +193,12 @@ export class ConnectedFieldComponent extends React.Component<CombinedProps> {
    * Actions
    */
 
-  touch() {
+  touch(origin: string) {
+    if (this.touched || origin !== this.props.contextTouchedOn) return;
+
     this.touched = true;
-  }
-
-  touchAndRender() {
-    const wasTouched = this.touched;
-    this.touch();
-
-    if (!wasTouched) this.forceUpdate();
+    // Force update so that the input knows it's been touched
+    this.forceUpdate();
   }
 
   validate(): ?string {
@@ -222,7 +228,7 @@ export class ConnectedFieldComponent extends React.Component<CombinedProps> {
 
   handleFocus = (event?: Event) => {
     this.target = (event || this).target;
-    this.touchAndRender();
+    this.touch('focus');
 
     if (this.props.onFocus) this.props.onFocus(event);
   };
@@ -231,8 +237,14 @@ export class ConnectedFieldComponent extends React.Component<CombinedProps> {
     this.target = (event || this).target;
     this.incomingError = error;
     this.setValue(value);
+    this.touch('change');
 
     if (this.props.onChange) this.props.onChange(event);
+  };
+
+  handleBlur = (event?: Event) => {
+    this.touch('blur');
+    if (this.props.onBlur) this.props.onBlur(event);
   };
 
   /*
@@ -253,6 +265,7 @@ export class ConnectedFieldComponent extends React.Component<CombinedProps> {
     delete otherProps.contextPrefix;
     delete otherProps.contextOnChange;
     delete otherProps.contextOnValidate;
+    delete otherProps.contextTouchedOn;
 
     const C = this.getComponent();
 
@@ -266,7 +279,8 @@ export class ConnectedFieldComponent extends React.Component<CombinedProps> {
       touched: this.touched,
       onMount: this.handleMount,
       onFocus: this.handleFocus,
-      onChange: this.handleChange
+      onChange: this.handleChange,
+      onBlur: this.handleBlur
     };
 
     return (
@@ -296,18 +310,23 @@ export function withConnectedFieldContext(Component: React.ComponentType<Combine
   return (props: Props) => (
     <ValidateContext.Consumer>
       {onValidate => (
-        <FieldGroupContext.Consumer>
-          {fieldGroupContext => (
-            <Component
-              contextOnValidate={onValidate}
-              contextFor={fieldGroupContext.for}
-              contextSchema={fieldGroupContext.schema}
-              contextPrefix={fieldGroupContext.prefix}
-              contextOnChange={fieldGroupContext.onChange}
-              {...props}
-            />
+        <FormTouchedOnContext.Consumer>
+          {touchedOn => (
+            <FieldGroupContext.Consumer>
+              {fieldGroupContext => (
+                <Component
+                  contextOnValidate={onValidate}
+                  contextFor={fieldGroupContext.for}
+                  contextSchema={fieldGroupContext.schema}
+                  contextPrefix={fieldGroupContext.prefix}
+                  contextOnChange={fieldGroupContext.onChange}
+                  contextTouchedOn={touchedOn}
+                  {...props}
+                />
+              )}
+            </FieldGroupContext.Consumer>
           )}
-        </FieldGroupContext.Consumer>
+        </FormTouchedOnContext.Consumer>
       )}
     </ValidateContext.Consumer>
   );
