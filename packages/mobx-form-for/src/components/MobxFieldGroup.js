@@ -5,7 +5,7 @@ import { observer } from 'mobx-react';
 import { withFieldGroupContext, FieldGroupComponent } from 'form-for';
 
 class MobxFieldGroupComponent extends FieldGroupComponent {
-  getMutatedObject(name: ?string, value: any, index: ?any): Object {
+  getMutatedObject(name: any, value: any, index: ?any): Object {
     const key: any = name || index;
 
     if (this.props.for[key] !== value) {
