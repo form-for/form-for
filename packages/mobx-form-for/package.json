@@ -1,7 +1,7 @@
 {
   "name": "mobx-form-for",
   "description": "form-for state management with MobX ",
-  "version": "2.0.0-alpha.1",
+  "version": "2.0.0-alpha.2",
   "keywords": [
     "react-component",
     "react",
