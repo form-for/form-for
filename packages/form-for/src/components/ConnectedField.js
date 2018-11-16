@@ -83,17 +83,21 @@ export class ConnectedFieldComponent extends React.Component<CombinedProps> {
     return ConnectedFieldComponent.connectedComponents[this.getType()] || this.throwMissingTypeConnection();
   }
 
-  getValue(incomingValue?: any) {
-    return incomingValue !== undefined ? incomingValue : this.getTargetValue();
+  getTargetValueProp() {
+    return this.target.type === 'checkbox' ? 'checked' : 'value';
   }
 
   getTargetValue(): any {
-    if (this.target.type === 'checkbox') return this.target.checked;
-    return this.target.value;
+    if (!this.target) throw new Error('Attempting to get value from null HTML target');
+    return this.target[this.getTargetValueProp()];
   }
 
   getTargetValidationMessage(): ?string {
-    return (this.target || {}).validationMessage;
+    if (!this.target) return;
+
+    // Update target value with latest to ensure correct error message
+    this.target[this.getTargetValueProp()] = this.getObjectValue() || '';
+    return this.target.validationMessage;
   }
 
   runErrorPromise(response: any) {
@@ -149,7 +153,7 @@ export class ConnectedFieldComponent extends React.Component<CombinedProps> {
     return error;
   }
 
-  getError(value?: any): ?any {
+  getCustomError(value?: any): ?any {
     if (this.asyncError) {
       const error = this.asyncError;
       this.asyncError = null;
@@ -157,7 +161,7 @@ export class ConnectedFieldComponent extends React.Component<CombinedProps> {
     }
 
     if (this.props.error) return this.props.error;
-    return this.incomingError || this.getTargetValidationMessage() || this.getSchemaError();
+    return this.incomingError || this.getSchemaError();
   }
 
   /*
@@ -166,7 +170,9 @@ export class ConnectedFieldComponent extends React.Component<CombinedProps> {
 
   setValue(incomingValue: ?any) {
     const { name, contextOnChange } = this.props;
-    contextOnChange(name, this.getValue(incomingValue));
+
+    const value = incomingValue !== undefined ? incomingValue : this.getTargetValue();
+    contextOnChange(name, value);
   }
 
   setBrowserCustomValidity(message?: ?string): void {
@@ -204,15 +210,17 @@ export class ConnectedFieldComponent extends React.Component<CombinedProps> {
   validate(): ?string {
     this.validatingPromise = null;
     this.clearBrowserCustomValidity();
-    let error = this.getError();
+
+    const customError = this.getCustomError();
+    let compoundError = customError || this.getTargetValidationMessage();
 
     // Avoid rerenderd when changing among null, false, undefined, 0 and ''
-    if (!error || (typeof error === 'string' && error === '')) error = null;
+    if (!compoundError || (typeof compoundError === 'string' && compoundError === '')) compoundError = null;
 
-    this.setBrowserCustomValidity(error);
-    this.dispatchValidation(error);
+    this.setBrowserCustomValidity(customError);
+    this.dispatchValidation(compoundError);
 
-    return error;
+    return compoundError;
   }
 
   /*
