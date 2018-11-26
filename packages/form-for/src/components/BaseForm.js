@@ -49,6 +49,8 @@ export default class BaseForm extends React.Component<Props, State> {
   formRef: React.ElementRef<*> = React.createRef();
   valid: boolean = true;
 
+  unmounting: boolean = false;
+
   state = {
     submitted: false,
     submitting: null
@@ -108,7 +110,7 @@ export default class BaseForm extends React.Component<Props, State> {
   }
 
   onAsyncSubmitFinish = () => {
-    this.setState({ submitted: true, submitting: null });
+    if (!this.unmounting) this.setState({ submitted: true, submitting: null });
   };
 
   onInvalidSubmit(event: ?any) {
@@ -157,6 +159,10 @@ export default class BaseForm extends React.Component<Props, State> {
   /*
    * Lifecycle
    */
+
+  componentWillUnmount() {
+    this.unmounting = true;
+  }
 
   render(): React.Node {
     const { submitted, submitting } = this.state;
