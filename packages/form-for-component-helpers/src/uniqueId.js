@@ -1,12 +1,12 @@
 // @flow
 
-export default function uniqueId(Component: any): string {
-  const id = Component.props && Component.props.id;
+export default function uniqueId(component: any): string {
+  const id = component.props && component.props.id;
   if (id) return id;
 
-  if (Component.__uniqueGeneratedId) return Component.__uniqueGeneratedId;
+  if (component.__uniqueGeneratedId) return component.__uniqueGeneratedId;
 
-  return (Component['__uniqueGeneratedId'] = `${Component.constructor.name}#${uniqueId.idCounter++}`);
+  return (component['__uniqueGeneratedId'] = `${component.constructor.name}-${uniqueId.idCounter++}`);
 }
 
 uniqueId.idCounter = 1;
