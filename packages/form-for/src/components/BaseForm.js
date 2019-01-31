@@ -25,7 +25,8 @@ export type Props = {
   onInvalidSubmit?: (errors: Object) => any,
   onSubmit?: (event: any, data: Object) => any,
   onChange?: (data: Object) => any,
-  touchedOn?: TouchedOn
+  touchedOn?: TouchedOn,
+  noPreventDefault?: boolean
 };
 
 type State = {
@@ -35,6 +36,8 @@ type State = {
 
 export default class BaseForm extends React.Component<Props, State> {
   static defaultProps: Object = { noValidate: true, touchedOn: 'blur' };
+  static preventDefault = true;
+
   static formComponent: React.ComponentType<*> | string = 'form';
   static fieldGroupComponent: React.ComponentType<*> = FieldGroup;
 
@@ -86,6 +89,7 @@ export default class BaseForm extends React.Component<Props, State> {
     delete formProps.onInvalidSubmit;
     delete formProps.onChange;
     delete formProps.touchedOn;
+    delete formProps.noPreventDefault;
 
     return formProps;
   }
@@ -97,7 +101,11 @@ export default class BaseForm extends React.Component<Props, State> {
   onChange(data: Object) {}
 
   onSubmit(event: any): any {
-    const { onSubmit } = this.props;
+    const { onSubmit, noPreventDefault } = this.props;
+
+    const shouldPreventDefault = BaseForm.preventDefault && !noPreventDefault;
+    if (shouldPreventDefault) event.preventDefault();
+
     if (onSubmit) return onSubmit(event, this.getData());
   }
 
