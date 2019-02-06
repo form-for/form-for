@@ -84,7 +84,14 @@ export class ConnectedFieldComponent extends React.Component<CombinedProps> {
   }
 
   getTargetValueProp() {
-    return this.target.type === 'checkbox' ? 'checked' : 'value';
+    switch (this.target.type) {
+      case 'checkbox':
+        return 'checked';
+      case 'file':
+        return;
+      default:
+        return 'value';
+    }
   }
 
   getTargetValue(): any {
@@ -96,7 +103,8 @@ export class ConnectedFieldComponent extends React.Component<CombinedProps> {
     if (!this.target) return;
 
     // Update target value with latest to ensure correct error message
-    this.target[this.getTargetValueProp()] = this.getObjectValue() || '';
+    const valueProp = this.getTargetValueProp();
+    if (valueProp) this.target[valueProp] = this.getObjectValue() || '';
     return this.target.validationMessage;
   }
 
