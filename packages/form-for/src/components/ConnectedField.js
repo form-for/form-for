@@ -39,11 +39,16 @@ type CombinedProps = Props & {
   contextTouchedOn: TouchedOn
 };
 
+type ConnectedData = {
+  component: React.ComponentType<*>,
+  defaultProps: any
+};
+
 const SUCCESS_ASYNC_VALIDATION = '__success_async__';
 
 export class ConnectedFieldComponent extends React.Component<CombinedProps> {
   static validatingErrorMessage = 'Validating';
-  static connectedComponents: { [_: string]: React.ComponentType<*> } = {};
+  static connectedComponents: { [_: string]: ConnectedData } = {};
 
   target: Object;
   touched: ?boolean;
@@ -79,7 +84,7 @@ export class ConnectedFieldComponent extends React.Component<CombinedProps> {
     return prefixer(contextPrefix, name);
   }
 
-  getComponent(): React.ComponentType<*> {
+  getConnectedData(): ConnectedData {
     return ConnectedFieldComponent.connectedComponents[this.getType()] || this.throwMissingTypeConnection();
   }
 
@@ -283,9 +288,11 @@ export class ConnectedFieldComponent extends React.Component<CombinedProps> {
     delete otherProps.contextOnValidate;
     delete otherProps.contextTouchedOn;
 
-    const C = this.getComponent();
+    const { component, defaultProps } = this.getConnectedData();
+    const C = component;
 
     const CProps = {
+      ...defaultProps,
       ...this.getSchemaProperty(),
       ...otherProps,
       name: this.getPrefixedName(),
@@ -350,6 +357,6 @@ export function withConnectedFieldContext(Component: React.ComponentType<Combine
 
 export default withConnectedFieldContext(ConnectedFieldComponent);
 
-export function connectField(type: string, component: React.ComponentType<*>): void {
-  ConnectedFieldComponent.connectedComponents[type] = component;
+export function connectField(type: string, component: React.ComponentType<*>, defaultProps: any = {}): void {
+  ConnectedFieldComponent.connectedComponents[type] = { component, defaultProps };
 }
