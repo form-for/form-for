@@ -54,13 +54,10 @@ export default class BaseForm extends React.Component<Props, State> {
 
   unmounting: boolean = false;
 
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      submitted: false,
-      submitting: null
-    };
+  UNSAFE_componentWillMount() {
+    this.handleChange = this.handleChange.bind(this);
+    this.handleValidate = this.handleValidate.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
   }
 
   getData(): Object {
@@ -121,9 +118,9 @@ export default class BaseForm extends React.Component<Props, State> {
     this.setState({ submitting });
   }
 
-  onAsyncSubmitFinish = () => {
+  onAsyncSubmitFinish() {
     if (!this.unmounting) this.setState({ submitted: true, submitting: null });
-  };
+  }
 
   onInvalidSubmit(event: ?any) {
     const isDOMEvent = event && event.target;
@@ -141,18 +138,18 @@ export default class BaseForm extends React.Component<Props, State> {
    * Bound handlers
    */
 
-  handleChange = (value: Object) => {
+  handleChange(value: Object) {
     this.onChange(value);
 
     const { onChange } = this.props;
     if (onChange) onChange(this.getData());
-  };
+  }
 
-  handleValidate = (errors: Object) => {
+  handleValidate(errors: Object) {
     this.valid = Object.keys(errors).length === 0;
-  };
+  }
 
-  handleSubmit = (event?: any) => {
+  handleSubmit(event?: any) {
     if (!this.valid) {
       this.onInvalidSubmit(event);
       return;
@@ -162,11 +159,11 @@ export default class BaseForm extends React.Component<Props, State> {
 
     if (isPromise(response)) {
       this.onAsyncSubmitStart(response);
-      response.then(this.onAsyncSubmitFinish).catch(this.onAsyncSubmitFinish);
+      response.then(this.onAsyncSubmitFinish.bind(this)).catch(this.onAsyncSubmitFinish.bind(this));
     } else {
       this.onSyncSubmit();
     }
-  };
+  }
 
   /*
    * Lifecycle
@@ -177,7 +174,7 @@ export default class BaseForm extends React.Component<Props, State> {
   }
 
   render(): React.Node {
-    const { submitted, submitting } = this.state;
+    const { submitted, submitting } = this.state || {};
 
     const C = this.constructor.formComponent || BaseForm.formComponent;
     const props = this.getProps();
@@ -187,7 +184,7 @@ export default class BaseForm extends React.Component<Props, State> {
         <FormForContext.Provider value={this.getData()}>
           <FormTouchedOnContext.Provider value={props.touchedOn}>
             <FormChangeContext.Provider value={this.handleChange}>
-              <FormSubmittedContext.Provider value={submitted}>
+              <FormSubmittedContext.Provider value={!!submitted}>
                 <FormSubmittingContext.Provider value={submitting}>
                   <Validate
                     onValidate={this.handleValidate}

@@ -240,37 +240,44 @@ export class ConnectedFieldComponent extends React.Component<CombinedProps> {
    * Handlers
    */
 
-  handleMount = (target: Object) => {
+  handleMount(target: Object) {
     this.target = target;
 
     // Force update to fetch and display new error
     this.forceUpdate();
-  };
+  }
 
-  handleFocus = (event?: Event) => {
+  handleFocus(event?: Event) {
     this.target = (event || this).target;
     this.touch('focus');
 
     if (this.props.onFocus) this.props.onFocus(event);
-  };
+  }
 
-  handleChange = (event?: Event, value?: any, error?: any) => {
+  handleChange(event?: Event, value?: any, error?: any) {
     this.target = (event || this).target;
     this.incomingError = error;
     this.setValue(value);
     this.touch('change');
 
     if (this.props.onChange) this.props.onChange(event);
-  };
+  }
 
-  handleBlur = (event?: Event) => {
+  handleBlur(event?: Event) {
     this.touch('blur');
     if (this.props.onBlur) this.props.onBlur(event);
-  };
+  }
 
   /*
    * Lifecycle
    */
+
+  UNSAFE_componentWillMount() {
+    this.handleMount = this.handleMount.bind(this);
+    this.handleFocus = this.handleFocus.bind(this);
+    this.handleChange = this.handleChange.bind(this);
+    this.handleBlur = this.handleBlur.bind(this);
+  }
 
   componentWillUnmount() {
     this.dispatchValidation();

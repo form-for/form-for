@@ -18,6 +18,11 @@ export type Props = {
 export default class Radio extends React.PureComponent<Props> {
   input: ?HTMLInputElement;
 
+  constructor(props) {
+    super(props);
+    this.renderRadio = this.renderRadio.bind(this);
+  }
+
   componentDidMount() {
     this.props.onMount(this.input);
   }
@@ -55,7 +60,7 @@ export default class Radio extends React.PureComponent<Props> {
     );
   }
 
-  renderRadio = (props: Object, label: string) => {
+  renderRadio(props: Object, label: string) {
     const id = `${uniqueId(this)}-${props.value}`;
 
     return (
@@ -66,5 +71,5 @@ export default class Radio extends React.PureComponent<Props> {
         </label>
       </div>
     );
-  };
+  }
 }

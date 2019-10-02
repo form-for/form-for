@@ -92,17 +92,17 @@ export class FieldGroupComponent extends React.Component<CombinedProps> {
     this.dispatchChange(newObject);
   }
 
-  /*
-   * Bound handlers
-   */
-
-  handleChange = (name: string, value: any, index?: any) => {
+  handleChange(name: string, value: any, index?: any) {
     this.onChange(name, value, index);
-  };
+  }
 
   /*
    * Lifecycle
    */
+
+  UNSAFE_componentWillMount() {
+    this.handleChange = this.handleChange.bind(this);
+  }
 
   render() {
     return (
