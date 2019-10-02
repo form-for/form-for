@@ -54,10 +54,14 @@ export default class BaseForm extends React.Component<Props, State> {
 
   unmounting: boolean = false;
 
-  state = {
-    submitted: false,
-    submitting: null
-  };
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      submitted: false,
+      submitting: null
+    };
+  }
 
   getData(): Object {
     return this.props.for || {};
@@ -68,7 +72,7 @@ export default class BaseForm extends React.Component<Props, State> {
 
     if (!object) return children;
 
-    return React.createElement(this.constructor.fieldGroupComponent, {
+    return React.createElement(this.constructor.fieldGroupComponent || BaseForm.fieldGroupComponent, {
       for: this.getData(),
       schema,
       children
@@ -175,7 +179,7 @@ export default class BaseForm extends React.Component<Props, State> {
   render(): React.Node {
     const { submitted, submitting } = this.state;
 
-    const C = this.constructor.formComponent;
+    const C = this.constructor.formComponent || BaseForm.formComponent;
     const props = this.getProps();
 
     return (

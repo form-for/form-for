@@ -16,7 +16,9 @@ export class FieldComponent extends React.Component<Props> {
   static connectedFieldComponent = ConnectedField;
 
   render() {
-    const C = this.props.children ? this.constructor.inlineFieldComponent : this.constructor.connectedFieldComponent;
+    const C = this.props.children
+      ? this.constructor.inlineFieldComponent || FieldComponent.inlineFieldComponent
+      : this.constructor.connectedFieldComponent || FieldComponent.connectedFieldComponent;
 
     return (
       <FieldNameContext.Provider value={this.props.name}>

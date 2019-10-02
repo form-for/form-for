@@ -32,7 +32,7 @@ export class InlineFieldComponent extends React.Component<CombinedProps> {
   render() {
     const { name, children } = this.props;
 
-    const CFieldGroup = this.constructor.fieldGroupComponent;
+    const CFieldGroup = this.constructor.fieldGroupComponent || InlineFieldComponent.fieldGroupComponent;
 
     const value = this.getFor();
     if (!value) return null;
