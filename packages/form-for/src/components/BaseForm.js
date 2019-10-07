@@ -50,11 +50,13 @@ export default class BaseForm extends React.Component<Props, State> {
   static Change = FormChangeContext.Consumer;
 
   formRef: React.ElementRef<*> = React.createRef();
-  valid: boolean = true;
+  valid: boolean;
 
-  unmounting: boolean = false;
+  unmounting: boolean;
 
   UNSAFE_componentWillMount() {
+    this.valid = true;
+    this.unmounting = false;
     this.handleChange = this.handleChange.bind(this);
     this.handleValidate = this.handleValidate.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
