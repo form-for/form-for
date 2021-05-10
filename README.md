@@ -1,5 +1,7 @@
 <img src="assets/logo.png" alt="logo" align="right" />
 
+⚠️ **This repository is no longer maintained**
+
 # form-for
 
 > Type less, do more. React forms made easy.
@@ -9,8 +11,6 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/9efdfe69fbe453cef6b4/maintainability)](https://codeclimate.com/github/form-for/form-for/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/9efdfe69fbe453cef6b4/test_coverage)](https://codeclimate.com/github/form-for/form-for/test_coverage)
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
-
-### Form-for v2 is on alpha. The docs will be updated soon! Until the alpha is over, it's recommended to continue on v1
 
 ```js
 import { Form, Field } from "form-for";
